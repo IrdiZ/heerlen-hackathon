@@ -52,11 +52,12 @@ openAppBtn.addEventListener('click', () => {
   chrome.tabs.create({ url: APP_URL });
 });
 
-// Check if app is connected
+// Check if extension is working (not persistent connection - just self-test)
 async function checkConnection() {
   try {
-    const { appConnected } = await chrome.storage.local.get('appConnected');
-    updateConnectionUI(appConnected);
+    // Just check if background script responds
+    const response = await chrome.runtime.sendMessage({ type: 'PING' });
+    updateConnectionUI(response?.success === true);
   } catch (e) {
     updateConnectionUI(false);
   }
@@ -66,10 +67,10 @@ async function checkConnection() {
 function updateConnectionUI(connected) {
   if (connected) {
     connectionDot.classList.add('connected');
-    connectionStatus.textContent = 'Connected';
+    connectionStatus.textContent = 'Ready';
   } else {
     connectionDot.classList.remove('connected');
-    connectionStatus.textContent = 'Not connected';
+    connectionStatus.textContent = 'Error';
   }
 }
 

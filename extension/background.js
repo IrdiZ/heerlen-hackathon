@@ -31,9 +31,15 @@ chrome.runtime.onConnectExternal.addListener((port) => {
   });
 });
 
-// Listen for messages from content script
+// Listen for messages from content script or popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('[MigrantAI] Message from content script:', message);
+  console.log('[MigrantAI] Internal message:', message);
+  
+  // Respond to PING from popup
+  if (message.type === 'PING') {
+    sendResponse({ success: true, version: '1.0.0' });
+    return true;
+  }
   
   if (message.type === 'PAGE_DATA') {
     lastCapturedData = message.data;
