@@ -237,6 +237,29 @@ export function useExtension() {
     setCaptureHistory([]);
   }, []);
 
+  const removeCapture = useCallback(async (index: number) => {
+    const capture = captureHistory[index];
+    if (!capture) return;
+    
+    // Remove from local state
+    setCaptureHistory(prev => prev.filter((_, i) => i !== index));
+    
+    // If we're removing the currently selected one, clear it or select another
+    if (formSchema?.capturedAt === capture.capturedAt) {
+      const remaining = captureHistory.filter((_, i) => i !== index);
+      setFormSchema(remaining.length > 0 ? remaining[0] : null);
+    }
+    
+    // Remove from database if it has an ID
+    if ((capture as any).id) {
+      try {
+        await fetch(`/api/captures/${(capture as any).id}`, { method: 'DELETE' });
+      } catch (e) {
+        console.error('[useExtension] Failed to delete capture from DB:', e);
+      }
+    }
+  }, [captureHistory, formSchema]);
+
   return {
     isConnected,
     formSchema,
@@ -249,6 +272,7 @@ export function useExtension() {
     clearSchema,
     selectCapture,
     clearHistory,
+    removeCapture,
   };
 }
 

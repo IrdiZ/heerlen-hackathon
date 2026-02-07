@@ -147,7 +147,7 @@ export default function Home() {
   const [selectedTemplate, setSelectedTemplate] = useState<FormTemplate | null>(null);
   
   const { piiData, updateField, clearAll, loadDemo, getFilledCount, totalFields } = useLocalPII();
-  const { isConnected, formSchema: extensionFormSchema, captureHistory, lastFillResults, error, requestFormSchema, fillForm, clearSchema, selectCapture } = useExtension();
+  const { isConnected, formSchema: extensionFormSchema, captureHistory, lastFillResults, error, requestFormSchema, fillForm, clearSchema, selectCapture, removeCapture } = useExtension();
   const { roadmap, createRoadmap, setStepStatus, updateNotes, clearRoadmap, getProgress } = useRoadmap();
   const [showRoadmap, setShowRoadmap] = useState(false);
 
@@ -654,6 +654,7 @@ export default function Home() {
                   error={error}
                   captureHistory={captureHistory}
                   onSelectCapture={selectCapture}
+                  onRemoveCapture={removeCapture}
                 />
               </FadeInOnScroll>
 

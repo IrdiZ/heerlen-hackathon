@@ -12,6 +12,7 @@ interface FormStatusProps {
   error: string | null;
   captureHistory?: FormSchema[];
   onSelectCapture?: (index: number) => void;
+  onRemoveCapture?: (index: number) => void;
 }
 
 // Shimmer loading skeleton component
@@ -36,7 +37,7 @@ function PulsingIcon({ children, color }: { children: React.ReactNode; color: st
   );
 }
 
-export function FormStatus({ schema, fillResults, onClear, isConnected, error, captureHistory = [], onSelectCapture }: FormStatusProps) {
+export function FormStatus({ schema, fillResults, onClear, isConnected, error, captureHistory = [], onSelectCapture, onRemoveCapture }: FormStatusProps) {
   const t = useTranslations('formStatus');
 
   // Error state with shake animation
@@ -166,37 +167,56 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error, c
               {captureHistory.map((capture, i) => {
                 const isActive = capture.url === schema?.url && capture.capturedAt === schema?.capturedAt;
                 return (
-                  <motion.button
+                  <motion.div
                     key={capture.capturedAt || i}
-                    onClick={() => onSelectCapture?.(i)}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: i * 0.05 }}
-                    whileHover={{ 
-                      scale: 1.05, 
-                      y: -2,
-                      boxShadow: "0 8px 20px -5px rgba(0,0,0,0.15)"
-                    }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`
-                      snap-start shrink-0 w-40 p-2 rounded-lg text-left transition-all duration-200
-                      ${isActive 
-                        ? 'bg-orange-500 text-white shadow-lg ring-2 ring-blue-300' 
-                        : 'bg-white text-gray-700 shadow border border-gray-200'
-                      }
-                    `}
+                    className="relative snap-start shrink-0"
                   >
-                    <div className={`text-xs font-medium truncate ${isActive ? 'text-white' : 'text-gray-800'}`}>
-                      {capture.title?.slice(0, 25) || 'Untitled'}
-                      {capture.title && capture.title.length > 25 ? '...' : ''}
-                    </div>
-                    <div className={`text-[10px] truncate mt-0.5 ${isActive ? 'text-blue-100' : 'text-gray-400'}`}>
-                      {capture.fields?.length || 0} fields
-                    </div>
-                    <div className={`text-[10px] mt-0.5 ${isActive ? 'text-blue-200' : 'text-gray-400'}`}>
-                      {capture.capturedAt ? new Date(capture.capturedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                    </div>
-                  </motion.button>
+                    {/* Remove button */}
+                    {onRemoveCapture && (
+                      <motion.button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRemoveCapture(i);
+                        }}
+                        whileHover={{ scale: 1.2, backgroundColor: '#ef4444' }}
+                        whileTap={{ scale: 0.9 }}
+                        className="absolute -top-1 -right-1 z-10 w-5 h-5 bg-gray-400 hover:bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-md transition-colors"
+                        title="Remove capture"
+                      >
+                        ×
+                      </motion.button>
+                    )}
+                    <motion.button
+                      onClick={() => onSelectCapture?.(i)}
+                      whileHover={{ 
+                        scale: 1.05, 
+                        y: -2,
+                        boxShadow: "0 8px 20px -5px rgba(0,0,0,0.15)"
+                      }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`
+                        w-40 p-2 rounded-lg text-left transition-all duration-200
+                        ${isActive 
+                          ? 'bg-orange-500 text-white shadow-lg ring-2 ring-blue-300' 
+                          : 'bg-white text-gray-700 shadow border border-gray-200'
+                        }
+                      `}
+                    >
+                      <div className={`text-xs font-medium truncate ${isActive ? 'text-white' : 'text-gray-800'}`}>
+                        {capture.title?.slice(0, 25) || 'Untitled'}
+                        {capture.title && capture.title.length > 25 ? '...' : ''}
+                      </div>
+                      <div className={`text-[10px] truncate mt-0.5 ${isActive ? 'text-blue-100' : 'text-gray-400'}`}>
+                        {capture.fields?.length || 0} fields
+                      </div>
+                      <div className={`text-[10px] mt-0.5 ${isActive ? 'text-blue-200' : 'text-gray-400'}`}>
+                        {capture.capturedAt ? new Date(capture.capturedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                      </div>
+                    </motion.button>
+                  </motion.div>
                 );
               })}
             </div>
