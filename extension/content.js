@@ -1,451 +1,212 @@
 // MigrantAI Extension - Content Script
-// Runs on every page to extract form schemas and fill forms
+// Runs on every page to enable capture
 
-console.log('MigrantAI content script loaded');
+console.log('[MigrantAI] Content script loaded on:', window.location.href);
 
-// ============ FORM TEMPLATES ============
-// Inline template definitions for URL detection (synced with web/src/lib/form-templates.ts)
-
-const FORM_TEMPLATES = [
-  {
-    id: 'gemeente-registration',
-    nameNL: 'Gemeente Inschrijving',
-    nameEN: 'Municipality Registration',
-    urlPatterns: [
-      'gemeente\\.nl.*inschrijving',
-      'gemeente\\.nl.*registration',
-      'gemeente\\.nl.*verhuizing',
-      'mijn\\.overheid\\.nl.*brp',
-      'amsterdam\\.nl.*registration',
-      'rotterdam\\.nl.*registration',
-      'denhaag\\.nl.*registration',
-      'utrecht\\.nl.*registration',
-    ],
-    category: 'government',
-  },
-  {
-    id: 'digid-application',
-    nameNL: 'DigiD Aanvraag',
-    nameEN: 'DigiD Application',
-    urlPatterns: [
-      'digid\\.nl.*aanvragen',
-      'digid\\.nl.*apply',
-      'digid\\.nl.*request',
-      'mijn\\.digid\\.nl',
-    ],
-    category: 'government',
-  },
-  {
-    id: 'bsn-request',
-    nameNL: 'BSN Aanvraag / RNI Inschrijving',
-    nameEN: 'BSN Request / RNI Registration',
-    urlPatterns: [
-      'rfrni\\.nl',
-      'rfrni\\.amsterdam\\.nl',
-      'belastingdienst\\.nl.*bsn',
-      'rfrni\\.',
-    ],
-    category: 'government',
-  },
-  {
-    id: 'health-insurance',
-    nameNL: 'Zorgverzekering Aanmelden',
-    nameEN: 'Health Insurance Registration',
-    urlPatterns: [
-      'cz\\.nl.*aanmelden',
-      'zilverenkruis\\.nl.*register',
-      'zilveren-kruis\\.nl',
-      'vgz\\.nl.*aanmelden',
-      'menzis\\.nl.*aanmelden',
-      'unive\\.nl.*zorg',
-      'ohra\\.nl.*zorg',
-      'aegon\\.nl.*zorg',
-      'anderzorg\\.nl',
-      'ditzo\\.nl',
-      'zorgverzekering',
-    ],
-    category: 'healthcare',
-  },
-  {
-    id: 'bank-account',
-    nameNL: 'Bankrekening Openen',
-    nameEN: 'Bank Account Opening',
-    urlPatterns: [
-      'ing\\.nl.*rekening.*openen',
-      'abnamro\\.nl.*rekening.*openen',
-      'rabobank\\.nl.*rekening.*openen',
-      'snsbank\\.nl.*rekening',
-      'asnbank\\.nl.*rekening',
-      'triodos\\.nl.*rekening',
-      'bunq\\.com.*signup',
-      'n26\\.com.*signup',
-      'revolut\\.com.*signup',
-    ],
-    category: 'finance',
-  },
-  {
-    id: 'zorgtoeslag',
-    nameNL: 'Zorgtoeslag Aanvragen',
-    nameEN: 'Healthcare Allowance Application',
-    urlPatterns: [
-      'toeslagen\\.nl.*zorgtoeslag',
-      'belastingdienst\\.nl.*zorgtoeslag',
-      'mijntoeslagen\\.nl',
-    ],
-    category: 'government',
-  },
-];
-
-function detectTemplateByUrl(url) {
-  for (const template of FORM_TEMPLATES) {
-    for (const pattern of template.urlPatterns) {
-      const regex = new RegExp(pattern, 'i');
-      if (regex.test(url)) {
-        return template;
-      }
-    }
+// Listen for messages from background script or popup
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'CAPTURE_NOW') {
+    const data = capturePageData();
+    sendResponse({ success: true, data });
   }
-  return null;
-}
-
-// ============ TOAST NOTIFICATION ============
-
-let toastContainer = null;
-
-function createToastContainer() {
-  if (toastContainer) return toastContainer;
   
-  toastContainer = document.createElement('div');
-  toastContainer.id = 'migrantai-toast-container';
-  toastContainer.style.cssText = `
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 2147483647;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    pointer-events: none;
-  `;
-  document.body.appendChild(toastContainer);
-  return toastContainer;
-}
-
-function showPageToast(message, type = 'success') {
-  const container = createToastContainer();
+  if (message.type === 'HIGHLIGHT_FIELD') {
+    highlightField(message.selector);
+    sendResponse({ success: true });
+  }
   
-  const toast = document.createElement('div');
-  const bgColor = type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#3b82f6';
+  if (message.type === 'FILL_FIELD') {
+    const result = fillField(message.selector, message.value);
+    sendResponse(result);
+  }
   
-  toast.style.cssText = `
-    background: ${bgColor};
-    color: white;
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.3s ease;
-    margin-top: 8px;
-    pointer-events: auto;
-  `;
-  
-  toast.innerHTML = `
-    <span style="font-size: 16px;">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>
-    <span>${message}</span>
-  `;
-  
-  container.appendChild(toast);
-  
-  // Trigger animation
-  requestAnimationFrame(() => {
-    toast.style.opacity = '1';
-    toast.style.transform = 'translateY(0)';
-  });
-  
-  // Auto-dismiss after 5 seconds
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateY(20px)';
-    setTimeout(() => toast.remove(), 300);
-  }, 5000);
-}
+  return true;
+});
 
-// ============ FORM SCHEMA EXTRACTION ============
-
-function extractFormSchema() {
-  const fields = [];
-  const selector = 'input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="reset"]), select, textarea';
-  const elements = document.querySelectorAll(selector);
-
-  const processedNames = new Set();
-
-  elements.forEach((el, index) => {
-    // Skip if already processed (for radio/checkbox groups)
-    if ((el.type === 'radio' || el.type === 'checkbox') && processedNames.has(el.name)) {
-      return;
-    }
-
-    // Find label
-    const labelFor = el.id ? document.querySelector(`label[for="${el.id}"]`) : null;
-    const ariaLabel = el.getAttribute('aria-label');
-    const closestLabel = el.closest('label');
-    const placeholder = el.getAttribute('placeholder');
-    const title = el.getAttribute('title');
-
-    const label = labelFor?.textContent?.trim()
-      || ariaLabel
-      || closestLabel?.textContent?.trim()
-      || placeholder
-      || title
-      || el.name 
-      || el.id 
-      || `field_${index}`;
-
-    const field = {
-      id: el.id || el.name || `field_${index}`,
-      name: el.name || null,
-      label: label.replace(/\s+/g, ' ').substring(0, 100), // Clean up whitespace
-      type: el.type || el.tagName.toLowerCase(),
-      tag: el.tagName.toLowerCase(),
-      required: el.required || el.getAttribute('aria-required') === 'true'
-    };
-
-    // Handle SELECT elements
-    if (el.tagName === 'SELECT') {
-      field.options = [...el.options]
-        .filter(o => o.value) // Skip empty options
-        .slice(0, 50) // Limit options to avoid huge payloads
-        .map(o => ({ 
-          value: o.value, 
-          text: o.textContent.trim() 
-        }));
-    }
-
-    // Handle RADIO and CHECKBOX groups
-    if (el.type === 'radio' || el.type === 'checkbox') {
-      processedNames.add(el.name);
-      const group = document.querySelectorAll(`input[name="${el.name}"]`);
-      field.options = [...group].map(g => {
-        const gLabel = document.querySelector(`label[for="${g.id}"]`);
-        return {
-          value: g.value,
-          label: gLabel?.textContent?.trim() || g.value
-        };
-      });
-    }
-
-    fields.push(field);
-  });
-
-  // Detect template based on URL
-  const detectedTemplate = detectTemplateByUrl(window.location.href);
-
-  return {
+// Capture all relevant page data
+function capturePageData() {
+  const data = {
     url: window.location.href,
     title: document.title,
-    fields: fields,
-    extractedAt: new Date().toISOString(),
-    detectedTemplate: detectedTemplate ? {
-      id: detectedTemplate.id,
-      nameEN: detectedTemplate.nameEN,
-      nameNL: detectedTemplate.nameNL,
-      category: detectedTemplate.category,
-    } : null,
+    timestamp: new Date().toISOString(),
+    forms: [],
+    inputs: [],
+    buttons: [],
+    headings: [],
+    errors: [],
+    mainContent: ''
+  };
+  
+  // Find all forms
+  document.querySelectorAll('form').forEach((form, formIndex) => {
+    const formData = {
+      id: form.id || `form-${formIndex}`,
+      name: form.name,
+      action: form.action,
+      fields: []
+    };
+    
+    // Get fields in this form
+    form.querySelectorAll('input, select, textarea').forEach((field) => {
+      if (field.type === 'hidden') return; // Skip hidden fields
+      
+      formData.fields.push(extractFieldInfo(field));
+    });
+    
+    data.forms.push(formData);
+  });
+  
+  // Find standalone inputs
+  document.querySelectorAll('input:not(form input), select:not(form select), textarea:not(form textarea)').forEach((field) => {
+    if (field.type === 'hidden') return;
+    data.inputs.push(extractFieldInfo(field));
+  });
+  
+  // Find buttons
+  document.querySelectorAll('button, [role="button"], input[type="submit"]').forEach((btn) => {
+    data.buttons.push({
+      text: btn.textContent?.trim() || btn.value || btn.getAttribute('aria-label'),
+      type: btn.type || 'button',
+      id: btn.id,
+      disabled: btn.disabled
+    });
+  });
+  
+  // Get headings for context
+  document.querySelectorAll('h1, h2, h3').forEach((h) => {
+    const text = h.textContent?.trim();
+    if (text) {
+      data.headings.push({ level: h.tagName, text });
+    }
+  });
+  
+  // Find error messages
+  document.querySelectorAll('.error, .alert-error, [role="alert"], .validation-error, .field-error').forEach((el) => {
+    const text = el.textContent?.trim();
+    if (text) {
+      data.errors.push(text);
+    }
+  });
+  
+  // Get main content for context
+  const mainEl = document.querySelector('main, article, [role="main"], .main-content, #main');
+  if (mainEl) {
+    // Get text but limit length
+    data.mainContent = mainEl.textContent?.replace(/\s+/g, ' ').slice(0, 1500).trim();
+  }
+  
+  return data;
+}
+
+// Extract info from a form field
+function extractFieldInfo(field) {
+  return {
+    id: field.id,
+    name: field.name,
+    type: field.type || field.tagName.toLowerCase(),
+    label: findLabel(field),
+    placeholder: field.placeholder,
+    required: field.required || field.getAttribute('aria-required') === 'true',
+    value: field.type === 'password' ? '' : (field.value || ''),
+    checked: field.type === 'checkbox' || field.type === 'radio' ? field.checked : undefined,
+    options: field.tagName === 'SELECT' ? 
+      Array.from(field.options).map(o => ({ value: o.value, text: o.text, selected: o.selected })) :
+      undefined,
+    validation: field.getAttribute('pattern') || field.getAttribute('data-validation'),
+    maxLength: field.maxLength > 0 ? field.maxLength : undefined,
+    disabled: field.disabled,
+    readonly: field.readOnly
   };
 }
 
-// ============ FORM FILLING ============
-
-function fillForm(fillMap) {
-  const results = [];
-
-  Object.entries(fillMap).forEach(([fieldId, value]) => {
-    // Try to find element by ID first, then by name
-    let el = document.getElementById(fieldId);
-    if (!el) {
-      el = document.querySelector(`[name="${fieldId}"]`);
-    }
-    if (!el) {
-      // Try case-insensitive match
-      el = document.querySelector(`[id="${fieldId}" i], [name="${fieldId}" i]`);
-    }
-
-    if (!el) {
-      results.push({ field: fieldId, status: 'not_found' });
-      return;
-    }
-
-    try {
-      fillElement(el, value);
-      highlightElement(el);
-      results.push({ field: fieldId, status: 'filled' });
-    } catch (e) {
-      console.error(`Error filling ${fieldId}:`, e);
-      results.push({ field: fieldId, status: 'error', error: e.message });
-    }
-  });
-
-  // Show toast notification with result
-  const filledCount = results.filter(r => r.status === 'filled').length;
-  const errorCount = results.filter(r => r.status === 'error' || r.status === 'not_found').length;
-  
-  if (filledCount > 0 && errorCount === 0) {
-    showPageToast(`MigrantAI filled ${filledCount} field${filledCount !== 1 ? 's' : ''}`, 'success');
-  } else if (filledCount > 0) {
-    showPageToast(`Filled ${filledCount} field${filledCount !== 1 ? 's' : ''} (${errorCount} failed)`, 'info');
-  } else {
-    showPageToast('Could not fill any fields', 'error');
-  }
-
-  return results;
-}
-
-function fillElement(el, value) {
-  const tagName = el.tagName.toLowerCase();
-  const type = el.type?.toLowerCase();
-
-  if (tagName === 'select') {
-    fillSelect(el, value);
-  } else if (type === 'radio') {
-    fillRadio(el.name, value);
-  } else if (type === 'checkbox') {
-    fillCheckbox(el, value);
-  } else if (type === 'date') {
-    fillDate(el, value);
-  } else {
-    fillInput(el, value);
-  }
-}
-
-function fillInput(el, value) {
-  // Use native setter to bypass React's controlled input
-  const nativeSetter = Object.getOwnPropertyDescriptor(
-    window.HTMLInputElement.prototype, 'value'
-  )?.set || Object.getOwnPropertyDescriptor(
-    window.HTMLTextAreaElement.prototype, 'value'
-  )?.set;
-
-  if (nativeSetter) {
-    nativeSetter.call(el, value);
-  } else {
-    el.value = value;
-  }
-
-  // Dispatch events to trigger framework updates
-  el.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
-  el.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
-  el.dispatchEvent(new Event('blur', { bubbles: true, cancelable: true }));
-}
-
-function fillSelect(el, value) {
-  // Try exact match first
-  let option = [...el.options].find(o => o.value === value || o.text === value);
-  
-  // Try case-insensitive match
-  if (!option) {
-    const lowerValue = value.toLowerCase();
-    option = [...el.options].find(o => 
-      o.value.toLowerCase() === lowerValue || 
-      o.text.toLowerCase() === lowerValue ||
-      o.text.toLowerCase().includes(lowerValue) ||
-      lowerValue.includes(o.text.toLowerCase())
-    );
-  }
-
-  if (option) {
-    el.value = option.value;
-    el.dispatchEvent(new Event('change', { bubbles: true }));
-  }
-}
-
-function fillRadio(name, value) {
-  const radios = document.querySelectorAll(`input[name="${name}"]`);
-  radios.forEach(radio => {
-    const label = document.querySelector(`label[for="${radio.id}"]`);
-    const labelText = label?.textContent?.trim().toLowerCase() || '';
-    const radioValue = radio.value.toLowerCase();
-    const targetValue = value.toLowerCase();
-
-    if (radioValue === targetValue || labelText === targetValue || labelText.includes(targetValue)) {
-      radio.checked = true;
-      radio.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-  });
-}
-
-function fillCheckbox(el, value) {
-  const shouldCheck = value === true || value === 'true' || value === '1' || value === 'yes';
-  el.checked = shouldCheck;
-  el.dispatchEvent(new Event('change', { bubbles: true }));
-}
-
-function fillDate(el, value) {
-  // Handle various date formats
-  let dateValue = value;
-  
-  // If it's DD-MM-YYYY (Dutch format), convert to YYYY-MM-DD
-  if (/^\d{2}-\d{2}-\d{4}$/.test(value)) {
-    const [day, month, year] = value.split('-');
-    dateValue = `${year}-${month}-${day}`;
+// Find the label for a field
+function findLabel(field) {
+  // Method 1: label[for="id"]
+  if (field.id) {
+    const label = document.querySelector(`label[for="${field.id}"]`);
+    if (label) return label.textContent?.trim();
   }
   
-  fillInput(el, dateValue);
+  // Method 2: parent label
+  const parentLabel = field.closest('label');
+  if (parentLabel) {
+    // Get text excluding the input's value
+    const clone = parentLabel.cloneNode(true);
+    clone.querySelectorAll('input, select, textarea').forEach(el => el.remove());
+    return clone.textContent?.trim();
+  }
+  
+  // Method 3: aria-label
+  const ariaLabel = field.getAttribute('aria-label');
+  if (ariaLabel) return ariaLabel;
+  
+  // Method 4: aria-labelledby
+  const labelledBy = field.getAttribute('aria-labelledby');
+  if (labelledBy) {
+    const labelEl = document.getElementById(labelledBy);
+    if (labelEl) return labelEl.textContent?.trim();
+  }
+  
+  // Method 5: preceding element
+  const prev = field.previousElementSibling;
+  if (prev && ['LABEL', 'SPAN', 'DIV'].includes(prev.tagName)) {
+    const text = prev.textContent?.trim();
+    if (text && text.length < 100) return text;
+  }
+  
+  // Method 6: placeholder as last resort
+  return field.placeholder || field.name || null;
 }
 
-function highlightElement(el) {
-  const originalOutline = el.style.outline;
-  const originalOutlineOffset = el.style.outlineOffset;
-  const originalTransition = el.style.transition;
-
-  el.style.transition = 'outline 0.3s ease';
-  el.style.outline = '3px solid #22c55e';
-  el.style.outlineOffset = '2px';
-
-  // Remove highlight after 10 seconds (longer for demo)
-  setTimeout(() => {
-    el.style.outline = originalOutline;
-    el.style.outlineOffset = originalOutlineOffset;
-    el.style.transition = originalTransition;
-  }, 10000);
-}
-
-// ============ MESSAGE HANDLING ============
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('Content script received:', message);
-
-  if (message.type === 'PING') {
-    sendResponse({ success: true });
+// Highlight a field (for visual feedback)
+function highlightField(selector) {
+  const field = document.getElementById(selector) || 
+                document.querySelector(`[name="${selector}"]`) ||
+                document.querySelector(selector);
+  
+  if (field) {
+    const originalOutline = field.style.outline;
+    field.style.outline = '3px solid #4CAF50';
+    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    setTimeout(() => {
+      field.style.outline = originalOutline;
+    }, 3000);
+    
     return true;
   }
-
-  if (message.type === 'CAPTURE_FORM') {
-    try {
-      const schema = extractFormSchema();
-      console.log('Extracted schema:', schema);
-      sendResponse({ success: true, schema });
-    } catch (e) {
-      console.error('Schema extraction error:', e);
-      sendResponse({ success: false, error: e.message });
-    }
-    return true;
-  }
-
-  if (message.type === 'FILL_FORM') {
-    try {
-      const results = fillForm(message.fillMap);
-      console.log('Fill results:', results);
-      sendResponse({ success: true, results });
-    } catch (e) {
-      console.error('Form fill error:', e);
-      sendResponse({ success: false, error: e.message });
-    }
-    return true;
-  }
-
   return false;
-});
+}
+
+// Fill a specific field
+function fillField(selector, value) {
+  const field = document.getElementById(selector) || 
+                document.querySelector(`[name="${selector}"]`) ||
+                document.querySelector(selector);
+  
+  if (!field) {
+    return { success: false, error: 'Field not found' };
+  }
+  
+  try {
+    if (field.type === 'checkbox' || field.type === 'radio') {
+      field.checked = Boolean(value);
+    } else if (field.tagName === 'SELECT') {
+      field.value = value;
+    } else {
+      field.value = value;
+    }
+    
+    // Trigger events for frameworks that listen
+    field.dispatchEvent(new Event('input', { bubbles: true }));
+    field.dispatchEvent(new Event('change', { bubbles: true }));
+    field.dispatchEvent(new Event('blur', { bubbles: true }));
+    
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+// Notify that content script is ready
+chrome.runtime.sendMessage({ type: 'CONTENT_SCRIPT_READY', url: window.location.href });

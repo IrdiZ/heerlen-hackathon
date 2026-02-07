@@ -1,173 +1,273 @@
 'use client';
 
-import { useConversation } from '@elevenlabs/react';
-import { useCallback, useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { AGENT_ID } from '@/lib/elevenlabs-config';
+/**
+ * Voice Agent Component
+ * ElevenLabs Conversational AI widget with extension integration
+ */
+
+import { useEffect, useRef, useCallback, useState } from 'react';
+import { useExtensionBridge } from '@/hooks/useExtensionBridge';
 
 interface VoiceAgentProps {
-  onFormSchemaRequest: () => void;
-  onFillForm: (fieldMappings: Record<string, string>) => void;
-  onMessage?: (message: { role: string; content: string }) => void;
-}
-
-interface ElevenLabsMessage {
-  message: string;
-  role: string;
-}
-
-// Animated loading dots component
-function LoadingDots() {
-  return (
-    <span className="inline-flex items-center gap-1 ms-1">
-      <span className="w-1.5 h-1.5 bg-current rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-      <span className="w-1.5 h-1.5 bg-current rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-      <span className="w-1.5 h-1.5 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-    </span>
-  );
+  onFormSchemaRequest?: () => Promise<void>;
+  onFillForm?: (fieldMappings: Record<string, string>) => Promise<void>;
+  onMessage?: (msg: { role: string; content: string }) => void;
 }
 
 export function VoiceAgent({ onFormSchemaRequest, onFillForm, onMessage }: VoiceAgentProps) {
-  const t = useTranslations('voiceAgent');
-  const [isStarting, setIsStarting] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle');
+  const conversationRef = useRef<any>(null);
+  
+  const { 
+    isConnected: extensionConnected, 
+    capturePage, 
+    fillForm: extensionFillForm, 
+    formatPageDataForAgent,
+    lastCapture
+  } = useExtensionBridge();
 
-  const conversation = useConversation({
-    onConnect: () => {
-      console.log('Connected to ElevenLabs');
-      setIsStarting(false);
-    },
-    onDisconnect: () => {
-      console.log('Disconnected from ElevenLabs');
-    },
-    onMessage: (message: ElevenLabsMessage) => {
-      console.log('Message:', message);
-      // Map ElevenLabs message format to our format
-      onMessage?.({ role: message.role, content: message.message });
-    },
-    onError: (error) => {
-      console.error('ElevenLabs error:', error);
-      setIsStarting(false);
-    },
-  });
+  // Emit message to parent
+  const emitMessage = useCallback((role: string, content: string) => {
+    onMessage?.({ role, content });
+  }, [onMessage]);
 
-  const handleStart = useCallback(async () => {
-    if (!AGENT_ID) {
-      alert('Please configure NEXT_PUBLIC_ELEVENLABS_AGENT_ID in .env.local');
+  // Handle capture_page tool call from agent
+  const handleCapturePage = useCallback(async (): Promise<string> => {
+    console.log('[VoiceAgent] Agent requested page capture');
+    emitMessage('system', '📸 Capturing current page...');
+    
+    // First try the extension bridge
+    if (extensionConnected) {
+      const pageData = await capturePage();
+      if (pageData) {
+        const formatted = formatPageDataForAgent(pageData);
+        emitMessage('system', `✅ Page captured: ${pageData.title}`);
+        return formatted;
+      }
+    }
+    
+    // Fallback: trigger parent's form schema request
+    if (onFormSchemaRequest) {
+      await onFormSchemaRequest();
+      emitMessage('system', '📋 Form schema requested from extension');
+      return JSON.stringify({
+        message: 'Form capture requested. The user may need to click the extension icon.',
+        instructions: 'Ask the user if they can see the form fields now.'
+      });
+    }
+    
+    return JSON.stringify({
+      error: 'Extension not connected',
+      instructions: 'Ask the user to install the MigrantAI Helper extension and click its icon on the page they need help with.'
+    });
+  }, [extensionConnected, capturePage, formatPageDataForAgent, onFormSchemaRequest, emitMessage]);
+
+  // Handle fill_form tool call from agent
+  const handleFillForm = useCallback(async (params: Record<string, unknown>): Promise<string> => {
+    console.log('[VoiceAgent] Agent requested form fill:', params);
+    
+    const fieldMappings = params.field_mappings as Record<string, string>;
+    
+    if (!fieldMappings || Object.keys(fieldMappings).length === 0) {
+      return JSON.stringify({
+        error: 'No field mappings provided',
+        instructions: 'Specify which fields to fill with what values using placeholder tokens like [FIRST_NAME], [LAST_NAME], etc.'
+      });
+    }
+
+    emitMessage('system', `📝 Filling ${Object.keys(fieldMappings).length} fields...`);
+
+    // Use parent's fill form handler if available (handles PII substitution)
+    if (onFillForm) {
+      await onFillForm(fieldMappings);
+      return JSON.stringify({
+        success: true,
+        message: `Sent fill request for ${Object.keys(fieldMappings).length} fields`,
+        fields: Object.keys(fieldMappings)
+      });
+    }
+
+    // Fallback to direct extension fill
+    if (extensionConnected) {
+      extensionFillForm(fieldMappings);
+      return JSON.stringify({
+        success: true,
+        message: `Attempting to fill ${Object.keys(fieldMappings).length} fields via extension`,
+        fields: Object.keys(fieldMappings)
+      });
+    }
+    
+    return JSON.stringify({
+      error: 'Cannot fill form - extension not connected',
+      instructions: 'The form filling feature requires the MigrantAI Helper extension.'
+    });
+  }, [onFillForm, extensionConnected, extensionFillForm, emitMessage]);
+
+  // Start conversation
+  const startConversation = useCallback(async () => {
+    const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
+    
+    if (!agentId) {
+      console.error('[VoiceAgent] No agent ID configured');
+      setStatus('error');
+      emitMessage('system', '❌ Voice agent not configured. Missing NEXT_PUBLIC_ELEVENLABS_AGENT_ID.');
       return;
     }
 
-    setIsStarting(true);
+    setStatus('connecting');
+    emitMessage('system', '🔄 Connecting to voice agent...');
+
     try {
+      // Dynamic import of ElevenLabs SDK
+      const { Conversation } = await import('@11labs/client');
+      
       // Request microphone permission
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      
-      // Start the conversation with the agent
-      await conversation.startSession({
-        agentId: AGENT_ID,
+
+      const conversation = await Conversation.startSession({
+        agentId,
         clientTools: {
-          // Client tool: request form schema from extension
-          request_form_schema: async () => {
-            console.log('Agent requested form schema');
-            onFormSchemaRequest();
-            return 'Form capture requested. Please click "Capture Form" in the extension.';
-          },
-          // Client tool: fill form with placeholder mappings
-          fill_form: async ({ fieldMappings }: { fieldMappings: Record<string, string> }) => {
-            console.log('Agent wants to fill form:', fieldMappings);
-            onFillForm(fieldMappings);
-            return 'Form fill initiated successfully.';
-          },
+          capture_page: handleCapturePage,
+          fill_form: handleFillForm,
         },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+        onConnect: () => {
+          console.log('[VoiceAgent] Connected');
+          setStatus('connected');
+          setIsActive(true);
+          emitMessage('system', '✅ Voice agent connected. Start speaking!');
+        },
+        onDisconnect: () => {
+          console.log('[VoiceAgent] Disconnected');
+          setStatus('idle');
+          setIsActive(false);
+          emitMessage('system', '👋 Voice agent disconnected.');
+        },
+        onMessage: (message: { role: string; content: string }) => {
+          console.log('[VoiceAgent] Message:', message);
+          emitMessage(message.role === 'user' ? 'user' : 'assistant', message.content);
+        },
+        onError: (error: Error) => {
+          console.error('[VoiceAgent] Error:', error);
+          setStatus('error');
+          emitMessage('system', `❌ Error: ${error.message}`);
+        },
+      });
+
+      conversationRef.current = conversation;
     } catch (error) {
-      console.error('Failed to start conversation:', error);
-      setIsStarting(false);
+      console.error('[VoiceAgent] Failed to start:', error);
+      setStatus('error');
+      emitMessage('system', `❌ Failed to start: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-  }, [conversation, onFormSchemaRequest, onFillForm]);
+  }, [handleCapturePage, handleFillForm, emitMessage]);
 
-  const handleStop = useCallback(async () => {
-    await conversation.endSession();
-  }, [conversation]);
-
-  const getStatusIndicatorClasses = () => {
-    const baseClasses = 'w-4 h-4 rounded-full transition-all duration-300';
-    if (conversation.status === 'connected') {
-      if (conversation.isSpeaking) {
-        // Active pulse with glow when speaking
-        return `${baseClasses} bg-green-500 animate-pulse shadow-lg shadow-green-500/50`;
-      }
-      // Gentle pulse when listening
-      return `${baseClasses} bg-blue-500 animate-pulse`;
+  // End conversation
+  const endConversation = useCallback(async () => {
+    if (conversationRef.current) {
+      await conversationRef.current.endSession();
+      conversationRef.current = null;
     }
-    if (isStarting) {
-      return `${baseClasses} bg-yellow-500 animate-pulse`;
-    }
-    return `${baseClasses} bg-gray-400`;
-  };
-
-  const getStatusText = () => {
-    if (isStarting) return t('status.connecting');
-    if (conversation.status === 'connected') {
-      return conversation.isSpeaking ? t('status.speaking') : t('status.listening');
-    }
-    return t('status.ready');
-  };
+    setIsActive(false);
+    setStatus('idle');
+  }, []);
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      {/* Status indicator */}
-      <div className="flex items-center gap-3 transition-all duration-300">
-        <div className={getStatusIndicatorClasses()} />
-        <span className="text-lg font-medium text-gray-700 transition-all duration-200">
-          {getStatusText()}
-          {isStarting && <LoadingDots />}
-        </span>
+    <div className="voice-agent">
+      {/* Status indicators */}
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <div className="flex items-center gap-2">
+          <div className={`w-3 h-3 rounded-full transition-colors ${
+            status === 'connected' ? 'bg-green-500 animate-pulse' :
+            status === 'connecting' ? 'bg-yellow-500 animate-pulse' :
+            status === 'error' ? 'bg-red-500' :
+            'bg-gray-300'
+          }`} />
+          <span className="text-sm text-gray-600">
+            {status === 'connected' ? '🎤 Listening...' :
+             status === 'connecting' ? 'Connecting...' :
+             status === 'error' ? 'Error' :
+             'Ready to start'}
+          </span>
+        </div>
+        
+        {/* Extension status */}
+        <div className="flex items-center gap-1">
+          <div className={`w-2 h-2 rounded-full ${extensionConnected ? 'bg-green-400' : 'bg-gray-300'}`} />
+          <span className="text-xs text-gray-400">
+            {extensionConnected ? 'Extension' : 'No extension'}
+          </span>
+        </div>
       </div>
 
-      {/* Main control button */}
-      {conversation.status !== 'connected' ? (
-        <button
-          onClick={handleStart}
-          disabled={isStarting}
-          className="px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl font-semibold text-white bg-blue-600 rounded-full hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 active:scale-100 shadow-lg hover:shadow-xl disabled:hover:scale-100 disabled:hover:shadow-lg"
-        >
-          {isStarting ? (
-            <span className="flex items-center gap-3">
-              <svg className="animate-spin h-5 w-5 sm:h-6 sm:w-6" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-              <span>{t('status.connecting')}<LoadingDots /></span>
+      {/* Main button */}
+      <button
+        onClick={isActive ? endConversation : startConversation}
+        disabled={status === 'connecting'}
+        className={`
+          w-full py-4 px-6 rounded-xl font-semibold text-lg
+          transition-all duration-200 transform
+          ${isActive 
+            ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/30' 
+            : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30'
+          }
+          ${status === 'connecting' ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'}
+        `}
+      >
+        {isActive ? (
+          <span className="flex items-center justify-center gap-3">
+            <span className="relative flex h-4 w-4">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-white"></span>
             </span>
-          ) : (
-            <span className="flex items-center gap-2">
-              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
-              {t('startConversation')}
-            </span>
-          )}
-        </button>
-      ) : (
-        <button
-          onClick={handleStop}
-          className="px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-xl font-semibold text-white bg-red-600 rounded-full hover:bg-red-700 active:bg-red-800 transition-all duration-200 transform hover:scale-105 active:scale-100 shadow-lg hover:shadow-xl"
-        >
-          <span className="flex items-center gap-2">
-            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
-            </svg>
-            {t('endConversation')}
+            End Conversation
           </span>
-        </button>
+        ) : status === 'connecting' ? (
+          <span className="flex items-center justify-center gap-2">
+            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Connecting...
+          </span>
+        ) : (
+          <span className="flex items-center justify-center gap-2">
+            🎤 Start Voice Chat
+          </span>
+        )}
+      </button>
+
+      {/* Quick tips */}
+      {!isActive && status === 'idle' && (
+        <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+          <p className="text-sm text-blue-800">
+            <strong>💡 Tips:</strong> Say "I'm stuck" when on a government form, and I'll help you fill it out. 
+            {!extensionConnected && (
+              <span className="block mt-1 text-blue-600">
+                Install the MigrantAI Helper extension for form assistance.
+              </span>
+            )}
+          </p>
+        </div>
       )}
 
-      {/* Language hint */}
-      <p className="text-gray-500 text-sm text-center px-4 transition-opacity duration-200 hover:text-gray-600">
-        🌍 {t('languageHint')}
-      </p>
+      {/* Active conversation indicator */}
+      {isActive && (
+        <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-100">
+          <div className="flex items-center gap-3">
+            <div className="flex gap-1">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+            </div>
+            <span className="text-sm text-green-800">
+              MigrantAI is listening. Speak naturally in any language.
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+export default VoiceAgent;

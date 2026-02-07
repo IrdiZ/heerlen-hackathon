@@ -1,10 +1,26 @@
 {
   "manifest_version": 3,
-  "name": "MigrantAI Form Filler",
+  "name": "MigrantAI Helper",
   "version": "1.0.0",
-  "description": "Auto-fill Dutch government forms with voice AI assistance",
-  "permissions": ["activeTab", "storage"],
-  "host_permissions": ["<all_urls>"],
+  "description": "Helps MigrantAI voice assistant understand government forms",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -18,21 +34,12 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_idle"
-    }
-  ],
-  "background": {
-    "service_worker": "background.js"
-  },
   "externally_connectable": {
     "matches": [
       "http://localhost:*/*",
+      "https://localhost:*/*",
       "https://*.vercel.app/*",
-      "https://migrant-ai.vercel.app/*"
+      "https://migrantai.app/*"
     ]
   }
 }
