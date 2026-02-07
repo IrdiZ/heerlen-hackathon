@@ -118,10 +118,9 @@ function DevPanelInner({ piiData, formSchema, lastFillResults, voiceAgentStatus,
 
       {/* Panel */}
       <div
-        className={`fixed top-0 right-0 h-full bg-gray-900 text-gray-100 shadow-2xl z-50 transition-transform duration-300 ease-in-out flex flex-col ${
+        className={`fixed top-0 right-0 h-full w-full sm:w-[420px] bg-gray-900 text-gray-100 shadow-2xl z-50 transition-transform duration-300 ease-in-out flex flex-col ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
-        style={{ width: '420px' }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700 shrink-0">

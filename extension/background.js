@@ -132,7 +132,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   
   // Respond to PING from popup
   if (message.type === 'PING') {
-    sendResponse({ success: true, version: '1.0.0' });
+    sendResponse({ success: true, version: chrome.runtime.getManifest().version });
     return true;
   }
   
@@ -431,7 +431,7 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
   console.log('[MigrantAI] External message:', message, 'from:', sender);
   
   if (message.type === 'PING') {
-    sendResponse({ success: true, version: '1.0.0' });
+    sendResponse({ success: true, version: chrome.runtime.getManifest().version });
     return true;
   }
   

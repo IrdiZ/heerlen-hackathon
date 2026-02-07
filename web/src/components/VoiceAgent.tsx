@@ -191,11 +191,29 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   }, [emitMessage, onFormCaptured]);
 
   // Handle fill_form tool call from agent
-  const handleFillForm = useCallback(async (params: { fieldMappings?: Record<string, string>; field_mappings?: Record<string, string> }): Promise<string> => {
-    console.log('[VoiceAgent] fill_form tool called:', params);
+  const handleFillForm = useCallback(async (rawParams: unknown): Promise<string> => {
+    console.log('[VoiceAgent] fill_form tool called:', rawParams);
+    
+    // Handle string parameters (JSON parsing)
+    let parsed = rawParams;
+    if (typeof rawParams === 'string') {
+      try { parsed = JSON.parse(rawParams); } catch {}
+    }
+    
+    // Unwrap ElevenLabs wrappers
+    let raw: Record<string, unknown> = parsed && typeof parsed === 'object' 
+      ? parsed as Record<string, unknown> 
+      : {};
+    
+    for (const key of ['parameters', 'args', 'input', 'arguments', 'params', 'data']) {
+      if (raw[key] && typeof raw[key] === 'object') {
+        raw = raw[key] as Record<string, unknown>;
+        break;
+      }
+    }
     
     // Handle both camelCase and snake_case (ElevenLabs may use either)
-    const fieldMappings = params.fieldMappings || params.field_mappings;
+    const fieldMappings = (raw.fieldMappings || raw.field_mappings || raw.fields) as Record<string, string> | undefined;
 
     if (!fieldMappings || Object.keys(fieldMappings).length === 0) {
       return 'No field mappings provided. Please specify which fields to fill.';
@@ -340,8 +358,33 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   }, [onCreateRoadmap, emitMessage]);
 
   // Handle update_roadmap tool call from agent
-  const handleUpdateRoadmap = useCallback(async (params: UpdateRoadmapParams): Promise<string> => {
-    console.log('[VoiceAgent] Agent requested roadmap update:', params);
+  const handleUpdateRoadmap = useCallback(async (rawParams: unknown): Promise<string> => {
+    console.log('[VoiceAgent] Agent requested roadmap update:', rawParams);
+
+    // Handle string parameters (JSON parsing)
+    let parsed = rawParams;
+    if (typeof rawParams === 'string') {
+      try { parsed = JSON.parse(rawParams); } catch {}
+    }
+    
+    // Unwrap ElevenLabs wrappers
+    let raw: Record<string, unknown> = parsed && typeof parsed === 'object' 
+      ? parsed as Record<string, unknown> 
+      : {};
+    
+    for (const key of ['parameters', 'args', 'input', 'arguments', 'params', 'data']) {
+      if (raw[key] && typeof raw[key] === 'object') {
+        raw = raw[key] as Record<string, unknown>;
+        break;
+      }
+    }
+    
+    // Normalize snake_case to camelCase
+    const params: UpdateRoadmapParams = {
+      stepId: (raw.stepId || raw.step_id) as string,
+      status: raw.status as 'pending' | 'in-progress' | 'complete',
+      notes: raw.notes as string | undefined,
+    };
 
     try {
       if (onUpdateRoadmap) {
