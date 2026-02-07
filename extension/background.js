@@ -128,8 +128,14 @@ function capturePageContent() {
     buttons: [],
     links: [],
     headings: [],
-    mainContent: ''
+    mainContent: '',
+    pageDescription: ''
   };
+  
+  // Get page description from meta or first paragraph
+  const metaDesc = document.querySelector('meta[name="description"]')?.content;
+  const firstP = document.querySelector('main p, article p, .content p')?.textContent?.slice(0, 200);
+  data.pageDescription = metaDesc || firstP || '';
   
   // Capture all forms
   document.querySelectorAll('form').forEach((form, formIndex) => {
@@ -197,30 +203,84 @@ function capturePageContent() {
     data.mainContent = main.textContent?.slice(0, 2000).trim();
   }
   
-  // Helper to find label for a field
+  // Helper to find label for a field - tries multiple strategies
   function findLabelForField(field) {
-    // Check for associated label
+    let label = null;
+    
+    // 1. Check for associated label via for=""
     if (field.id) {
-      const label = document.querySelector(`label[for="${field.id}"]`);
-      if (label) return label.textContent?.trim();
+      const labelEl = document.querySelector(`label[for="${field.id}"]`);
+      if (labelEl) label = labelEl.textContent?.trim();
     }
     
-    // Check for parent label
-    const parentLabel = field.closest('label');
-    if (parentLabel) return parentLabel.textContent?.trim();
-    
-    // Check for aria-label
-    if (field.getAttribute('aria-label')) {
-      return field.getAttribute('aria-label');
+    // 2. Check for parent label
+    if (!label) {
+      const parentLabel = field.closest('label');
+      if (parentLabel) {
+        // Get label text excluding the input value
+        const clone = parentLabel.cloneNode(true);
+        clone.querySelectorAll('input, select, textarea').forEach(el => el.remove());
+        label = clone.textContent?.trim();
+      }
     }
     
-    // Check preceding sibling or text
-    const prev = field.previousElementSibling;
-    if (prev && (prev.tagName === 'LABEL' || prev.tagName === 'SPAN')) {
-      return prev.textContent?.trim();
+    // 3. aria-label or aria-labelledby
+    if (!label && field.getAttribute('aria-label')) {
+      label = field.getAttribute('aria-label');
+    }
+    if (!label && field.getAttribute('aria-labelledby')) {
+      const labelledBy = document.getElementById(field.getAttribute('aria-labelledby'));
+      if (labelledBy) label = labelledBy.textContent?.trim();
     }
     
-    return null;
+    // 4. Check preceding siblings (common pattern: label/span before input)
+    if (!label) {
+      let prev = field.previousElementSibling;
+      while (prev && !label) {
+        if (['LABEL', 'SPAN', 'DIV', 'P'].includes(prev.tagName)) {
+          const text = prev.textContent?.trim();
+          if (text && text.length < 100) {
+            label = text;
+            break;
+          }
+        }
+        prev = prev.previousElementSibling;
+      }
+    }
+    
+    // 5. Check parent's previous sibling (nested structures)
+    if (!label) {
+      const parent = field.parentElement;
+      const parentPrev = parent?.previousElementSibling;
+      if (parentPrev) {
+        const text = parentPrev.textContent?.trim();
+        if (text && text.length < 100) label = text;
+      }
+    }
+    
+    // 6. Look for nearby visible text above the field
+    if (!label) {
+      const rect = field.getBoundingClientRect();
+      const elementsAbove = document.elementsFromPoint(rect.left + 10, rect.top - 20);
+      for (const el of elementsAbove) {
+        if (['LABEL', 'SPAN', 'DIV', 'P', 'TD', 'TH'].includes(el.tagName)) {
+          const text = el.textContent?.trim();
+          if (text && text.length > 2 && text.length < 80) {
+            label = text;
+            break;
+          }
+        }
+      }
+    }
+    
+    // 7. Fallback to placeholder or name (make it human-readable)
+    if (!label) {
+      label = field.placeholder || 
+              field.name?.replace(/[_-]/g, ' ').replace(/([A-Z])/g, ' $1').trim() ||
+              field.id?.replace(/[_-]/g, ' ').replace(/([A-Z])/g, ' $1').trim();
+    }
+    
+    return label || 'Unnamed field';
   }
   
   return data;
