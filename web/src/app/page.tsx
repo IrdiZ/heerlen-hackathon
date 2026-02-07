@@ -32,7 +32,13 @@ export default function Home() {
   const [selectedTemplate, setSelectedTemplate] = useState<FormTemplate | null>(null);
   
   const { piiData, updateField, clearAll, loadDemo, getFilledCount, totalFields } = useLocalPII();
-  const { isConnected, formSchema, lastFillResults, error, requestFormSchema, fillForm, clearSchema } = useExtension();
+  const { isConnected, formSchema: extensionFormSchema, lastFillResults, error, requestFormSchema, fillForm, clearSchema } = useExtension();
+  
+  // Allow VoiceAgent to set schema directly (for when agent captures via tool)
+  const [voiceAgentSchema, setVoiceAgentSchema] = useState<typeof extensionFormSchema | null>(null);
+  
+  // Prefer voiceAgentSchema if available, otherwise use extensionFormSchema
+  const formSchema = voiceAgentSchema || extensionFormSchema;
 
   // Auto-select template when form schema is captured with a detected template
   useEffect(() => {
@@ -47,6 +53,12 @@ export default function Home() {
 
   const handleMessage = useCallback((msg: { role: string; content: string }) => {
     setMessages(prev => [...prev, { ...msg, timestamp: new Date() }]);
+  }, []);
+
+  // Handle schema captured by VoiceAgent tool
+  const handleFormCaptured = useCallback((schema: any) => {
+    console.log('[Page] VoiceAgent captured schema:', schema);
+    setVoiceAgentSchema(schema);
   }, []);
 
   const handleFormSchemaRequest = useCallback(async () => {
@@ -231,6 +243,7 @@ export default function Home() {
             <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 sm:p-8">
               <VoiceAgent
                 onFormSchemaRequest={handleFormSchemaRequest}
+                onFormCaptured={handleFormCaptured}
                 onFillForm={handleFillForm}
                 onMessage={handleMessage}
               />

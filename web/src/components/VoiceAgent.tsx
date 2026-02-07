@@ -5,11 +5,27 @@
  * ElevenLabs Conversational AI with extension integration
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useConversation } from '@elevenlabs/react';
+
+interface FormField {
+  id: string;
+  name?: string;
+  label: string;
+  type: string;
+  required?: boolean;
+  options?: Array<{ value: string; text?: string }>;
+}
+
+interface FormSchema {
+  url: string;
+  title: string;
+  fields: FormField[];
+}
 
 interface VoiceAgentProps {
   onFormSchemaRequest?: () => Promise<void>;
+  onFormCaptured?: (schema: FormSchema) => void;  // NEW: sync to UI
   onFillForm?: (fieldMappings: Record<string, string>) => Promise<void>;
   onMessage?: (msg: { role: string; content: string }) => void;
 }
@@ -17,7 +33,7 @@ interface VoiceAgentProps {
 const EXTENSION_ID = process.env.NEXT_PUBLIC_EXTENSION_ID || '';
 
 // Direct extension communication
-async function capturePageViaExtension(): Promise<any> {
+async function capturePageViaExtension(): Promise<FormSchema> {
   if (!EXTENSION_ID) {
     throw new Error('Extension ID not configured');
   }
@@ -30,7 +46,7 @@ async function capturePageViaExtension(): Promise<any> {
     chrome.runtime.sendMessage(EXTENSION_ID, { type: 'CAPTURE_FORM' }, (response) => {
       if (chrome.runtime.lastError) {
         reject(new Error(chrome.runtime.lastError.message));
-      } else if (response?.success) {
+      } else if (response?.success && response.schema) {
         resolve(response.schema);
       } else {
         reject(new Error(response?.error || 'Capture failed'));
@@ -71,14 +87,15 @@ async function pingExtension(): Promise<boolean> {
   });
 }
 
-export function VoiceAgent({ onFormSchemaRequest, onFillForm, onMessage }: VoiceAgentProps) {
+export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, onMessage }: VoiceAgentProps) {
   const [error, setError] = useState<string | null>(null);
   const [extensionConnected, setExtensionConnected] = useState(false);
+  const [lastSchema, setLastSchema] = useState<FormSchema | null>(null);
 
   // Check extension on mount
-  useState(() => {
+  useEffect(() => {
     pingExtension().then(setExtensionConnected);
-  });
+  }, []);
 
   // Emit message to parent
   const emitMessage = useCallback((role: string, content: string) => {
@@ -87,24 +104,27 @@ export function VoiceAgent({ onFormSchemaRequest, onFillForm, onMessage }: Voice
     }
   }, [onMessage]);
 
-  // Format captured schema for the agent
-  const formatSchemaForAgent = (schema: any): string => {
+  // Format captured schema for the agent - plain text, no markdown
+  const formatSchemaForAgent = (schema: FormSchema): string => {
     const lines: string[] = [];
-    lines.push(`📄 **Page:** ${schema.title}`);
-    lines.push(`🔗 **URL:** ${schema.url}`);
+    lines.push(`Page: ${schema.title}`);
+    lines.push(`URL: ${schema.url}`);
     lines.push('');
     
     if (schema.fields && schema.fields.length > 0) {
-      lines.push(`📝 **Form Fields (${schema.fields.length}):**`);
-      schema.fields.forEach((field: any) => {
-        const required = field.required ? ' *required*' : '';
-        lines.push(`  - **${field.label || field.name || field.id}** (${field.type})${required}`);
+      lines.push(`Found ${schema.fields.length} form fields:`);
+      lines.push('');
+      schema.fields.forEach((field, index) => {
+        const required = field.required ? ' (required)' : '';
+        const label = field.label || field.name || field.id || `Field ${index + 1}`;
+        lines.push(`${index + 1}. ${label} - type: ${field.type}${required}`);
         if (field.options && field.options.length > 0) {
-          lines.push(`    Options: ${field.options.map((o: any) => o.text || o.label || o.value).join(', ')}`);
+          const optionsList = field.options.slice(0, 5).map(o => o.text || o.value).join(', ');
+          lines.push(`   Options: ${optionsList}${field.options.length > 5 ? '...' : ''}`);
         }
       });
     } else {
-      lines.push('No form fields detected on this page.');
+      lines.push('No form fields were detected on this page.');
     }
     
     return lines.join('\n');
@@ -112,74 +132,78 @@ export function VoiceAgent({ onFormSchemaRequest, onFillForm, onMessage }: Voice
 
   // Handle capture_page tool call from agent
   const handleCapturePage = useCallback(async (): Promise<string> => {
-    console.log('[VoiceAgent] Agent requested page capture');
-    emitMessage('system', '📸 Capturing current page...');
+    console.log('[VoiceAgent] capture_page tool called');
+    emitMessage('system', '📸 Capturing page...');
     
     try {
       const schema = await capturePageViaExtension();
-      const formatted = formatSchemaForAgent(schema);
-      emitMessage('system', `✅ Page captured: ${schema.title} (${schema.fields?.length || 0} fields)`);
+      console.log('[VoiceAgent] Captured schema:', schema);
       
-      // Also trigger parent's handler if provided
-      if (onFormSchemaRequest) {
-        onFormSchemaRequest();
+      // Store locally
+      setLastSchema(schema);
+      
+      // Sync to parent UI
+      if (onFormCaptured) {
+        onFormCaptured(schema);
       }
+      
+      // Format for agent
+      const formatted = formatSchemaForAgent(schema);
+      console.log('[VoiceAgent] Returning to agent:', formatted);
+      
+      emitMessage('system', `✅ Captured: ${schema.title} (${schema.fields?.length || 0} fields)`);
       
       return formatted;
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-      console.error('[VoiceAgent] Capture failed:', errorMsg);
+      console.error('[VoiceAgent] Capture error:', err);
       emitMessage('system', `❌ Capture failed: ${errorMsg}`);
       
-      // Fallback message for agent
-      return `Could not capture the page automatically. Error: ${errorMsg}. Ask the user to click the MigrantAI extension icon on their browser toolbar while on the form page.`;
+      return `Failed to capture page: ${errorMsg}. The user should click the MigrantAI extension icon in their browser toolbar while viewing the form.`;
     }
-  }, [emitMessage, onFormSchemaRequest]);
+  }, [emitMessage, onFormCaptured]);
 
   // Handle fill_form tool call from agent
   const handleFillForm = useCallback(async (params: { field_mappings?: Record<string, string> }): Promise<string> => {
-    console.log('[VoiceAgent] Agent requested form fill:', params);
+    console.log('[VoiceAgent] fill_form tool called:', params);
     
     const fieldMappings = params.field_mappings;
     
     if (!fieldMappings || Object.keys(fieldMappings).length === 0) {
-      return 'No field mappings provided. Specify fields using placeholder tokens like [FIRST_NAME].';
+      return 'No field mappings provided. Please specify which fields to fill.';
     }
 
     emitMessage('system', `📝 Filling ${Object.keys(fieldMappings).length} fields...`);
 
     try {
-      // Try parent's handler first (handles PII substitution)
       if (onFillForm) {
         await onFillForm(fieldMappings);
-        return `Sent fill request for ${Object.keys(fieldMappings).length} fields. Ask the user if the fields were filled correctly.`;
+        return `Filled ${Object.keys(fieldMappings).length} fields. Ask the user to verify the values are correct.`;
       }
 
-      // Direct extension fill
       const result = await fillFormViaExtension(fieldMappings);
       const filledCount = result?.results?.filter((r: any) => r.status === 'filled').length || 0;
-      return `Filled ${filledCount} of ${Object.keys(fieldMappings).length} fields.`;
+      return `Filled ${filledCount} fields successfully.`;
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-      return `Form fill failed: ${errorMsg}`;
+      return `Failed to fill form: ${errorMsg}`;
     }
   }, [onFillForm, emitMessage]);
 
-  // Initialize conversation
+  // Initialize conversation with client tools
   const conversation = useConversation({
     clientTools: {
       capture_page: handleCapturePage,
       fill_form: handleFillForm,
     },
     onConnect: () => {
-      console.log('[VoiceAgent] Connected');
-      emitMessage('system', '✅ Voice agent connected. Start speaking!');
-      // Re-check extension
+      console.log('[VoiceAgent] Connected to ElevenLabs');
+      emitMessage('system', '✅ Voice connected. Start speaking!');
       pingExtension().then(setExtensionConnected);
     },
     onDisconnect: () => {
       console.log('[VoiceAgent] Disconnected');
-      emitMessage('system', '👋 Voice agent disconnected.');
+      emitMessage('system', '👋 Voice disconnected.');
     },
     onMessage: (message) => {
       console.log('[VoiceAgent] Message:', message);
@@ -213,9 +237,9 @@ export function VoiceAgent({ onFormSchemaRequest, onFillForm, onMessage }: Voice
       await navigator.mediaDevices.getUserMedia({ audio: true });
       await conversation.startSession({ agentId });
     } catch (err) {
-      console.error('[VoiceAgent] Failed to start:', err);
+      console.error('[VoiceAgent] Start failed:', err);
       setError(err instanceof Error ? err.message : 'Failed to start');
-      emitMessage('system', `❌ Failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      emitMessage('system', `❌ ${err instanceof Error ? err.message : 'Failed to start'}`);
     }
   }, [conversation, emitMessage]);
 
@@ -241,27 +265,24 @@ export function VoiceAgent({ onFormSchemaRequest, onFillForm, onMessage }: Voice
             {isConnected ? (isSpeaking ? '🔊 Speaking...' : '🎤 Listening...') :
              isConnecting ? 'Connecting...' :
              error ? 'Error' :
-             'Ready to start'}
+             'Ready'}
           </span>
         </div>
         
-        {/* Extension status */}
         <div className="flex items-center gap-1">
           <div className={`w-2 h-2 rounded-full ${extensionConnected ? 'bg-green-400' : 'bg-gray-300'}`} />
           <span className="text-xs text-gray-400">
-            {extensionConnected ? 'Extension' : 'No extension'}
+            {extensionConnected ? 'Extension ✓' : 'No extension'}
           </span>
         </div>
       </div>
 
-      {/* Error display */}
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
           {error}
         </div>
       )}
 
-      {/* Main button */}
       <button
         onClick={isConnected ? endConversation : startConversation}
         disabled={isConnecting}
@@ -285,34 +306,25 @@ export function VoiceAgent({ onFormSchemaRequest, onFillForm, onMessage }: Voice
           </span>
         ) : isConnecting ? (
           <span className="flex items-center justify-center gap-2">
-            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
             Connecting...
           </span>
         ) : (
-          <span className="flex items-center justify-center gap-2">
-            🎤 Start Voice Chat
-          </span>
+          <span>🎤 Start Voice Chat</span>
         )}
       </button>
 
-      {/* Quick tips */}
       {!isConnected && !isConnecting && !error && (
         <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
           <p className="text-sm text-blue-800">
-            <strong>💡 Tips:</strong> Say &quot;I&apos;m stuck&quot; when on a government form, and I&apos;ll help you fill it out. 
-            {!extensionConnected && (
-              <span className="block mt-1 text-blue-600">
-                Install the MigrantAI Helper extension for form assistance.
-              </span>
-            )}
+            <strong>💡 Tip:</strong> Say &quot;I&apos;m stuck&quot; when on a form and I&apos;ll help you fill it.
           </p>
         </div>
       )}
 
-      {/* Active conversation indicator */}
       {isConnected && (
         <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-100">
           <div className="flex items-center gap-3">
@@ -322,9 +334,17 @@ export function VoiceAgent({ onFormSchemaRequest, onFillForm, onMessage }: Voice
               <span className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
             </div>
             <span className="text-sm text-green-800">
-              {isSpeaking ? 'MigrantAI is speaking...' : 'MigrantAI is listening. Speak naturally in any language.'}
+              {isSpeaking ? 'Speaking...' : 'Listening...'}
             </span>
           </div>
+        </div>
+      )}
+      
+      {/* Show last captured schema */}
+      {lastSchema && lastSchema.fields && lastSchema.fields.length > 0 && (
+        <div className="mt-4 p-3 bg-gray-50 rounded-lg border text-xs">
+          <div className="font-medium text-gray-700 mb-1">Last capture: {lastSchema.title}</div>
+          <div className="text-gray-500">{lastSchema.fields.length} fields detected</div>
         </div>
       )}
     </div>
