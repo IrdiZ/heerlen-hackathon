@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eerste inschrijving BRP - Gemeente Heerlen</title>
+  <style>
+    /* ============================================
+       RIJKSOVERHEID DESIGN SYSTEM - FAITHFUL REPLICA
+       Dutch Government Form Styling
+       ============================================ */
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ro-blue: #154273;
+      --ro-blue-hover: #1a5490;
+      --ro-blue-light: #e0edf5;
+      --ro-blue-bg: #d9eaf7;
+      --ro-orange: #e17000;
+      --ro-orange-light: #f9e5cc;
+      --ro-green: #275937;
+      --ro-green-light: #e1f0e6;
+      --ro-red: #d52b1e;
+      --ro-gray-bg: #f3f3f3;
+      --ro-gray-100: #e8e8e8;
+      --ro-gray-200: #d4d4d4;
+      --ro-gray-300: #b4b4b4;
+      --ro-gray-400: #787878;
+      --ro-gray-500: #535353;
+      --ro-gray-600: #333333;
+      --ro-white: #ffffff;
+      --ro-font: "RijksoverheidSansText", "Calibri", "Verdana", "Arial", sans-serif;
+      --ro-font-heading: "RijksoverheidSansHeading", "Calibri", "Verdana", "Arial", sans-serif;
+      --content-max: 960px;
+      --header-max: 1200px;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--ro-font);
+      background-color: var(--ro-gray-bg);
+      color: var(--ro-gray-600);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- ORANGE TOP STRIPE ---- */
+    .ro-top-stripe {
+      background-color: var(--ro-orange);
+      height: 4px;
+      width: 100%;
+      flex-shrink: 0;
+    }
+
+    /* ---- MAIN HEADER ---- */
+    .ro-header {
+      background-color: var(--ro-white);
+      border-bottom: 1px solid var(--ro-gray-200);
+    }
+
+    .ro-header-inner {
+      max-width: var(--header-max);
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .ro-coat-of-arms {
+      flex-shrink: 0;
+      width: 44px;
+      height: 52px;
+    }
+
+    .ro-coat-of-arms svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .ro-header-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ro-header-text .ro-title {
+      font-family: var(--ro-font-heading);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--ro-blue);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .ro-header-text .ro-subtitle {
+      font-size: 0.78rem;
+      color: var(--ro-gray-400);
+      letter-spacing: 0.02em;
+      margin-top: 1px;
+    }
+
+    .ro-header-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .ro-header-link {
+      font-size: 0.85rem;
+      color: var(--ro-blue);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .ro-header-link:hover {
+      text-decoration: underline;
+    }
+
+    .ro-header-link svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ---- MUNICIPALITY BAR ---- */
+    .ro-municipality-bar {
+      background-color: var(--ro-blue);
+    }
+
+    .ro-municipality-inner {
+      max-width: var(--header-max);
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    .ro-municipality-name {
+      color: var(--ro-white);
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 10px 0;
+      letter-spacing: 0.01em;
+    }
+
+    .ro-municipality-sep {
+      color: rgba(255, 255, 255, 0.4);
+      margin: 0 12px;
+      font-weight: 300;
+    }
+
+    .ro-municipality-dept {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.85rem;
+    }
+
+    .ro-nav-links {
+      margin-left: auto;
+      display: flex;
+      gap: 0;
+    }
+
+    .ro-nav-link {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      font-size: 0.82rem;
+      padding: 10px 16px;
+      transition: background-color 0.15s;
+    }
+
+    .ro-nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .ro-nav-link.active {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: white;
+      font-weight: 600;
+    }
+
+    /* ---- BREADCRUMBS ---- */
+    .ro-breadcrumbs-wrapper {
+      background-color: var(--ro-white);
+      border-bottom: 1px solid var(--ro-gray-100);
+    }
+
+    .ro-breadcrumbs {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .ro-breadcrumbs a {
+      color: var(--ro-blue);
+      text-decoration: none;
+    }
+
+    .ro-breadcrumbs a:hover {
+      text-decoration: underline;
+    }
+
+    .ro-breadcrumbs .sep {
+      color: var(--ro-gray-300);
+      font-size: 0.7rem;
+    }
+
+    .ro-breadcrumbs .current {
+      color: var(--ro-gray-400);
+    }
+
+    /* ---- MAIN CONTENT ---- */
+    .ro-main {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+      width: 100%;
+      flex-grow: 1;
+    }
+
+    /* ---- STEPPER ---- */
+    .ro-stepper {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 32px;
+      gap: 0;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .ro-step {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      min-width: 0;
+      position: relative;
+    }
+
+    .ro-step::after {
+      content: "";
+      flex-grow: 1;
+      height: 2px;
+      background-color: var(--ro-gray-200);
+      margin: 0 8px;
+    }
+
+    .ro-step:last-child::after {
+      display: none;
+    }
+
+    .ro-step-content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .ro-step-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      border: 2px solid var(--ro-gray-200);
+      background: var(--ro-white);
+      color: var(--ro-gray-300);
+      transition: all 0.2s;
+    }
+
+    .ro-step.active .ro-step-number {
+      background-color: var(--ro-blue);
+      border-color: var(--ro-blue);
+      color: var(--ro-white);
+    }
+
+    .ro-step.completed .ro-step-number {
+      background-color: var(--ro-green);
+      border-color: var(--ro-green);
+      color: var(--ro-white);
+    }
+
+    .ro-step-label {
+      font-size: 0.75rem;
+      color: var(--ro-gray-300);
+      font-weight: 500;
+    }
+
+    .ro-step.active .ro-step-label {
+      color: var(--ro-blue);
+      font-weight: 700;
+    }
+
+    .ro-step.completed .ro-step-label {
+      color: var(--ro-green);
+    }
+
+    /* ---- PAGE TITLE ---- */
+    .ro-page-title {
+      margin-bottom: 6px;
+    }
+
+    .ro-page-title h1 {
+      font-family: var(--ro-font-heading);
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--ro-blue);
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+
+    .ro-page-title .ro-page-subtitle {
+      font-size: 0.92rem;
+      color: var(--ro-gray-400);
+      margin-bottom: 20px;
+    }
+
+    /* ---- INFO BOX ---- */
+    .ro-info-box {
+      background-color: var(--ro-blue-bg);
+      border-left: 4px solid var(--ro-blue);
+      padding: 16px 20px;
+      margin-bottom: 28px;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .ro-info-box-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .ro-info-box-header svg {
+      width: 20px;
+      height: 20px;
+      color: var(--ro-blue);
+      flex-shrink: 0;
+    }
+
+    .ro-info-box-header strong {
+      color: var(--ro-blue);
+      font-size: 0.92rem;
+    }
+
+    .ro-info-box p {
+      font-size: 0.85rem;
+      color: var(--ro-gray-500);
+      line-height: 1.55;
+      margin-left: 28px;
+    }
+
+    /* ---- FORM SECTIONS ---- */
+    .ro-form-section {
+      background-color: var(--ro-white);
+      border: 1px solid var(--ro-gray-100);
+      border-radius: 4px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .ro-section-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--ro-gray-100);
+      border-left: 4px solid var(--ro-blue);
+      background-color: #fafbfc;
+    }
+
+    .ro-section-header h2 {
+      font-family: var(--ro-font-heading);
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--ro-blue);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ro-section-number {
+      width: 24px;
+      height: 24px;
+      background-color: var(--ro-blue);
+      color: white;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .ro-section-body {
+      padding: 24px;
+    }
+
+    /* ---- FORM ELEMENTS ---- */
+    .ro-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 24px;
+    }
+
+    .ro-field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ro-field.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .ro-field.small {
+      max-width: 200px;
+    }
+
+    .ro-field label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ro-gray-600);
+      margin-bottom: 4px;
+      display: block;
+      line-height: 1.3;
+    }
+
+    .ro-field label .required {
+      color: var(--ro-red);
+      margin-left: 2px;
+    }
+
+    .ro-field .help-text {
+      font-size: 0.78rem;
+      color: var(--ro-gray-400);
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .ro-field input[type="text"],
+    .ro-field input[type="email"],
+    .ro-field input[type="tel"],
+    .ro-field input[type="number"],
+    .ro-field input[type="date"],
+    .ro-field select,
+    .ro-field textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--ro-gray-200);
+      border-radius: 3px;
+      font-family: var(--ro-font);
+      font-size: 0.9rem;
+      color: var(--ro-gray-600);
+      background-color: var(--ro-white);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+      line-height: 1.4;
+    }
+
+    .ro-field input:focus,
+    .ro-field select:focus,
+    .ro-field textarea:focus {
+      border-color: var(--ro-blue);
+      box-shadow: 0 0 0 3px rgba(21, 66, 115, 0.12);
+    }
+
+    .ro-field input::placeholder {
+      color: var(--ro-gray-300);
+    }
+
+    .ro-field select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23535353' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    /* Radio group */
+    .ro-radio-group {
+      display: flex;
+      gap: 24px;
+      margin-top: 4px;
+    }
+
+    .ro-radio-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      color: var(--ro-gray-600);
+      font-weight: 400 !important;
+    }
+
+    .ro-radio-label input[type="radio"] {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--ro-gray-200);
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      transition: border-color 0.15s;
+    }
+
+    .ro-radio-label input[type="radio"]:checked {
+      border-color: var(--ro-blue);
+    }
+
+    .ro-radio-label input[type="radio"]:checked::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--ro-blue);
+    }
+
+    .ro-radio-label input[type="radio"]:focus {
+      box-shadow: 0 0 0 3px rgba(21, 66, 115, 0.12);
+    }
+
+    /* Checkboxes */
+    .ro-checkbox-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--ro-gray-600);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .ro-checkbox-label:last-child {
+      margin-bottom: 0;
+    }
+
+    .ro-checkbox-label input[type="checkbox"] {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--ro-gray-200);
+      border-radius: 3px;
+      cursor: pointer;
+      flex-shrink: 0;
+      position: relative;
+      margin-top: 1px;
+      transition: all 0.15s;
+    }
+
+    .ro-checkbox-label input[type="checkbox"]:checked {
+      background-color: var(--ro-blue);
+      border-color: var(--ro-blue);
+    }
+
+    .ro-checkbox-label input[type="checkbox"]:checked::after {
+      content: "";
+      position: absolute;
+      top: 1px;
+      left: 5px;
+      width: 5px;
+      height: 9px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .ro-checkbox-label input[type="checkbox"]:focus {
+      box-shadow: 0 0 0 3px rgba(21, 66, 115, 0.12);
+    }
+
+    /* ---- DECLARATION BOX ---- */
+    .ro-declaration-box {
+      background-color: #fafbfc;
+      border: 1px solid var(--ro-gray-100);
+      border-radius: 3px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    /* ---- FORM BUTTONS ---- */
+    .ro-form-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--ro-gray-100);
+    }
+
+    .ro-form-actions-right {
+      display: flex;
+      gap: 12px;
+    }
+
+    .ro-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 24px;
+      font-family: var(--ro-font);
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: 3px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+      text-decoration: none;
+      line-height: 1.3;
+    }
+
+    .ro-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .ro-btn-primary {
+      background-color: var(--ro-blue);
+      color: var(--ro-white);
+      border-color: var(--ro-blue);
+    }
+
+    .ro-btn-primary:hover {
+      background-color: var(--ro-blue-hover);
+      border-color: var(--ro-blue-hover);
+    }
+
+    .ro-btn-secondary {
+      background-color: var(--ro-white);
+      color: var(--ro-blue);
+      border-color: var(--ro-blue);
+    }
+
+    .ro-btn-secondary:hover {
+      background-color: var(--ro-blue-light);
+    }
+
+    .ro-btn-ghost {
+      background-color: transparent;
+      color: var(--ro-gray-500);
+      border-color: var(--ro-gray-200);
+    }
+
+    .ro-btn-ghost:hover {
+      border-color: var(--ro-gray-300);
+      background-color: var(--ro-white);
+    }
+
+    /* ---- FOOTER ---- */
+    .ro-footer {
+      background-color: var(--ro-blue);
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: auto;
+    }
+
+    .ro-footer-top {
+      max-width: var(--header-max);
+      margin: 0 auto;
+      padding: 36px 24px 28px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 36px;
+    }
+
+    .ro-footer-column h3 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: white;
+    }
+
+    .ro-footer-column a {
+      display: block;
+      color: rgba(255, 255, 255, 0.75);
+      text-decoration: none;
+      font-size: 0.82rem;
+      padding: 3px 0;
+      transition: color 0.15s;
+    }
+
+    .ro-footer-column a:hover {
+      color: white;
+      text-decoration: underline;
+    }
+
+    .ro-footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .ro-footer-bottom-inner {
+      max-width: var(--header-max);
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .ro-footer-bottom-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .ro-footer-bottom-links a {
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      font-size: 0.75rem;
+    }
+
+    .ro-footer-bottom-links a:hover {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* ---- COOKIE BANNER ---- */
+    .ro-cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: var(--ro-white);
+      border-top: 3px solid var(--ro-blue);
+      padding: 18px 24px;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    .ro-cookie-banner.hidden {
+      display: none;
+    }
+
+    .ro-cookie-text {
+      font-size: 0.85rem;
+      color: var(--ro-gray-500);
+      max-width: 600px;
+    }
+
+    .ro-cookie-actions {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 768px) {
+      .ro-form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .ro-stepper {
+        display: none;
+      }
+
+      .ro-header-right {
+        display: none;
+      }
+
+      .ro-nav-links {
+        display: none;
+      }
+
+      .ro-footer-top {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .ro-form-actions {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .ro-form-actions-right {
+        width: 100%;
+        flex-direction: column;
+      }
+
+      .ro-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .ro-cookie-banner {
+        flex-direction: column;
+        gap: 14px;
+        text-align: center;
+      }
+
+      .ro-page-title h1 {
+        font-size: 1.3rem;
+      }
+    }
+
+    /* ---- PRINT ---- */
+    @media print {
+      .ro-cookie-banner,
+      .ro-stepper,
+      .ro-footer,
+      .ro-form-actions {
+        display: none;
+      }
+
+      .ro-form-section {
+        break-inside: avoid;
+      }
+    }
+
+    /* ---- SKIP LINK (accessibility) ---- */
+    .ro-skip-link {
+      position: absolute;
+      top: -100px;
+      left: 0;
+      background: var(--ro-blue);
+      color: white;
+      padding: 8px 16px;
+      z-index: 10000;
+      font-size: 0.85rem;
+      text-decoration: none;
+    }
+
+    .ro-skip-link:focus {
+      top: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Skip link for accessibility -->
+  <a href="#main-content" class="ro-skip-link">Ga naar de inhoud</a>
+
+  <!-- Orange top stripe -->
+  <div class="ro-top-stripe" role="presentation"></div>
+
+  <!-- Main Header -->
+  <header class="ro-header">
+    <div class="ro-header-inner">
+      <!-- Coat of Arms (Rijkswapen) -->
+      <div class="ro-coat-of-arms" aria-hidden="true">
+        <svg viewBox="0 0 44 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Simplified Rijkswapen / Royal coat of arms -->
+          <rect x="4" y="8" width="36" height="36" rx="4" fill="#154273"/>
+          <!-- Shield shape -->
+          <path d="M10 12h24v20c0 6-12 12-12 12S10 38 10 32V12z" fill="#e17000"/>
+          <!-- Lion silhouette (simplified) -->
+          <g fill="#154273">
+            <path d="M22 16c-2 0-3 1-4 3l-1 3v4l2 3c1 1 2 2 3 2s2-1 3-2l2-3v-4l-1-3c-1-2-2-3-4-3z"/>
+            <path d="M17 28l-2 2v2l3 2 4 3 4-3 3-2v-2l-2-2"/>
+            <!-- Crown -->
+            <rect x="18" y="13" width="8" height="3" rx="1" fill="#e17000"/>
+            <circle cx="19.5" cy="13" r="1" fill="#e17000"/>
+            <circle cx="22" cy="12" r="1" fill="#e17000"/>
+            <circle cx="24.5" cy="13" r="1" fill="#e17000"/>
+          </g>
+          <!-- "NL" text under shield -->
+          <text x="22" y="50" text-anchor="middle" font-size="7" font-weight="700" fill="#154273" font-family="Arial">NL</text>
+        </svg>
+      </div>
+
+      <div class="ro-header-text">
+        <span class="ro-title">Rijksoverheid</span>
+        <span class="ro-subtitle">De Nederlandse overheid</span>
+      </div>
+
+      <div class="ro-header-right">
+        <a href="#" class="ro-header-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Zoeken
+        </a>
+        <a href="#" class="ro-header-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          MijnOverheid
+        </a>
+        <a href="#" class="ro-header-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          English
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Municipality Bar -->
+  <nav class="ro-municipality-bar" aria-label="Gemeente navigatie">
+    <div class="ro-municipality-inner">
+      <span class="ro-municipality-name">Gemeente Heerlen</span>
+      <span class="ro-municipality-sep">|</span>
+      <span class="ro-municipality-dept">Burgerzaken</span>
+      <div class="ro-nav-links">
+        <a href="#" class="ro-nav-link">Producten &amp; diensten</a>
+        <a href="#" class="ro-nav-link active">Formulieren</a>
+        <a href="#" class="ro-nav-link">Afspraak maken</a>
+        <a href="#" class="ro-nav-link">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumbs -->
+  <div class="ro-breadcrumbs-wrapper">
+    <nav class="ro-breadcrumbs" aria-label="Broodkruimelpad">
+      <a href="#">Home</a>
+      <span class="sep" aria-hidden="true">&#8250;</span>
+      <a href="#">Burgerzaken</a>
+      <span class="sep" aria-hidden="true">&#8250;</span>
+      <a href="#">Verhuizen en inschrijven</a>
+      <span class="sep" aria-hidden="true">&#8250;</span>
+      <span class="current" aria-current="page">Eerste inschrijving</span>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <main class="ro-main" id="main-content">
+
+    <!-- Progress Stepper -->
+    <div class="ro-stepper" role="navigation" aria-label="Formulier voortgang">
+      <div class="ro-step active">
+        <div class="ro-step-content">
+          <span class="ro-step-number" aria-current="step">1</span>
+          <span class="ro-step-label">Persoonsgegevens</span>
+        </div>
+      </div>
+      <div class="ro-step">
+        <div class="ro-step-content">
+          <span class="ro-step-number">2</span>
+          <span class="ro-step-label">Identiteitsbewijs</span>
+        </div>
+      </div>
+      <div class="ro-step">
+        <div class="ro-step-content">
+          <span class="ro-step-number">3</span>
+          <span class="ro-step-label">Adres &amp; verhuizing</span>
+        </div>
+      </div>
+      <div class="ro-step">
+        <div class="ro-step-content">
+          <span class="ro-step-number">4</span>
+          <span class="ro-step-label">Contactgegevens</span>
+        </div>
+      </div>
+      <div class="ro-step">
+        <div class="ro-step-content">
+          <span class="ro-step-number">5</span>
+          <span class="ro-step-label">Controleren</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Title -->
+    <div class="ro-page-title">
+      <h1>Eerste inschrijving in de Basisregistratie Personen (BRP)</h1>
+      <p class="ro-page-subtitle">Registratie bij Gemeente Heerlen</p>
+    </div>
+
+    <!-- Info Box -->
+    <div class="ro-info-box" role="note">
+      <div class="ro-info-box-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <strong>Belangrijk: Inschrijving is verplicht</strong>
+      </div>
+      <p>
+        Als u zich voor het eerst in Nederland vestigt, bent u verplicht om zich binnen <strong>5 werkdagen</strong> na aankomst in te schrijven bij de gemeente waar u gaat wonen.
+        Voor inschrijving bij de Basisregistratie Personen (BRP) dient u dit formulier volledig in te vullen en een afspraak te maken bij het gemeentehuis.
+        Neem uw originele identiteitsbewijs en een bewijs van uw woonadres mee.
+      </p>
+    </div>
+
+    <!-- FORM START -->
+    <form id="brp-registratie-form" novalidate>
+
+      <!-- ========================== -->
+      <!-- SECTION 1: Persoonsgegevens -->
+      <!-- ========================== -->
+      <div class="ro-form-section">
+        <div class="ro-section-header">
+          <h2>
+            <span class="ro-section-number">1</span>
+            Persoonsgegevens
+          </h2>
+        </div>
+        <div class="ro-section-body">
+          <div class="ro-form-grid">
+
+            <!-- BSN -->
+            <div class="ro-field">
+              <label for="bsn">Burgerservicenummer (BSN)</label>
+              <span class="help-text">Indien al aan u toegekend</span>
+              <input type="text" id="bsn" name="bsn" placeholder="123456789" maxlength="9" inputmode="numeric">
+            </div>
+
+            <!-- Voornamen -->
+            <div class="ro-field">
+              <label for="voornamen">Voornamen <span class="required" aria-label="verplicht">*</span></label>
+              <span class="help-text">Alle voornamen zoals vermeld op uw identiteitsbewijs</span>
+              <input type="text" id="voornamen" name="voornamen" required>
+            </div>
+
+            <!-- Tussenvoegsel -->
+            <div class="ro-field small">
+              <label for="tussenvoegsel">Tussenvoegsel</label>
+              <span class="help-text">Bijv. van, de, van der</span>
+              <input type="text" id="tussenvoegsel" name="tussenvoegsel" placeholder="van der">
+            </div>
+
+            <!-- Achternaam -->
+            <div class="ro-field">
+              <label for="achternaam">Achternaam <span class="required" aria-label="verplicht">*</span></label>
+              <input type="text" id="achternaam" name="achternaam" required>
+            </div>
+
+            <!-- Geboortedatum -->
+            <div class="ro-field">
+              <label for="geboortedatum">Geboortedatum <span class="required" aria-label="verplicht">*</span></label>
+              <span class="help-text">Formaat: dd-mm-jjjj</span>
+              <input type="date" id="geboortedatum" name="geboortedatum" required>
+            </div>
+
+            <!-- Geboorteplaats -->
+            <div class="ro-field">
+              <label for="geboorteplaats">Geboorteplaats <span class="required" aria-label="verplicht">*</span></label>
+              <input type="text" id="geboorteplaats" name="geboorteplaats" required>
+            </div>
+
+            <!-- Geboorteland -->
+            <div class="ro-field">
+              <label for="geboorteland">Geboorteland <span class="required" aria-label="verplicht">*</span></label>
+              <select id="geboorteland" name="geboorteland" required>
+                <option value="">— Selecteer land —</option>
+                <option value="NL">Nederland</option>
+                <option value="TR">Turkije</option>
+                <option value="MA">Marokko</option>
+                <option value="EG">Egypte</option>
+                <option value="SY">Syrië</option>
+                <option value="IQ">Irak</option>
+                <option value="IR">Iran</option>
+                <option value="AF">Afghanistan</option>
+                <option value="PL">Polen</option>
+                <option value="UA">Oekraïne</option>
+                <option value="RO">Roemenië</option>
+                <option value="BG">Bulgarije</option>
+                <option value="ER">Eritrea</option>
+                <option value="SO">Somalië</option>
+                <option value="DE">Duitsland</option>
+                <option value="BE">België</option>
+                <option value="ID">Indonesië</option>
+                <option value="SR">Suriname</option>
+                <option value="CN">China</option>
+                <option value="IN">India</option>
+                <option value="overig">Overig</option>
+              </select>
+            </div>
+
+            <!-- Nationaliteit -->
+            <div class="ro-field">
+              <label for="nationaliteit">Nationaliteit <span class="required" aria-label="verplicht">*</span></label>
+              <select id="nationaliteit" name="nationaliteit" required>
+                <option value="">— Selecteer nationaliteit —</option>
+                <option value="nederlandse">Nederlandse</option>
+                <option value="turkse">Turkse</option>
+                <option value="marokkaanse">Marokkaanse</option>
+                <option value="egyptische">Egyptische</option>
+                <option value="syrische">Syrische</option>
+                <option value="iraakse">Iraakse</option>
+                <option value="iraanse">Iraanse</option>
+                <option value="afghaanse">Afghaanse</option>
+                <option value="poolse">Poolse</option>
+                <option value="oekraiense">Oekraïense</option>
+                <option value="roemeense">Roemeense</option>
+                <option value="bulgaarse">Bulgaarse</option>
+                <option value="eritrese">Eritrese</option>
+                <option value="somalische">Somalische</option>
+                <option value="duitse">Duitse</option>
+                <option value="belgische">Belgische</option>
+                <option value="indonesische">Indonesische</option>
+                <option value="surinaamse">Surinaamse</option>
+                <option value="chinese">Chinese</option>
+                <option value="indiase">Indiase</option>
+                <option value="anders">Anders</option>
+              </select>
+            </div>
+
+            <!-- Geslacht -->
+            <div class="ro-field">
+              <label>Geslacht <span class="required" aria-label="verplicht">*</span></label>
+              <div class="ro-radio-group" role="radiogroup" aria-label="Geslacht">
+                <label class="ro-radio-label">
+                  <input type="radio" name="geslacht" value="man" required>
+                  Man
+                </label>
+                <label class="ro-radio-label">
+                  <input type="radio" name="geslacht" value="vrouw">
+                  Vrouw
+                </label>
+                <label class="ro-radio-label">
+                  <input type="radio" name="geslacht" value="onbekend">
+                  Onbekend
+                </label>
+              </div>
+            </div>
+
+            <!-- Burgerlijke staat -->
+            <div class="ro-field">
+              <label for="burgerlijke-staat">Burgerlijke staat <span class="required" aria-label="verplicht">*</span></label>
+              <select id="burgerlijke-staat" name="burgerlijke_staat" required>
+                <option value="">— Selecteer —</option>
+                <option value="ongehuwd">Ongehuwd</option>
+                <option value="gehuwd">Gehuwd / Married</option>
+                <option value="partnerschap">Geregistreerd partnerschap</option>
+                <option value="gescheiden">Gescheiden</option>
+                <option value="weduwe">Weduwe / Weduwnaar</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================== -->
+      <!-- SECTION 2: Identiteitsbewijs -->
+      <!-- ========================== -->
+      <div class="ro-form-section">
+        <div class="ro-section-header">
+          <h2>
+            <span class="ro-section-number">2</span>
+            Identiteitsbewijs
+          </h2>
+        </div>
+        <div class="ro-section-body">
+          <div class="ro-form-grid">
+
+            <!-- Soort document -->
+            <div class="ro-field">
+              <label for="document-type">Soort document <span class="required" aria-label="verplicht">*</span></label>
+              <select id="document-type" name="document_type" required>
+                <option value="">— Selecteer documenttype —</option>
+                <option value="paspoort">Paspoort</option>
+                <option value="id-kaart">Identiteitskaart (ID-kaart)</option>
+                <option value="verblijfsdocument">Verblijfsdocument</option>
+                <option value="vluchtelingenpaspoort">Vluchtelingenpaspoort</option>
+                <option value="vreemdelingenpaspoort">Vreemdelingenpaspoort</option>
+              </select>
+            </div>
+
+            <!-- Documentnummer -->
+            <div class="ro-field">
+              <label for="documentnummer">Documentnummer <span class="required" aria-label="verplicht">*</span></label>
+              <input type="text" id="documentnummer" name="documentnummer" required placeholder="XX0000000">
+            </div>
+
+            <!-- Datum afgifte -->
+            <div class="ro-field">
+              <label for="datum-afgifte">Datum afgifte <span class="required" aria-label="verplicht">*</span></label>
+              <span class="help-text">Datum waarop het document is afgegeven</span>
+              <input type="date" id="datum-afgifte" name="datum_afgifte" required>
+            </div>
+
+            <!-- Geldig tot -->
+            <div class="ro-field">
+              <label for="geldig-tot">Geldig tot <span class="required" aria-label="verplicht">*</span></label>
+              <span class="help-text">Verloopdatum van het document</span>
+              <input type="date" id="geldig-tot" name="geldig_tot" required>
+            </div>
+
+            <!-- Afgegeven door -->
+            <div class="ro-field full-width">
+              <label for="afgegeven-door">Afgegeven door <span class="required" aria-label="verplicht">*</span></label>
+              <span class="help-text">Land of instantie die het document heeft afgegeven</span>
+              <input type="text" id="afgegeven-door" name="afgegeven_door" required>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================== -->
+      <!-- SECTION 3: Adres & verhuizing -->
+      <!-- ========================== -->
+      <div class="ro-form-section">
+        <div class="ro-section-header">
+          <h2>
+            <span class="ro-section-number">3</span>
+            Adres &amp; verhuizing
+          </h2>
+        </div>
+        <div class="ro-section-body">
+          <div class="ro-form-grid">
+
+            <!-- Datum vestiging -->
+            <div class="ro-field">
+              <label for="datum-vestiging">Datum vestiging in Nederland <span class="required" aria-label="verplicht">*</span></label>
+              <span class="help-text">Datum waarop u zich in Nederland heeft gevestigd</span>
+              <input type="date" id="datum-vestiging" name="datum_vestiging" required>
+            </div>
+
+            <!-- Land van herkomst -->
+            <div class="ro-field">
+              <label for="land-herkomst">Land van herkomst <span class="required" aria-label="verplicht">*</span></label>
+              <select id="land-herkomst" name="land_herkomst" required>
+                <option value="">— Selecteer land —</option>
+                <option value="TR">Turkije</option>
+                <option value="MA">Marokko</option>
+                <option value="EG">Egypte</option>
+                <option value="SY">Syrië</option>
+                <option value="IQ">Irak</option>
+                <option value="IR">Iran</option>
+                <option value="AF">Afghanistan</option>
+                <option value="PL">Polen</option>
+                <option value="UA">Oekraïne</option>
+                <option value="RO">Roemenië</option>
+                <option value="BG">Bulgarije</option>
+                <option value="ER">Eritrea</option>
+                <option value="SO">Somalië</option>
+                <option value="DE">Duitsland</option>
+                <option value="BE">België</option>
+                <option value="ID">Indonesië</option>
+                <option value="SR">Suriname</option>
+                <option value="CN">China</option>
+                <option value="IN">India</option>
+                <option value="overig">Overig</option>
+              </select>
+            </div>
+
+            <!-- Straatnaam -->
+            <div class="ro-field">
+              <label for="straatnaam">Straatnaam <span class="required" aria-label="verplicht">*</span></label>
+              <input type="text" id="straatnaam" name="straatnaam" required>
+            </div>
+
+            <!-- Huisnummer -->
+            <div class="ro-field small">
+              <label for="huisnummer">Huisnummer <span class="required" aria-label="verplicht">*</span></label>
+              <input type="number" id="huisnummer" name="huisnummer" required min="1">
+            </div>
+
+            <!-- Huisnummer toevoeging -->
+            <div class="ro-field small">
+              <label for="huisnummer-toevoeging">Toevoeging</label>
+              <span class="help-text">Bijv. A, bis, II</span>
+              <input type="text" id="huisnummer-toevoeging" name="huisnummer_toevoeging">
+            </div>
+
+            <!-- Postcode -->
+            <div class="ro-field">
+              <label for="postcode">Postcode <span class="required" aria-label="verplicht">*</span></label>
+              <span class="help-text">Formaat: 1234 AB</span>
+              <input type="text" id="postcode" name="postcode" required placeholder="6411 AB" maxlength="7" pattern="[0-9]{4}\s?[A-Za-z]{2}">
+            </div>
+
+            <!-- Woonplaats -->
+            <div class="ro-field">
+              <label for="woonplaats">Woonplaats <span class="required" aria-label="verplicht">*</span></label>
+              <input type="text" id="woonplaats" name="woonplaats" required value="Heerlen">
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================== -->
+      <!-- SECTION 4: Contactgegevens -->
+      <!-- ========================== -->
+      <div class="ro-form-section">
+        <div class="ro-section-header">
+          <h2>
+            <span class="ro-section-number">4</span>
+            Contactgegevens
+          </h2>
+        </div>
+        <div class="ro-section-body">
+          <div class="ro-form-grid">
+
+            <!-- Telefoonnummer -->
+            <div class="ro-field">
+              <label for="telefoonnummer">Telefoonnummer <span class="required" aria-label="verplicht">*</span></label>
+              <span class="help-text">Bij voorkeur een Nederlands mobiel nummer</span>
+              <input type="tel" id="telefoonnummer" name="telefoonnummer" required placeholder="06 12345678">
+            </div>
+
+            <!-- E-mailadres -->
+            <div class="ro-field">
+              <label for="email">E-mailadres <span class="required" aria-label="verplicht">*</span></label>
+              <input type="email" id="email" name="email" required placeholder="uw.naam@voorbeeld.nl">
+            </div>
+
+            <!-- Voorkeurstaal -->
+            <div class="ro-field">
+              <label for="voorkeurstaal">Voorkeurstaal voor correspondentie</label>
+              <span class="help-text">In welke taal wilt u post en berichten ontvangen?</span>
+              <select id="voorkeurstaal" name="voorkeurstaal">
+                <option value="nl">Nederlands</option>
+                <option value="en">Engels / English</option>
+                <option value="de">Duits / Deutsch</option>
+                <option value="fr">Frans / Français</option>
+                <option value="ar">Arabisch / العربية</option>
+                <option value="tr">Turks / Türkçe</option>
+                <option value="pl">Pools / Polski</option>
+                <option value="uk">Oekraïens / Українська</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================== -->
+      <!-- SECTION 5: Verklaring -->
+      <!-- ========================== -->
+      <div class="ro-form-section">
+        <div class="ro-section-header">
+          <h2>
+            <span class="ro-section-number">5</span>
+            Verklaring en ondertekening
+          </h2>
+        </div>
+        <div class="ro-section-body">
+
+          <div class="ro-declaration-box">
+            <label class="ro-checkbox-label">
+              <input type="checkbox" name="verklaring_waarheid" required>
+              Ik verklaar dat de gegevens in dit formulier naar waarheid zijn ingevuld.
+            </label>
+
+            <label class="ro-checkbox-label">
+              <input type="checkbox" name="verklaring_strafbaar" required>
+              Ik begrijp dat het verstrekken van onjuiste gegevens strafbaar is op grond van artikel 227 van het Wetboek van Strafrecht.
+            </label>
+
+            <label class="ro-checkbox-label">
+              <input type="checkbox" name="verklaring_avg" required>
+              Ik ga akkoord met de verwerking van mijn persoonsgegevens conform de Algemene Verordening Gegevensbescherming (AVG) ten behoeve van de gemeentelijke basisadministratie.
+            </label>
+          </div>
+
+          <div class="ro-form-grid" style="margin-top: 20px;">
+            <!-- Datum ondertekening -->
+            <div class="ro-field">
+              <label for="datum-ondertekening">Datum <span class="required" aria-label="verplicht">*</span></label>
+              <input type="date" id="datum-ondertekening" name="datum_ondertekening" required>
+            </div>
+
+            <!-- Plaats ondertekening -->
+            <div class="ro-field">
+              <label for="plaats-ondertekening">Plaats <span class="required" aria-label="verplicht">*</span></label>
+              <input type="text" id="plaats-ondertekening" name="plaats_ondertekening" required value="Heerlen">
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ========================== -->
+      <!-- FORM ACTIONS -->
+      <!-- ========================== -->
+      <div class="ro-form-actions">
+        <button type="button" class="ro-btn ro-btn-ghost" onclick="window.history.back()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+          Vorige
+        </button>
+        <div class="ro-form-actions-right">
+          <button type="button" class="ro-btn ro-btn-secondary" id="btn-save-draft">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+            Opslaan als concept
+          </button>
+          <button type="submit" class="ro-btn ro-btn-primary" id="btn-submit">
+            Volgende stap
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- Footer -->
+  <footer class="ro-footer">
+    <div class="ro-footer-top">
+      <div class="ro-footer-column">
+        <h3>Over deze website</h3>
+        <a href="#">Over Gemeente Heerlen</a>
+        <a href="#">Contact opnemen</a>
+        <a href="#">Werkdagen en openingstijden</a>
+        <a href="#">Vacatures bij de gemeente</a>
+        <a href="#">Sitemap</a>
+      </div>
+      <div class="ro-footer-column">
+        <h3>Service</h3>
+        <a href="#">Veelgestelde vragen</a>
+        <a href="#">Afspraak maken</a>
+        <a href="#">Formulieren downloaden</a>
+        <a href="#">Meldingen openbare ruimte</a>
+        <a href="#">Klacht indienen</a>
+      </div>
+      <div class="ro-footer-column">
+        <h3>Meer informatie</h3>
+        <a href="#">Rijksoverheid.nl</a>
+        <a href="#">MijnOverheid.nl</a>
+        <a href="#">DigiD aanvragen</a>
+        <a href="#">Immigratie en Naturalisatiedienst (IND)</a>
+        <a href="#">Belastingdienst</a>
+      </div>
+    </div>
+    <div class="ro-footer-bottom">
+      <div class="ro-footer-bottom-inner">
+        <span>&copy; 2026 Gemeente Heerlen. Alle rechten voorbehouden.</span>
+        <div class="ro-footer-bottom-links">
+          <a href="#">Privacyverklaring</a>
+          <a href="#">Cookiebeleid</a>
+          <a href="#">Toegankelijkheidsverklaring</a>
+          <a href="#">Disclaimer</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cookie Banner -->
+  <div class="ro-cookie-banner" id="cookie-banner" role="dialog" aria-label="Cookiemelding">
+    <p class="ro-cookie-text">
+      Deze website maakt gebruik van cookies voor het verbeteren van de gebruikservaring en het analyseren van websitebezoek.
+      Meer informatie vindt u in ons <a href="#" style="color: var(--ro-blue);">cookiebeleid</a>.
+    </p>
+    <div class="ro-cookie-actions">
+      <button class="ro-btn ro-btn-primary" onclick="acceptCookies()" style="padding: 8px 20px; font-size: 0.82rem;">Accepteren</button>
+      <button class="ro-btn ro-btn-ghost" onclick="acceptCookies()" style="padding: 8px 20px; font-size: 0.82rem;">Alleen noodzakelijk</button>
+    </div>
+  </div>
+
+  <script>
+    // ---- Auto-fill today's date on declaration ----
+    (function() {
+      const today = new Date().toISOString().split('T')[0];
+      const datumField = document.getElementById('datum-ondertekening');
+      if (datumField && !datumField.value) {
+        datumField.value = today;
+      }
+    })();
+
+    // ---- Cookie banner ----
+    function acceptCookies() {
+      document.getElementById('cookie-banner').classList.add('hidden');
+    }
+
+    // ---- Form "submission" (demo only) ----
+    document.getElementById('brp-registratie-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Collect all form data
+      const formData = new FormData(this);
+      const data = {};
+      formData.forEach((value, key) => { data[key] = value; });
+
+      console.log('[Demo] Formuliergegevens:', data);
+
+      // Show a brief confirmation
+      const btn = document.getElementById('btn-submit');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="16" height="16"><polyline points="20,6 9,17 4,12"/></svg> Verzonden (demo)';
+      btn.style.backgroundColor = '#275937';
+      btn.style.borderColor = '#275937';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.backgroundColor = '';
+        btn.style.borderColor = '';
+        btn.disabled = false;
+      }, 2500);
+    });
+
+    // ---- Save draft (demo only) ----
+    document.getElementById('btn-save-draft').addEventListener('click', function() {
+      const btn = this;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="16" height="16"><polyline points="20,6 9,17 4,12"/></svg> Opgeslagen';
+      btn.style.color = '#275937';
+      btn.style.borderColor = '#275937';
+
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }, 2000);
+    });
+  </script>
+</body>
+</html>
