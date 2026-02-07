@@ -10,7 +10,7 @@
  * Last Verified: 2026-02-08
  * 
  * Sources:
- * - IND: https://ind.nl/en/residence-permits/study/study-at-university
+ * - IND: https://ind.nl/en/residence-permits/study/student-residence-permit-for-university-or-higher-professional-education
  * - Nuffic: https://www.studyinholland.nl
  * - Netherlands Embassy Skopje: https://www.netherlandsandyou.nl/web/north-macedonia
  */
@@ -277,7 +277,7 @@ export const albaniaStudentRoadmap: AlbaniaStudentRoadmap = {
         notes: 'Must be signed by you, declaring no criminal record'
       },
       
-      portalUrl: 'https://ind.nl/en/residence-permits/study/study-at-university',
+      portalUrl: 'https://ind.nl/en/residence-permits/study/student-residence-permit-for-university-or-higher-professional-education',
       
       documentsRequired: [
         {
@@ -364,7 +364,7 @@ export const albaniaStudentRoadmap: AlbaniaStudentRoadmap = {
       
       verifiedSources: [
         {
-          url: 'https://ind.nl/en/residence-permits/study/study-at-university',
+          url: 'https://ind.nl/en/residence-permits/study/student-residence-permit-for-university-or-higher-professional-education',
           title: 'IND - Study at University Permit',
           type: 'official',
           lastVerified: '2026-02-08',

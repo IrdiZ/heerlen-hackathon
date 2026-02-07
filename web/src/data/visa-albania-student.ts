@@ -8,7 +8,7 @@
  * Albanian citizens must travel to SKOPJE, NORTH MACEDONIA for MVV collection.
  * 
  * Sources:
- * - IND: https://ind.nl/en/residence-permits/study/study-at-university
+ * - IND: https://ind.nl/en/residence-permits/study/student-residence-permit-for-university-or-higher-professional-education
  * - Nuffic: https://www.studyinholland.nl
  * - Netherlands Embassy Skopje: https://www.netherlandsandyou.nl/web/north-macedonia
  */
@@ -311,7 +311,7 @@ and get your BSN (citizen service number). Open Dutch bank account.`,
     },
     {
       title: 'IND - Study Permit',
-      url: 'https://ind.nl/en/residence-permits/study/study-at-university',
+      url: 'https://ind.nl/en/residence-permits/study/student-residence-permit-for-university-or-higher-professional-education',
       description: 'Official IND information for student residence permits'
     },
     {
