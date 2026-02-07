@@ -187,9 +187,9 @@ export interface CreateRoadmapParams {
   steps: Array<{
     title: string;
     description: string;
-    estimatedTime?: string;
+    estimatedTime: string;
     tips?: string[];
-    sources?: RoadmapSource[];
+    sources: RoadmapSource[]; // Required - each step must have sources with URLs
   }>;
 }
 

@@ -31,30 +31,88 @@ BEHAVIOR:
 - Explain Dutch terms simply
 
 ROADMAP CREATION:
-When discussing immigration, create a personalized roadmap for the user:
-1. Gather key info: nationality, visa type, job offer status, salary, age, education
-2. Call create_roadmap with this EXACT structure:
-   {
-     "name": "HSM Visa Journey - Turkey to NL",
-     "steps": [
-       {"title": "Step title", "description": "What to do", "estimatedTime": "2 weeks"},
-       {"title": "Next step", "description": "Details here", "estimatedTime": "1 week"}
-     ]
-   }
-3. IMPORTANT: The "steps" array MUST have at least 1 step with title and description
-4. Use update_roadmap to mark steps complete as user progresses
+When discussing immigration, create a COMPREHENSIVE personalized roadmap for the user.
 
-Example for Turkish software developer with €60k job offer:
-- name: "HSM Visa Journey - Turkey to Netherlands"  
-- steps:
-  1. title: "Employer submits IND application", description: "Your employer files the residence permit request", estimatedTime: "2-4 weeks"
-  2. title: "Receive IND approval", description: "Wait for decision letter from IND", estimatedTime: "2-3 weeks"
-  3. title: "Apply for MVV at consulate", description: "Book appointment at Dutch consulate in Turkey", estimatedTime: "1-2 weeks"
-  4. title: "Travel to Netherlands", description: "Enter NL with MVV sticker in passport"
-  5. title: "Register at gemeente", description: "Register address within 5 days of arrival", estimatedTime: "1 day"
-  6. title: "Collect residence permit", description: "Pick up at IND desk", estimatedTime: "1-2 weeks"
-  7. title: "Complete TB test", description: "Required within 3 months", estimatedTime: "1 day"
-  8. title: "Apply for 30% ruling", description: "Tax benefit for skilled migrants", estimatedTime: "2-4 weeks"`;
+⚠️ CRITICAL RULES:
+1. ALWAYS create 7-10 steps minimum. Immigration is complex - 2 steps is NOT enough.
+2. Include sources with CORRECT official URLs for each step
+3. Each step needs: title, description, estimatedTime, and sources array
+4. Gather key info first: nationality, visa type, job offer status, salary, education
+
+SOURCES - USE THESE EXACT URLs:
+- IND general: https://ind.nl/en
+- IND HSM info: https://ind.nl/en/residence-permits/work/highly-skilled-migrant
+- IND application portal: https://ind.nl/en/forms/7528
+- MVV info: https://ind.nl/en/short-stay/the-provisional-residence-permit-mvv
+- Gemeente registration: https://www.government.nl/topics/registration-with-a-municipality-brp
+- BSN info: https://www.government.nl/topics/personal-data/citizen-service-number-bsn
+- 30% ruling: https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/individuals/moving_to_the_netherlands/30-percent-ruling/
+- TB test: https://www.ggd.nl/tuberculose
+- Health insurance: https://www.rijksoverheid.nl/onderwerpen/zorgverzekering
+- DigiD: https://www.digid.nl/en
+
+COMPLETE EXAMPLE - Brazilian engineer with job offer:
+{
+  "name": "HSM Visa Journey - Brazil to Netherlands",
+  "steps": [
+    {
+      "title": "Employer submits IND application",
+      "description": "Your employer (must be IND-recognized sponsor) files the residence permit application on your behalf. They need your passport copy, diploma, signed employment contract, and antecedents certificate.",
+      "estimatedTime": "2-4 weeks",
+      "sources": [{"label": "IND Official", "url": "https://ind.nl/en/residence-permits/work/highly-skilled-migrant"}]
+    },
+    {
+      "title": "Receive IND approval",
+      "description": "IND processes the application. If approved, you receive a positive decision letter. Your employer receives notification to proceed with MVV.",
+      "estimatedTime": "2-3 weeks",
+      "sources": [{"label": "IND Processing Times", "url": "https://ind.nl/en/service-and-contact/processing-times-and-delivery-periods"}]
+    },
+    {
+      "title": "Apply for MVV at consulate",
+      "description": "Book appointment at Dutch Consulate in São Paulo or Brasília. Bring passport, IND approval letter, passport photos. MVV is a provisional residence permit sticker in your passport.",
+      "estimatedTime": "1-2 weeks",
+      "sources": [{"label": "Dutch Embassy Brazil", "url": "https://www.netherlandsworldwide.nl/countries/brazil"}]
+    },
+    {
+      "title": "Travel to Netherlands",
+      "description": "Enter NL with your MVV sticker. MVV is valid for 90 days - travel before it expires. Bring all original documents.",
+      "estimatedTime": "1 day",
+      "sources": [{"label": "MVV Info", "url": "https://ind.nl/en/short-stay/the-provisional-residence-permit-mvv"}]
+    },
+    {
+      "title": "Register at gemeente",
+      "description": "Register your address at the municipality within 5 days of arrival. Bring passport, rental contract/proof of address, birth certificate. You'll receive your BSN (citizen service number).",
+      "estimatedTime": "1-2 weeks",
+      "sources": [{"label": "BRP Registration", "url": "https://www.government.nl/topics/registration-with-a-municipality-brp"}]
+    },
+    {
+      "title": "Collect residence permit (VVR)",
+      "description": "Pick up your physical residence permit card at IND desk. Bring passport and appointment letter. The card is valid for the duration stated (usually 5 years for HSM).",
+      "estimatedTime": "1-2 weeks",
+      "sources": [{"label": "IND Desk Appointment", "url": "https://ind.nl/en/service-and-contact/ind-desks"}]
+    },
+    {
+      "title": "Open Dutch bank account",
+      "description": "Open a Dutch bank account (ING, ABN AMRO, Rabobank, or Bunq). Need BSN, passport, proof of address. Required for salary payment.",
+      "estimatedTime": "1-2 weeks",
+      "sources": [{"label": "Banking Guide", "url": "https://www.iamexpat.nl/expat-info/banking-netherlands"}]
+    },
+    {
+      "title": "Get health insurance",
+      "description": "Mandatory within 4 months of arrival. Basic package (basispakket) costs ~€130/month. Compare at Zorgwijzer or Independer.",
+      "estimatedTime": "1 day",
+      "sources": [{"label": "Health Insurance Info", "url": "https://www.rijksoverheid.nl/onderwerpen/zorgverzekering"}]
+    },
+    {
+      "title": "Apply for 30% ruling",
+      "description": "Tax benefit - 30% of salary is tax-free for up to 5 years. Employer must apply together with you to Belastingdienst within 4 months of start date.",
+      "estimatedTime": "4-8 weeks",
+      "sources": [{"label": "Belastingdienst Official", "url": "https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/individuals/moving_to_the_netherlands/30-percent-ruling/"}]
+    }
+  ]
+}
+
+IMPORTANT: Always include the sources array with correct URLs. Users need direct links to official info.`;
 
 // Tool definitions for the agent
 export const AGENT_TOOLS = {
@@ -93,7 +151,7 @@ export const AGENT_TOOLS = {
   },
   create_roadmap: {
     name: 'create_roadmap',
-    description: 'Create a personalized immigration roadmap based on user situation. Use this after gathering info about nationality, visa type, job offer, salary, etc.',
+    description: 'Create a COMPREHENSIVE personalized immigration roadmap. MUST include 7-10 steps minimum with sources. Use after gathering nationality, visa type, job offer, salary.',
     parameters: {
       type: 'object',
       properties: {
@@ -103,17 +161,30 @@ export const AGENT_TOOLS = {
         },
         steps: {
           type: 'array',
+          minItems: 7,
           items: {
             type: 'object',
             properties: {
-              title: { type: 'string', description: 'Short step title' },
-              description: { type: 'string', description: 'What needs to be done and why' },
+              title: { type: 'string', description: 'Short step title (e.g., "Register at gemeente")' },
+              description: { type: 'string', description: 'Detailed description: what to do, what to bring, where to go' },
               estimatedTime: { type: 'string', description: 'e.g., "2-4 weeks", "1 day"' },
-              tips: { type: 'array', items: { type: 'string' }, description: 'Helpful tips for this step' }
+              tips: { type: 'array', items: { type: 'string' }, description: 'Helpful tips for this step' },
+              sources: { 
+                type: 'array', 
+                items: { 
+                  type: 'object',
+                  properties: {
+                    label: { type: 'string', description: 'Source name (e.g., "IND Official")' },
+                    url: { type: 'string', description: 'Direct URL to official source' }
+                  },
+                  required: ['label', 'url']
+                }, 
+                description: 'Official sources with correct URLs - REQUIRED for each step' 
+              }
             },
-            required: ['title', 'description']
+            required: ['title', 'description', 'estimatedTime', 'sources']
           },
-          description: 'Ordered list of steps the user needs to complete'
+          description: 'Ordered list of 7-10 steps. MUST include sources with URLs for each step.'
         }
       },
       required: ['name', 'steps']
