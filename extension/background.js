@@ -304,10 +304,17 @@ function capturePageContent() {
     });
   });
   
-  // Get main content text (for context)
+  // Get ALL page text content (for requirements pages, info pages, etc.)
+  // Try main content areas first, fallback to body
   const main = document.querySelector('main, article, [role="main"], .content, #content');
   if (main) {
-    data.mainContent = main.textContent?.slice(0, 2000).trim();
+    data.mainContent = main.textContent?.slice(0, 8000).trim();
+  } else {
+    // Fallback: get all text from body, excluding scripts/styles/nav/footer
+    const body = document.body.cloneNode(true);
+    // Remove noise elements
+    body.querySelectorAll('script, style, nav, footer, header, aside, .nav, .footer, .header, .sidebar, .menu, .cookie, .popup, .modal, .ad, [role="navigation"], [role="banner"], [role="contentinfo"]').forEach(el => el.remove());
+    data.mainContent = body.textContent?.replace(/\s+/g, ' ').slice(0, 8000).trim();
   }
   
   // Helper to find label for a field - tries multiple strategies
