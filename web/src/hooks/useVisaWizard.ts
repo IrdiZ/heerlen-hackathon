@@ -5,8 +5,10 @@ import {
   VisaIntakeData, 
   VisaType,
   VisaStep,
+  CountryCode,
   determineVisaType,
   getVisaPathway,
+  getCountryData,
 } from '@/lib/visa-wizard-data';
 
 export type WizardStep = 'intake' | 'results';
@@ -84,10 +86,16 @@ export function useVisaWizard() {
     }));
   }, []);
 
+  // Get pathway helper (uses country from intake data)
+  const getPathway = useCallback(() => {
+    if (!state.determinedVisaType) return null;
+    return getVisaPathway(state.determinedVisaType, state.intakeData.countryOfOrigin);
+  }, [state.determinedVisaType, state.intakeData.countryOfOrigin]);
+
   // Submit intake form and determine visa type
   const submitIntake = useCallback(() => {
     const visaType = determineVisaType(state.intakeData);
-    const pathway = getVisaPathway(visaType);
+    const pathway = getVisaPathway(visaType, state.intakeData.countryOfOrigin);
     
     // Initialize step progress for all steps
     const initialProgress: StepProgress = {};
@@ -153,37 +161,35 @@ export function useVisaWizard() {
 
   // Get progress percentage
   const getProgress = useCallback((): number => {
-    if (!state.determinedVisaType) return 0;
-    
-    const pathway = getVisaPathway(state.determinedVisaType);
-    if (pathway.steps.length === 0) return 0;
+    const pathway = getPathway();
+    if (!pathway || pathway.steps.length === 0) return 0;
     
     const completedSteps = pathway.steps.filter(
       step => state.stepProgress[step.id]?.completed
     ).length;
     
     return Math.round((completedSteps / pathway.steps.length) * 100);
-  }, [state.determinedVisaType, state.stepProgress]);
+  }, [getPathway, state.stepProgress]);
 
   // Get completed steps count
   const getCompletedCount = useCallback((): number => {
-    if (!state.determinedVisaType) return 0;
+    const pathway = getPathway();
+    if (!pathway) return 0;
     
-    const pathway = getVisaPathway(state.determinedVisaType);
     return pathway.steps.filter(
       step => state.stepProgress[step.id]?.completed
     ).length;
-  }, [state.determinedVisaType, state.stepProgress]);
+  }, [getPathway, state.stepProgress]);
 
   // Get next incomplete step
   const getNextStep = useCallback((): VisaStep | undefined => {
-    if (!state.determinedVisaType) return undefined;
+    const pathway = getPathway();
+    if (!pathway) return undefined;
     
-    const pathway = getVisaPathway(state.determinedVisaType);
     return pathway.steps.find(
       step => !state.stepProgress[step.id]?.completed
     );
-  }, [state.determinedVisaType, state.stepProgress]);
+  }, [getPathway, state.stepProgress]);
 
   // Check if step is completed
   const isStepCompleted = useCallback((stepId: string): boolean => {
@@ -215,6 +221,11 @@ export function useVisaWizard() {
     );
   }, [state]);
 
+  // Get country-specific data
+  const getSelectedCountryData = useCallback(() => {
+    return getCountryData(state.intakeData.countryOfOrigin);
+  }, [state.intakeData.countryOfOrigin]);
+
   return {
     // State
     currentStep: state.currentStep,
@@ -240,8 +251,7 @@ export function useVisaWizard() {
     isIntakeComplete,
     
     // Helpers
-    getVisaPathway: () => state.determinedVisaType 
-      ? getVisaPathway(state.determinedVisaType) 
-      : null,
+    getVisaPathway: getPathway,
+    getSelectedCountryData,
   };
 }

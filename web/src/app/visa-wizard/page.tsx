@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useVisaWizard } from '@/hooks/useVisaWizard';
 import {
@@ -9,6 +9,9 @@ import {
   VisaStep,
   DocumentItem,
   VisaPathway,
+  CountryVisaData,
+  SALARY_THRESHOLDS,
+  COUNTRY_FLAGS,
 } from '@/lib/visa-wizard-data';
 
 // ============================================================================
@@ -50,19 +53,14 @@ function IntakeForm({
               <button
                 key={option.value}
                 type="button"
-                onClick={() => updateField('countryOfOrigin', option.value as typeof intakeData.countryOfOrigin)}
+                onClick={() => updateField('countryOfOrigin', option.value)}
                 className={`p-4 rounded-xl border-2 text-center transition-all duration-200 hover:shadow-md ${
                   intakeData.countryOfOrigin === option.value
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <span className="text-2xl block mb-1">
-                  {option.value === 'turkey' && '🇹🇷'}
-                  {option.value === 'serbia' && '🇷🇸'}
-                  {option.value === 'albania' && '🇦🇱'}
-                  {option.value === 'other' && '🌐'}
-                </span>
+                <span className="text-2xl block mb-1">{option.flag}</span>
                 <span className="text-sm font-medium">{option.label}</span>
               </button>
             ))}
@@ -79,7 +77,7 @@ function IntakeForm({
               <button
                 key={option.value}
                 type="button"
-                onClick={() => updateField('currentLocation', option.value as typeof intakeData.currentLocation)}
+                onClick={() => updateField('currentLocation', option.value)}
                 className={`p-4 rounded-xl border-2 text-left transition-all duration-200 hover:shadow-md ${
                   intakeData.currentLocation === option.value
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
@@ -191,7 +189,7 @@ function IntakeForm({
               💰 What is your expected gross monthly salary?
             </label>
             <p className="text-sm text-gray-500 mb-4">
-              Kennismigrant threshold: €3,549/month (under 30) or €4,840/month (30+)
+              Kennismigrant threshold (2026): €{SALARY_THRESHOLDS.kennismigrant.under30.toLocaleString()}/month (under 30) or €{SALARY_THRESHOLDS.kennismigrant.over30.toLocaleString()}/month (30+)
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <button
@@ -259,6 +257,187 @@ function IntakeForm({
 }
 
 // ============================================================================
+// Country Info Card Component
+// ============================================================================
+
+function CountryInfoCard({ countryData }: { countryData: CountryVisaData }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full p-5 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-3xl">{countryData.flag}</span>
+          <div>
+            <h3 className="font-semibold text-gray-800">{countryData.country} → Netherlands</h3>
+            <p className="text-sm text-gray-500">Country-specific requirements</p>
+          </div>
+        </div>
+        <span className="text-gray-400 text-xl">{isExpanded ? '−' : '+'}</span>
+      </button>
+
+      {isExpanded && (
+        <div className="border-t p-5 space-y-4 animate-fade-in">
+          {/* Requirements badges */}
+          <div className="flex flex-wrap gap-2">
+            {countryData.requiresMVV && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                📋 MVV Required
+              </span>
+            )}
+            {countryData.requiresTBTest && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
+                🩺 TB Test Required
+              </span>
+            )}
+            {countryData.hasSpecialRules && (
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                ⭐ Special Rules Apply
+              </span>
+            )}
+          </div>
+
+          {/* Special rules note */}
+          {countryData.hasSpecialRules && countryData.specialRulesNote && (
+            <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+              <h4 className="font-medium text-green-800 mb-1">Special Benefits</h4>
+              <p className="text-sm text-green-700">{countryData.specialRulesNote}</p>
+            </div>
+          )}
+
+          {/* Processing time */}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-medium text-gray-800 mb-1 flex items-center gap-2">
+              ⏱️ Processing Time
+            </h4>
+            <p className="text-sm text-gray-600">{countryData.processingTimeNote}</p>
+          </div>
+
+          {/* Embassy Info */}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-medium text-gray-800 mb-2 flex items-center gap-2">
+              🏛️ Embassy/Consulate
+            </h4>
+            <p className="text-sm font-medium text-gray-700">{countryData.embassy.name}</p>
+            {countryData.embassy.address && (
+              <p className="text-sm text-gray-600">{countryData.embassy.address}</p>
+            )}
+            <p className="text-sm text-gray-600">
+              {countryData.embassy.city}, {countryData.embassy.country}
+            </p>
+            {countryData.embassy.email && (
+              <p className="text-sm text-blue-600 mt-1">
+                📧 <a href={`mailto:${countryData.embassy.email}`}>{countryData.embassy.email}</a>
+              </p>
+            )}
+            {countryData.embassy.website && (
+              <a
+                href={countryData.embassy.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline mt-2"
+              >
+                🔗 Visit website
+              </a>
+            )}
+            {countryData.embassy.openingHours && countryData.embassy.openingHours.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-200">
+                <p className="text-xs font-medium text-gray-500 mb-1">Opening Hours</p>
+                {countryData.embassy.openingHours.map((hours, i) => (
+                  <p key={i} className="text-xs text-gray-600">{hours}</p>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
+// Salary Thresholds Card Component
+// ============================================================================
+
+function SalaryThresholdsCard({ countryData }: { countryData: CountryVisaData }) {
+  return (
+    <div className="bg-white rounded-xl border-2 border-gray-200 p-5">
+      <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        💰 Salary Thresholds (2026)
+      </h3>
+      <div className="space-y-3">
+        {countryData.salaryThresholds.map((threshold, index) => (
+          <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+            <div>
+              <p className="text-sm font-medium text-gray-800">{threshold.category}</p>
+              {threshold.notes && (
+                <p className="text-xs text-gray-500">{threshold.notes}</p>
+              )}
+            </div>
+            <div className="text-right">
+              <p className="font-bold text-green-600">€{threshold.monthlyGross.toLocaleString()}</p>
+              <p className="text-xs text-gray-500">per month</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// Common Mistakes Card Component
+// ============================================================================
+
+function CommonMistakesCard({ countryData }: { countryData: CountryVisaData }) {
+  const [showAll, setShowAll] = useState(false);
+  const displayMistakes = showAll ? countryData.commonMistakes : countryData.commonMistakes.slice(0, 3);
+
+  if (countryData.commonMistakes.length === 0) return null;
+
+  return (
+    <div className="bg-amber-50 rounded-xl border-2 border-amber-200 p-5">
+      <h3 className="font-semibold text-amber-800 mb-4 flex items-center gap-2">
+        ⚠️ Common Pitfalls to Avoid
+      </h3>
+      <div className="space-y-3">
+        {displayMistakes.map((mistake, index) => (
+          <div key={index} className="bg-white rounded-lg p-4 border border-amber-100">
+            <div className="flex items-start gap-2">
+              <span className={`px-2 py-0.5 text-xs rounded ${
+                mistake.severity === 'high' ? 'bg-red-100 text-red-700' :
+                mistake.severity === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                'bg-gray-100 text-gray-700'
+              }`}>
+                {mistake.severity || 'warning'}
+              </span>
+            </div>
+            <h4 className="font-medium text-gray-800 mt-2">{mistake.title}</h4>
+            <p className="text-sm text-gray-600 mt-1">{mistake.description}</p>
+            <div className="mt-2 pt-2 border-t border-gray-100">
+              <p className="text-sm text-green-700">
+                <span className="font-medium">Prevention:</span> {mistake.prevention}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+      {countryData.commonMistakes.length > 3 && (
+        <button
+          onClick={() => setShowAll(!showAll)}
+          className="mt-3 text-sm text-amber-700 hover:text-amber-900 font-medium"
+        >
+          {showAll ? '← Show less' : `Show all ${countryData.commonMistakes.length} pitfalls →`}
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
 // Document Checklist Item Component
 // ============================================================================
 
@@ -309,6 +488,16 @@ function DocumentChecklistItem({
               >
                 🔗 Get it here
               </a>
+            )}
+            {document.needsApostille && (
+              <span className="inline-flex items-center text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded">
+                📜 Needs Apostille
+              </span>
+            )}
+            {document.needsTranslation && (
+              <span className="inline-flex items-center text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded">
+                🌐 Needs Translation
+              </span>
             )}
           </div>
           {document.tips && document.tips.length > 0 && (
@@ -413,15 +602,29 @@ function TimelineStepCard({
                     Complete
                   </span>
                 )}
+                {step.responsibleParty && (
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                    step.responsibleParty === 'employer' 
+                      ? 'bg-blue-100 text-blue-700'
+                      : step.responsibleParty === 'employee'
+                      ? 'bg-purple-100 text-purple-700'
+                      : 'bg-gray-100 text-gray-700'
+                  }`}>
+                    {step.responsibleParty === 'employer' ? '🏢 Employer' : 
+                     step.responsibleParty === 'employee' ? '👤 You' : '👥 Both'}
+                  </span>
+                )}
               </div>
               <p className="text-sm text-gray-500 mt-1">{step.description}</p>
               <div className="flex flex-wrap gap-2 mt-2">
                 <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
                   ⏱️ {step.estimatedTime}
                 </span>
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                  📄 {completedDocs}/{totalDocs} docs ready
-                </span>
+                {totalDocs > 0 && (
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                    📄 {completedDocs}/{totalDocs} docs ready
+                  </span>
+                )}
               </div>
             </div>
             <span className="text-gray-400 text-xl flex-shrink-0">
@@ -434,39 +637,43 @@ function TimelineStepCard({
         {isExpanded && (
           <div className="mt-4 space-y-4 animate-fade-in">
             {/* What to do */}
-            <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-              <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
-                📋 What to do
-              </h4>
-              <ul className="space-y-2">
-                {step.whatToDo.map((action, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                    <span className="text-blue-500">→</span>
-                    <span>{action}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {step.whatToDo.length > 0 && (
+              <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
+                  📋 What to do
+                </h4>
+                <ul className="space-y-2">
+                  {step.whatToDo.map((action, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                      <span className="text-blue-500">→</span>
+                      <span>{action}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* Required Documents */}
-            <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-              <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
-                📄 Required Documents
-                <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
-                  {completedDocs}/{totalDocs}
-                </span>
-              </h4>
-              <div className="space-y-3">
-                {step.requiredDocuments.map((doc) => (
-                  <DocumentChecklistItem
-                    key={doc.id}
-                    document={doc}
-                    isChecked={documentChecks[doc.id] || false}
-                    onToggle={() => onToggleDocument(doc.id)}
-                  />
-                ))}
+            {step.requiredDocuments.length > 0 && (
+              <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
+                  📄 Required Documents
+                  <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+                    {completedDocs}/{totalDocs}
+                  </span>
+                </h4>
+                <div className="space-y-3">
+                  {step.requiredDocuments.map((doc) => (
+                    <DocumentChecklistItem
+                      key={doc.id}
+                      document={doc}
+                      isChecked={documentChecks[doc.id] || false}
+                      onToggle={() => onToggleDocument(doc.id)}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Where to submit */}
             <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
@@ -544,6 +751,7 @@ function TimelineStepCard({
 
 function ResultsView({
   pathway,
+  countryData,
   stepProgress,
   progress,
   completedCount,
@@ -556,6 +764,7 @@ function ResultsView({
   onReset,
 }: {
   pathway: VisaPathway;
+  countryData: CountryVisaData | null;
   stepProgress: ReturnType<typeof useVisaWizard>['stepProgress'];
   progress: number;
   completedCount: number;
@@ -605,14 +814,21 @@ function ResultsView({
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Header with visa type */}
+      {/* Header with visa type and country flag */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 sm:p-8 text-white shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <p className="text-blue-200 text-sm uppercase tracking-wider mb-1">
-              Recommended Visa Type
-            </p>
-            <h2 className="text-2xl sm:text-3xl font-bold">{pathway.title}</h2>
+            <div className="flex items-center gap-3 mb-2">
+              {countryData && (
+                <span className="text-4xl">{countryData.flag}</span>
+              )}
+              <div>
+                <p className="text-blue-200 text-sm uppercase tracking-wider">
+                  Recommended Visa Type
+                </p>
+                <h2 className="text-2xl sm:text-3xl font-bold">{pathway.title}</h2>
+              </div>
+            </div>
             <p className="text-blue-100 mt-2">{pathway.description}</p>
           </div>
           <div className="text-right flex-shrink-0">
@@ -652,6 +868,20 @@ function ResultsView({
         </button>
       </div>
 
+      {/* Country-Specific Information */}
+      {countryData && (
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+            {countryData.flag} Information for {countryData.country} Citizens
+          </h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            <CountryInfoCard countryData={countryData} />
+            <SalaryThresholdsCard countryData={countryData} />
+          </div>
+          <CommonMistakesCard countryData={countryData} />
+        </div>
+      )}
+
       {/* Next Step Highlight */}
       {nextStep && progress < 100 && (
         <div className="bg-orange-50 rounded-xl p-5 border-2 border-orange-200">
@@ -679,6 +909,11 @@ function ResultsView({
       <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
         <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
           📍 Your Visa Journey
+          {countryData && (
+            <span className="text-sm font-normal text-gray-500">
+              ({countryData.country} → Netherlands)
+            </span>
+          )}
         </h3>
         <div className="space-y-0">
           {pathway.steps.map((step, index) => (
@@ -740,9 +975,11 @@ export default function VisaWizardPage() {
     isDocumentChecked,
     isIntakeComplete,
     getVisaPathway,
+    getSelectedCountryData,
   } = useVisaWizard();
 
   const pathway = getVisaPathway();
+  const countryData = getSelectedCountryData();
   const progress = getProgress();
   const completedCount = getCompletedCount();
   const nextStep = getNextStep();
@@ -772,9 +1009,14 @@ export default function VisaWizardPage() {
             <span className="text-2xl">🛂</span>
             <h1 className="text-xl font-bold text-gray-800">Visa Wizard</h1>
             {currentStep === 'results' && pathway && (
-              <span className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-                {pathway.titleNL}
-              </span>
+              <>
+                {countryData && (
+                  <span className="text-2xl">{countryData.flag}</span>
+                )}
+                <span className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                  {pathway.titleNL}
+                </span>
+              </>
             )}
           </div>
           <div className="flex items-center gap-3">
@@ -811,6 +1053,7 @@ export default function VisaWizardPage() {
         ) : pathway ? (
           <ResultsView
             pathway={pathway}
+            countryData={countryData}
             stepProgress={stepProgress}
             progress={progress}
             completedCount={completedCount}
