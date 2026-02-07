@@ -41,7 +41,14 @@ export default function Home() {
   // Allow VoiceAgent to set schema directly (for when agent captures via tool)
   const [voiceAgentSchema, setVoiceAgentSchema] = useState<typeof extensionFormSchema | null>(null);
 
-  // Prefer voiceAgentSchema if available, otherwise use extensionFormSchema
+  // Clear voiceAgentSchema when extension captures new data (so new capture shows)
+  useEffect(() => {
+    if (extensionFormSchema && extensionFormSchema.fields?.length > 0) {
+      setVoiceAgentSchema(null);
+    }
+  }, [extensionFormSchema]);
+
+  // Use the most recently captured schema (extension capture clears voice capture above)
   const formSchema = voiceAgentSchema || extensionFormSchema;
 
   // Auto-show roadmap when loaded from localStorage on first active
