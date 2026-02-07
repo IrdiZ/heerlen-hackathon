@@ -251,4 +251,73 @@ chrome.action.onClicked.addListener((tab) => {
   // With popup.html, this won't fire
 });
 
+// Handle one-shot messages from web app (chrome.runtime.sendMessage)
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+  console.log('[MigrantAI] External message:', message, 'from:', sender);
+  
+  if (message.type === 'PING') {
+    sendResponse({ success: true, version: '1.0.0' });
+    return true;
+  }
+  
+  if (message.type === 'CAPTURE_FORM') {
+    captureCurrentTab().then(data => {
+      if (data.error) {
+        sendResponse({ success: false, error: data.error });
+      } else {
+        // Transform to expected schema format
+        const schema = {
+          url: data.url,
+          title: data.title,
+          fields: []
+        };
+        
+        // Flatten form fields
+        data.forms?.forEach(form => {
+          form.fields?.forEach(field => {
+            schema.fields.push({
+              id: field.id || field.name,
+              name: field.name,
+              label: field.label || field.placeholder || field.name || field.id,
+              type: field.type,
+              tag: field.type === 'select' ? 'SELECT' : 'INPUT',
+              required: field.required,
+              options: field.options
+            });
+          });
+        });
+        
+        // Add standalone inputs
+        data.inputs?.forEach(field => {
+          schema.fields.push({
+            id: field.id || field.name,
+            name: field.name,
+            label: field.label || field.placeholder || field.name || field.id,
+            type: field.type,
+            tag: field.type === 'select' ? 'SELECT' : 'INPUT',
+            required: field.required,
+            options: field.options
+          });
+        });
+        
+        sendResponse({ success: true, schema });
+      }
+    });
+    return true; // Keep channel open for async response
+  }
+  
+  if (message.type === 'FILL_FORM') {
+    fillFormFields(message.fillMap).then(result => {
+      const results = [];
+      result.filled?.forEach(f => results.push({ field: f, status: 'filled' }));
+      result.errors?.forEach(e => results.push({ field: e.selector, status: 'error' }));
+      sendResponse({ success: true, results });
+    });
+    return true;
+  }
+  
+  sendResponse({ success: false, error: 'Unknown message type' });
+  return true;
+});
+
 console.log('[MigrantAI] Background script loaded');
