@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { FormSchema, FillResult } from '@/hooks/useExtension';
 
 interface FormStatusProps {
@@ -11,6 +12,8 @@ interface FormStatusProps {
 }
 
 export function FormStatus({ schema, fillResults, onClear, isConnected, error }: FormStatusProps) {
+  const t = useTranslations('formStatus');
+
   if (error) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-xl p-4">
@@ -18,7 +21,7 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error }:
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span className="font-medium">Error</span>
+          <span className="font-medium">{t('error')}</span>
         </div>
         <p className="mt-2 text-sm text-red-700">{error}</p>
       </div>
@@ -40,13 +43,10 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error }:
           )}
         </div>
         <h3 className="font-semibold text-gray-800">
-          {isConnected ? 'Extension Connected' : 'Extension Not Detected'}
+          {isConnected ? t('extensionConnected') : t('extensionNotDetected')}
         </h3>
         <p className="text-sm text-gray-500 mt-1">
-          {isConnected 
-            ? 'Navigate to a form and click "Capture Form" in the extension'
-            : 'Install the MigrantAI extension to enable form filling'
-          }
+          {isConnected ? t('captureHint') : t('installHint')}
         </p>
       </div>
     );
@@ -60,27 +60,27 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error }:
       {/* Header */}
       <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
         <div>
-          <h3 className="font-semibold text-gray-800 truncate max-w-xs">{schema.title || 'Form Captured'}</h3>
+          <h3 className="font-semibold text-gray-800 truncate max-w-xs">{schema.title || t('formCaptured')}</h3>
           <p className="text-xs text-gray-500 truncate max-w-xs">{schema.url}</p>
         </div>
         <button
           onClick={onClear}
           className="text-sm text-gray-500 hover:text-gray-700"
         >
-          Clear
+          {t('clear')}
         </button>
       </div>
 
       {/* Fill results summary */}
       {fillResults.length > 0 && (
         <div className="px-4 py-3 bg-blue-50 border-b flex items-center gap-4">
-          <span className="text-sm font-medium text-blue-800">Fill Results:</span>
+          <span className="text-sm font-medium text-blue-800">{t('fillResults')}:</span>
           {filledFields > 0 && (
             <span className="text-sm text-green-600 flex items-center gap-1">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              {filledFields} filled
+              {filledFields} {t('filled')}
             </span>
           )}
           {failedFields > 0 && (
@@ -88,7 +88,7 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error }:
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
-              {failedFields} failed
+              {failedFields} {t('failed')}
             </span>
           )}
         </div>
@@ -99,9 +99,9 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error }:
         <table className="w-full text-sm">
           <thead className="bg-gray-50 sticky top-0">
             <tr>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Field</th>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Type</th>
-              <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
+              <th className="px-4 py-2 text-start font-medium text-gray-600">{t('field')}</th>
+              <th className="px-4 py-2 text-start font-medium text-gray-600">{t('type')}</th>
+              <th className="px-4 py-2 text-start font-medium text-gray-600">{t('status')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -114,9 +114,9 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error }:
                   <td className="px-4 py-2">
                     {result ? (
                       result.status === 'filled' ? (
-                        <span className="text-green-600">✓ Filled</span>
+                        <span className="text-green-600">✓ {t('filled')}</span>
                       ) : (
-                        <span className="text-red-600">✗ Failed</span>
+                        <span className="text-red-600">✗ {t('failed')}</span>
                       )
                     ) : (
                       <span className="text-gray-400">—</span>
@@ -131,7 +131,7 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error }:
 
       {/* Field count */}
       <div className="px-4 py-2 bg-gray-50 border-t text-xs text-gray-500">
-        {schema.fields.length} fields detected
+        {t('fieldsDetected', { count: schema.fields.length })}
       </div>
     </div>
   );

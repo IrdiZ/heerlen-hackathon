@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { PIIData, DEMO_PII } from '@/hooks/useLocalPII';
 
 interface PIIFormProps {
@@ -11,24 +12,12 @@ interface PIIFormProps {
   totalFields: number;
 }
 
-const FIELD_LABELS: Record<keyof PIIData, string> = {
-  firstName: 'First Name',
-  lastName: 'Last Name',
-  dateOfBirth: 'Date of Birth',
-  birthPlace: 'Birth Place',
-  nationality: 'Nationality',
-  gender: 'Gender',
-  street: 'Street',
-  houseNumber: 'House Number',
-  postcode: 'Postcode',
-  city: 'City',
-  phone: 'Phone',
-  email: 'Email',
-  bsn: 'BSN (optional)',
-  iban: 'IBAN (optional)',
-  documentNumber: 'Document Number',
-  moveDate: 'Move Date',
-};
+const FIELD_KEYS: (keyof PIIData)[] = [
+  'firstName', 'lastName', 'dateOfBirth', 'birthPlace', 'nationality', 'gender',
+  'street', 'houseNumber', 'postcode', 'city',
+  'phone', 'email',
+  'documentNumber', 'moveDate', 'bsn', 'iban'
+];
 
 const FIELD_TYPES: Partial<Record<keyof PIIData, string>> = {
   dateOfBirth: 'date',
@@ -37,11 +26,11 @@ const FIELD_TYPES: Partial<Record<keyof PIIData, string>> = {
   phone: 'tel',
 };
 
-const GENDER_OPTIONS = ['', 'Male', 'Female', 'Other', 'Prefer not to say'];
-
 export function PIIForm({ piiData, onUpdate, onClear, onLoadDemo, filledCount, totalFields }: PIIFormProps) {
+  const t = useTranslations('piiForm');
+
   const renderField = (field: keyof PIIData) => {
-    const label = FIELD_LABELS[field];
+    const label = t(`fieldLabels.${field}`);
     const type = FIELD_TYPES[field] || 'text';
     const value = piiData[field];
 
@@ -54,9 +43,11 @@ export function PIIForm({ piiData, onUpdate, onClear, onLoadDemo, filledCount, t
             onChange={(e) => onUpdate(field, e.target.value)}
             className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
           >
-            {GENDER_OPTIONS.map((opt) => (
-              <option key={opt} value={opt}>{opt || 'Select...'}</option>
-            ))}
+            <option value="">{t('genderOptions.select')}</option>
+            <option value="Male">{t('genderOptions.male')}</option>
+            <option value="Female">{t('genderOptions.female')}</option>
+            <option value="Other">{t('genderOptions.other')}</option>
+            <option value="Prefer not to say">{t('genderOptions.preferNot')}</option>
           </select>
         </div>
       );
@@ -85,11 +76,11 @@ export function PIIForm({ piiData, onUpdate, onClear, onLoadDemo, filledCount, t
     <div className="bg-white rounded-xl shadow-lg p-6 max-h-[80vh] overflow-y-auto">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-800">🔒 Secure Local Form</h2>
-          <p className="text-sm text-gray-500">This data never leaves your browser</p>
+          <h2 className="text-xl font-bold text-gray-800">🔒 {t('title')}</h2>
+          <p className="text-sm text-gray-500">{t('subtitle')}</p>
         </div>
         <div className="text-sm text-gray-600">
-          {filledCount}/{totalFields} fields
+          {filledCount}/{totalFields} {t('fields')}
         </div>
       </div>
 
@@ -107,41 +98,41 @@ export function PIIForm({ piiData, onUpdate, onClear, onLoadDemo, filledCount, t
           onClick={onLoadDemo}
           className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
         >
-          Load Demo Data
+          {t('loadDemo')}
         </button>
         <button
           onClick={onClear}
           className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
         >
-          Clear All
+          {t('clearAll')}
         </button>
       </div>
 
       {/* Form sections */}
       <div className="space-y-6">
         <section>
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Personal Info</h3>
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">{t('sections.personalInfo')}</h3>
           <div className="grid grid-cols-2 gap-4">
             {primaryFields.map(renderField)}
           </div>
         </section>
 
         <section>
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Address</h3>
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">{t('sections.address')}</h3>
           <div className="grid grid-cols-2 gap-4">
             {addressFields.map(renderField)}
           </div>
         </section>
 
         <section>
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Contact</h3>
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">{t('sections.contact')}</h3>
           <div className="grid grid-cols-2 gap-4">
             {contactFields.map(renderField)}
           </div>
         </section>
 
         <section>
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Documents</h3>
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">{t('sections.documents')}</h3>
           <div className="grid grid-cols-2 gap-4">
             {documentFields.map(renderField)}
           </div>

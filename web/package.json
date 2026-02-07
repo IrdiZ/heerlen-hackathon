@@ -12,6 +12,7 @@
     "@elevenlabs/client": "^0.14.0",
     "@elevenlabs/react": "^0.14.0",
     "next": "16.1.6",
+    "next-intl": "^4.8.2",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
