@@ -112,7 +112,7 @@ export function ProgressTracker({
 
       <div className="bg-gradient-to-br from-white via-slate-50/50 to-blue-50/30 rounded-3xl shadow-2xl shadow-blue-900/10 overflow-hidden border border-slate-200/50 backdrop-blur-sm">
         {/* Header with animated gradient */}
-        <div className="relative px-8 py-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 gradient-animate text-white overflow-hidden">
+        <div className="relative px-8 py-6 bg-gradient-to-r from-primary-500 via-indigo-600 to-purple-600 gradient-animate text-white overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute -top-1/2 -right-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
@@ -183,8 +183,8 @@ export function ProgressTracker({
             <div className="absolute -right-20 -top-20 w-40 h-40 bg-blue-200/30 rounded-full blur-3xl" />
             
             <div className="relative">
-              <div className="flex items-center gap-2 text-sm font-bold text-blue-600 mb-3">
-                <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full">
+              <div className="flex items-center gap-2 text-sm font-bold text-primary-600 mb-3">
+                <span className="inline-flex items-center justify-center w-6 h-6 bg-primary-100 rounded-full">
                   🎯
                 </span>
                 <span className="uppercase tracking-wider text-xs">{t('nextAction')}</span>
@@ -200,7 +200,7 @@ export function ProgressTracker({
               {nextStep.status === 'pending' && (
                 <button
                   onClick={() => onSetStatus(nextStep.id, 'in-progress')}
-                  className="mt-4 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40"
+                  className="mt-4 px-6 py-2.5 bg-gradient-to-r from-primary-500 to-primary-700 text-white text-sm font-bold rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 active:scale-95 transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40"
                 >
                   🚀 Start This Step
                 </button>
@@ -266,7 +266,7 @@ export function ProgressTracker({
                       step.status === 'complete'
                         ? 'text-emerald-500'
                         : step.status === 'in-progress'
-                        ? 'text-blue-500'
+                        ? 'text-primary-500'
                         : 'text-slate-300'
                     }`}
                   >

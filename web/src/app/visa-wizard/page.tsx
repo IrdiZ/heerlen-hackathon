@@ -56,7 +56,7 @@ function IntakeForm({
                 onClick={() => updateField('countryOfOrigin', option.value)}
                 className={`p-4 rounded-xl border-2 text-center transition-all duration-200 hover:shadow-md ${
                   intakeData.countryOfOrigin === option.value
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                    ? 'border-primary-500 bg-primary-50 text-primary-700'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
@@ -80,7 +80,7 @@ function IntakeForm({
                 onClick={() => updateField('currentLocation', option.value)}
                 className={`p-4 rounded-xl border-2 text-left transition-all duration-200 hover:shadow-md ${
                   intakeData.currentLocation === option.value
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                    ? 'border-primary-500 bg-primary-50 text-primary-700'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
@@ -138,7 +138,7 @@ function IntakeForm({
                 href="https://ind.nl/en/public-register-recognised-sponsors"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
+                className="text-primary-600 hover:underline"
               >
                 IND public register
               </a>{' '}
@@ -240,7 +240,7 @@ function IntakeForm({
           disabled={!isComplete}
           className={`px-8 py-4 text-lg font-semibold rounded-full transition-all duration-200 shadow-lg ${
             isComplete
-              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl transform hover:scale-105'
+              ? 'bg-gradient-to-r from-primary-500 to-primary-700 text-white hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl transform hover:scale-105'
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
         >
@@ -284,7 +284,7 @@ function CountryInfoCard({ countryData }: { countryData: CountryVisaData }) {
           {/* Requirements badges */}
           <div className="flex flex-wrap gap-2">
             {countryData.requiresMVV && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
                 📋 MVV Required
               </span>
             )}
@@ -329,7 +329,7 @@ function CountryInfoCard({ countryData }: { countryData: CountryVisaData }) {
               {countryData.embassy.city}, {countryData.embassy.country}
             </p>
             {countryData.embassy.email && (
-              <p className="text-sm text-blue-600 mt-1">
+              <p className="text-sm text-primary-600 mt-1">
                 📧 <a href={`mailto:${countryData.embassy.email}`}>{countryData.embassy.email}</a>
               </p>
             )}
@@ -338,7 +338,7 @@ function CountryInfoCard({ countryData }: { countryData: CountryVisaData }) {
                 href={countryData.embassy.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline mt-2"
+                className="inline-flex items-center gap-1 text-sm text-primary-600 hover:underline mt-2"
               >
                 🔗 Visit website
               </a>
@@ -484,7 +484,7 @@ function DocumentChecklistItem({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
+                className="inline-flex items-center text-xs bg-primary-100 text-primary-600 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
               >
                 🔗 Get it here
               </a>
@@ -605,7 +605,7 @@ function TimelineStepCard({
                 {step.responsibleParty && (
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
                     step.responsibleParty === 'employer' 
-                      ? 'bg-blue-100 text-blue-700'
+                      ? 'bg-primary-100 text-primary-700'
                       : step.responsibleParty === 'employee'
                       ? 'bg-purple-100 text-purple-700'
                       : 'bg-gray-100 text-gray-700'
@@ -645,7 +645,7 @@ function TimelineStepCard({
                 <ul className="space-y-2">
                   {step.whatToDo.map((action, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                      <span className="text-blue-500">→</span>
+                      <span className="text-primary-500">→</span>
                       <span>{action}</span>
                     </li>
                   ))}
@@ -686,7 +686,7 @@ function TimelineStepCard({
                   href={step.submitLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 mt-2 text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                  className="inline-flex items-center gap-2 mt-2 text-sm text-primary-600 hover:text-primary-800 transition-colors"
                 >
                   🔗 Visit website
                 </a>
@@ -695,13 +695,13 @@ function TimelineStepCard({
 
             {/* Tips */}
             {step.tips.length > 0 && (
-              <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
-                <h4 className="font-medium text-blue-800 mb-2 flex items-center gap-2">
+              <div className="bg-primary-50 rounded-xl p-5 border border-primary-200">
+                <h4 className="font-medium text-primary-800 mb-2 flex items-center gap-2">
                   💡 Tips
                 </h4>
                 <ul className="space-y-1">
                   {step.tips.map((tip, i) => (
-                    <li key={i} className="text-sm text-blue-700 flex items-start gap-2">
+                    <li key={i} className="text-sm text-primary-700 flex items-start gap-2">
                       <span>•</span>
                       <span>{tip}</span>
                     </li>
@@ -815,7 +815,7 @@ function ResultsView({
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header with visa type and country flag */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 sm:p-8 text-white shadow-xl">
+      <div className="bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl p-6 sm:p-8 text-white shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -843,7 +843,7 @@ function ResultsView({
             <span>{completedCount} of {totalSteps} steps done</span>
             <span>{pathway.totalEstimatedTime}</span>
           </div>
-          <div className="w-full bg-blue-400/30 rounded-full h-3 overflow-hidden">
+          <div className="w-full bg-primary-400/30 rounded-full h-3 overflow-hidden">
             <div
               className="h-full bg-white rounded-full transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
@@ -1013,7 +1013,7 @@ export default function VisaWizardPage() {
                 {countryData && (
                   <span className="text-2xl">{countryData.flag}</span>
                 )}
-                <span className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                <span className="text-sm bg-primary-100 text-primary-700 px-3 py-1 rounded-full">
                   {pathway.titleNL}
                 </span>
               </>
@@ -1033,7 +1033,7 @@ export default function VisaWizardPage() {
             )}
             <Link
               href="/"
-              className="text-blue-600 hover:text-blue-800 transition-colors text-sm font-medium"
+              className="text-primary-600 hover:text-primary-800 transition-colors text-sm font-medium"
             >
               ← Back to Home
             </Link>

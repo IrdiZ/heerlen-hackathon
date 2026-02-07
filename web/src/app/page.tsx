@@ -462,7 +462,7 @@ export default function Home() {
                 onClick={() => setShowPIIForm(!showPIIForm)}
                 variant="secondary"
                 size="sm"
-                className={showPIIForm ? 'bg-blue-100 text-primary-700 hover:bg-blue-200' : ''}
+                className={showPIIForm ? 'bg-primary-100 text-primary-700 hover:bg-blue-200' : ''}
               >
                 🔒 {t('header.personalDetails')} ({getFilledCount()}/{totalFields})
               </AnimatedButton>

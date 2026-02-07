@@ -222,12 +222,12 @@ export function VehicleLookup({ onClose }: VehicleLookupProps) {
           </div>
 
           {/* Tips for buyers */}
-          <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+          <div className="bg-primary-50 rounded-lg p-4 border border-primary-200">
             <div className="flex items-start gap-2">
               <span className="text-lg">💡</span>
-              <div className="text-sm text-blue-800">
+              <div className="text-sm text-primary-800">
                 <p className="font-medium mb-1">Tips for Used Car Buyers:</p>
-                <ul className="list-disc list-inside space-y-1 text-blue-700">
+                <ul className="list-disc list-inside space-y-1 text-primary-700">
                   <li>Always verify the APK is valid before purchase</li>
                   <li>Check if the vehicle age matches what the seller claims</li>
                   <li>Vehicles over 4 years old need annual APK inspection</li>

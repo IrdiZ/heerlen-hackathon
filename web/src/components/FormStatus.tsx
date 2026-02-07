@@ -181,7 +181,7 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error, c
                     className={`
                       snap-start shrink-0 w-40 p-2 rounded-lg text-left transition-all duration-200
                       ${isActive 
-                        ? 'bg-blue-500 text-white shadow-lg ring-2 ring-blue-300' 
+                        ? 'bg-primary-500 text-white shadow-lg ring-2 ring-blue-300' 
                         : 'bg-white text-gray-700 shadow border border-gray-200'
                       }
                     `}
@@ -224,7 +224,7 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error, c
           onClick={onClear}
           whileHover={{ scale: 1.05, color: '#374151' }}
           whileTap={{ scale: 0.95 }}
-          className="text-sm text-gray-500 hover:text-gray-700 px-2 py-1 rounded-md hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+          className="text-sm text-gray-500 hover:text-gray-700 px-2 py-1 rounded-md hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1"
         >
           {t('clear')}
         </motion.button>
@@ -270,9 +270,9 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error, c
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="px-4 py-3 bg-blue-50 border-b flex items-center gap-4"
+            className="px-4 py-3 bg-primary-50 border-b flex items-center gap-4"
           >
-            <span className="text-sm font-medium text-blue-800">{t('fillResults')}:</span>
+            <span className="text-sm font-medium text-primary-800">{t('fillResults')}:</span>
             {filledFields > 0 && (
               <motion.span 
                 initial={{ scale: 0 }}

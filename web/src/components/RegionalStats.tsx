@@ -100,7 +100,7 @@ export function RegionalStats({
   return (
     <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 flex items-center justify-between">
+      <div className="bg-gradient-to-r from-primary-500 to-primary-700 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2 text-white">
           <span className="text-xl">📊</span>
           <h3 className="font-semibold">Regional Statistics</h3>
@@ -127,7 +127,7 @@ export function RegionalStats({
               onClick={() => handleRegionChange(region)}
               className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                 regionName === region
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-primary-500 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -140,7 +140,7 @@ export function RegionalStats({
           value={regionName}
           onChange={(e) => setRegionName(e.target.value)}
           placeholder="Or type a city name..."
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-transparent"
           onBlur={() => loadData(regionName)}
           onKeyPress={(e) => e.key === 'Enter' && loadData(regionName)}
         />
@@ -149,7 +149,7 @@ export function RegionalStats({
       {/* Loading State */}
       {loading && (
         <div className="p-8 text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <div className="animate-spin h-8 w-8 border-4 border-primary-500 border-t-transparent rounded-full mx-auto mb-4"></div>
           <p className="text-gray-500">Loading statistics...</p>
         </div>
       )}
@@ -189,7 +189,7 @@ export function RegionalStats({
               </div>
 
               {/* House Price Card */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-primary-200">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">Average House Price</span>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
@@ -236,7 +236,7 @@ export function RegionalStats({
                   </div>
                   <div>
                     <p className={`text-2xl font-bold ${
-                      migrationData.balance > 0 ? 'text-blue-600' : 'text-orange-600'
+                      migrationData.balance > 0 ? 'text-primary-600' : 'text-orange-600'
                     }`}>
                       {migrationData.balance > 0 ? '+' : ''}{formatNumber(migrationData.balance)}
                     </p>
@@ -297,7 +297,7 @@ export function RegionalTip({ regionName }: { regionName: string }) {
   if (!tip) return null;
 
   return (
-    <div className="bg-blue-50 border-l-4 border-blue-400 p-3 rounded-r-lg text-sm text-blue-800">
+    <div className="bg-primary-50 border-l-4 border-primary-400 p-3 rounded-r-lg text-sm text-primary-800">
       {tip}
     </div>
   );

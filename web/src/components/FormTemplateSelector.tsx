@@ -102,17 +102,17 @@ export function FormTemplateSelector({
 
       {/* Auto-detected template banner */}
       {detectedTemplate && detectedTemplate.id !== selectedTemplateId && (
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="mb-4 p-3 bg-primary-50 border border-primary-200 rounded-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-blue-600">🔍</span>
-              <span className="text-sm text-blue-800">
+              <span className="text-primary-600">🔍</span>
+              <span className="text-sm text-primary-800">
                 Detected: <strong>{detectedTemplate.nameEN}</strong>
               </span>
             </div>
             <button
               onClick={() => onSelectTemplate(detectedTemplate)}
-              className="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors"
+              className="px-3 py-1 text-sm font-medium text-primary-600 bg-primary-100 rounded-lg hover:bg-blue-200 transition-colors"
             >
               Use this template
             </button>
@@ -131,7 +131,7 @@ export function FormTemplateSelector({
             const template = FORM_TEMPLATES.find(t => t.id === e.target.value);
             if (template) onSelectTemplate(template);
           }}
-          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
+          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white"
         >
           <option value="">Choose a form template...</option>
           {Object.entries(templatesByCategory).map(([category, templates]) => (
@@ -256,7 +256,7 @@ export function FormTemplateSelector({
                   <ul className="space-y-2">
                     {selectedTemplate.tips.map((tip, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                        <span className="text-blue-500 mt-0.5">•</span>
+                        <span className="text-primary-500 mt-0.5">•</span>
                         <span>{tip}</span>
                       </li>
                     ))}
@@ -308,7 +308,7 @@ export function FormTemplateSelector({
                     <button
                       key={template.id}
                       onClick={() => onSelectTemplate(template)}
-                      className="w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors"
+                      className="w-full px-4 py-3 text-left hover:bg-primary-50 transition-colors"
                     >
                       <div className="font-medium text-gray-800">{template.nameEN}</div>
                       <div className="text-sm text-gray-500">{template.nameNL}</div>
@@ -336,7 +336,7 @@ export function TemplateIndicator({
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors"
+      className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-50 text-primary-700 rounded-full text-sm font-medium hover:bg-primary-100 transition-colors"
     >
       {CATEGORY_LABELS[template.category].icon}
       <span>{template.nameEN}</span>

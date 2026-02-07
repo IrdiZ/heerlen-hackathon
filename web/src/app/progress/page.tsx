@@ -397,7 +397,7 @@ function ImportExport({
     <div className="flex flex-wrap gap-2">
       <button
         onClick={handleExport}
-        className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium flex items-center gap-2"
+        className="px-4 py-2 bg-primary-100 text-primary-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium flex items-center gap-2"
       >
         📤 Export Progress
       </button>
@@ -544,7 +544,7 @@ export default function ProgressDashboard() {
           </div>
           <Link
             href="/"
-            className="text-blue-600 hover:text-blue-800 transition-colors text-sm font-medium"
+            className="text-primary-600 hover:text-primary-800 transition-colors text-sm font-medium"
           >
             ← Back to MigrantAI
           </Link>

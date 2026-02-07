@@ -28,7 +28,7 @@ export function FAQSection({ onAskAbout }: FAQSectionProps) {
           onClick={() => setSelectedCategory(null)}
           className={`px-3 py-1 rounded-full text-sm transition-colors ${
             selectedCategory === null
-              ? 'bg-blue-600 text-white'
+              ? 'bg-primary-500 text-white'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >
@@ -40,7 +40,7 @@ export function FAQSection({ onAskAbout }: FAQSectionProps) {
             onClick={() => setSelectedCategory(key)}
             className={`px-3 py-1 rounded-full text-sm transition-colors ${
               selectedCategory === key
-                ? 'bg-blue-600 text-white'
+                ? 'bg-primary-500 text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -107,7 +107,7 @@ function FAQItem({
           {onAsk && (
             <button
               onClick={() => onAsk(faq.question)}
-              className="mt-3 text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
+              className="mt-3 text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />

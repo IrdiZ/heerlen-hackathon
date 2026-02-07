@@ -235,7 +235,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
       onClick={onClick}
       className={`px-4 py-3 font-medium text-sm transition-all duration-200 border-b-2 ${
         active
-          ? 'text-blue-600 border-blue-600 bg-blue-50'
+          ? 'text-primary-600 border-primary-500 bg-primary-50'
           : 'text-gray-600 border-transparent hover:text-gray-800 hover:bg-gray-50'
       }`}
     >
@@ -246,7 +246,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
 
 function CostRow({ label, amount, sublabel, highlight }: { label: string; amount: number; sublabel?: string; highlight?: boolean }) {
   return (
-    <div className={`flex justify-between items-center py-3 px-4 ${highlight ? 'bg-blue-50 rounded-lg' : 'border-b border-gray-100'}`}>
+    <div className={`flex justify-between items-center py-3 px-4 ${highlight ? 'bg-primary-50 rounded-lg' : 'border-b border-gray-100'}`}>
       <div>
         <span className={highlight ? 'font-semibold text-blue-900' : 'text-gray-700'}>{label}</span>
         {sublabel && <p className="text-xs text-gray-500">{sublabel}</p>}
@@ -290,7 +290,7 @@ function InitialSettlementTab() {
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               {CITIES.map(c => (
                 <option key={c.name} value={c.name}>{c.name} ({c.region})</option>
@@ -302,7 +302,7 @@ function InitialSettlementTab() {
             <select
               value={apartmentType}
               onChange={(e) => setApartmentType(e.target.value as typeof apartmentType)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="studio">Studio (€{city.rent.studio}/mo)</option>
               <option value="oneBedroom">1 Bedroom (€{city.rent.oneBedroom}/mo)</option>
@@ -329,7 +329,7 @@ function InitialSettlementTab() {
                 type="checkbox"
                 checked={includeFurniture}
                 onChange={(e) => setIncludeFurniture(e.target.checked)}
-                className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
               <span className="text-sm text-gray-700">Include basic furniture (€{SETTLEMENT_COSTS.furnitureBasic})</span>
             </label>
@@ -410,7 +410,7 @@ function MonthlyCostsTab() {
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               {CITIES.map(c => (
                 <option key={c.name} value={c.name}>{c.name}</option>
@@ -422,7 +422,7 @@ function MonthlyCostsTab() {
             <select
               value={apartmentType}
               onChange={(e) => setApartmentType(e.target.value as typeof apartmentType)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="studio">Studio</option>
               <option value="oneBedroom">1 Bedroom</option>
@@ -434,7 +434,7 @@ function MonthlyCostsTab() {
             <select
               value={lifestyle}
               onChange={(e) => setLifestyle(e.target.value as typeof lifestyle)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="budget">Budget-conscious</option>
               <option value="moderate">Moderate</option>
@@ -469,7 +469,7 @@ function MonthlyCostsTab() {
         <h3 className="text-lg font-semibold text-gray-800 mb-4">📈 Cost Distribution</h3>
         <div className="space-y-3">
           {[
-            { label: 'Rent', amount: rent, color: 'bg-blue-500' },
+            { label: 'Rent', amount: rent, color: 'bg-primary-500' },
             { label: 'Utilities', amount: city.utilities, color: 'bg-yellow-500' },
             { label: 'Groceries', amount: groceries, color: 'bg-green-500' },
             { label: 'Transport', amount: transport, color: 'bg-purple-500' },
@@ -515,13 +515,13 @@ function VisaFeesTab() {
               onClick={() => setSelectedVisa(selectedVisa === visa.name ? null : visa.name)}
               className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
                 selectedVisa === visa.name
-                  ? 'border-blue-500 bg-blue-50'
+                  ? 'border-primary-500 bg-primary-50'
                   : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
               }`}
             >
               <div className="flex justify-between items-start mb-2">
                 <h4 className="font-semibold text-gray-800">{visa.name}</h4>
-                <span className="font-mono font-bold text-blue-600">€{visa.fee}</span>
+                <span className="font-mono font-bold text-primary-600">€{visa.fee}</span>
               </div>
               <p className="text-sm text-gray-500 mb-2">{visa.nameNL}</p>
               {selectedVisa === visa.name && (
@@ -550,9 +550,9 @@ function VisaFeesTab() {
       </div>
 
       {/* Tips */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-        <h4 className="font-semibold text-blue-800 mb-2">ℹ️ Important Information</h4>
-        <ul className="text-sm text-blue-700 space-y-2">
+      <div className="bg-primary-50 border border-primary-200 rounded-xl p-6">
+        <h4 className="font-semibold text-primary-800 mb-2">ℹ️ Important Information</h4>
+        <ul className="text-sm text-primary-700 space-y-2">
           <li>• Fees are paid online before your appointment</li>
           <li>• Processing times are from complete application</li>
           <li>• 30% ruling can be applied for alongside work permits</li>
@@ -605,7 +605,7 @@ function ZorgtoeslagTab() {
               type="number"
               value={annualIncome}
               onChange={(e) => setAnnualIncome(Number(e.target.value))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             />
             <input
               type="range"
@@ -624,7 +624,7 @@ function ZorgtoeslagTab() {
                 type="checkbox"
                 checked={hasPartner}
                 onChange={(e) => setHasPartner(e.target.checked)}
-                className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
               <span className="text-sm text-gray-700">I have a fiscal partner (toeslagpartner)</span>
             </label>
@@ -638,7 +638,7 @@ function ZorgtoeslagTab() {
                   type="number"
                   value={partnerIncome}
                   onChange={(e) => setPartnerIncome(Number(e.target.value))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
             )}
@@ -693,16 +693,16 @@ function ZorgtoeslagTab() {
       </div>
 
       {/* Apply link */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
-        <h4 className="font-semibold text-blue-800 mb-2">Ready to Apply?</h4>
-        <p className="text-sm text-blue-700 mb-4">
+      <div className="bg-primary-50 border border-primary-200 rounded-xl p-6 text-center">
+        <h4 className="font-semibold text-primary-800 mb-2">Ready to Apply?</h4>
+        <p className="text-sm text-primary-700 mb-4">
           Apply through Mijn Toeslagen on the Belastingdienst website
         </p>
         <a
           href="https://www.belastingdienst.nl/toeslagen/"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="inline-block px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
         >
           Go to Mijn Toeslagen →
         </a>
@@ -749,7 +749,7 @@ function CityComparisonTab() {
               onClick={() => toggleCity(city.name)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 selectedCities.includes(city.name)
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-primary-500 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -763,7 +763,7 @@ function CityComparisonTab() {
           <select
             value={apartmentType}
             onChange={(e) => setApartmentType(e.target.value as typeof apartmentType)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="studio">Studio</option>
             <option value="oneBedroom">1 Bedroom</option>
@@ -824,7 +824,7 @@ function CityComparisonTab() {
                   <td key={Math.random()} className="px-6 py-4 text-center font-mono">€{SETTLEMENT_COSTS.healthInsuranceMonthly}</td>
                 ))}
               </tr>
-              <tr className="bg-blue-50 font-semibold">
+              <tr className="bg-primary-50 font-semibold">
                 <td className="px-6 py-4 text-sm text-blue-900">📊 MONTHLY TOTAL</td>
                 {comparedCities.map(city => {
                   const total = getMonthlyTotal(city);

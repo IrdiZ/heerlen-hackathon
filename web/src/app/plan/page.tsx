@@ -53,7 +53,7 @@ export default function PlanPage() {
             </p>
             <Link
               href="/"
-              className="inline-block px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30"
+              className="inline-block px-6 py-3 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition-colors shadow-lg shadow-blue-500/30"
             >
               🎤 Start Conversation
             </Link>

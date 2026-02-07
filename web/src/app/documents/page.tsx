@@ -32,9 +32,9 @@ export default function DocumentsPage() {
         <DocumentChecklist />
 
         {/* Info section */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-6">
-          <h3 className="font-semibold text-blue-800 mb-2">💡 Tips for Document Collection</h3>
-          <ul className="space-y-2 text-sm text-blue-700">
+        <div className="mt-8 bg-primary-50 border border-primary-200 rounded-xl p-4 sm:p-6">
+          <h3 className="font-semibold text-primary-800 mb-2">💡 Tips for Document Collection</h3>
+          <ul className="space-y-2 text-sm text-primary-700">
             <li className="flex items-start gap-2">
               <span>📋</span>
               <span>
@@ -77,7 +77,7 @@ export default function DocumentsPage() {
               href="https://www.heerlen.nl"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 text-sm hover:underline"
+              className="text-primary-600 text-sm hover:underline"
             >
               Visit heerlen.nl →
             </a>
@@ -91,7 +91,7 @@ export default function DocumentsPage() {
               href="https://www.digid.nl/aanvragen"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 text-sm hover:underline"
+              className="text-primary-600 text-sm hover:underline"
             >
               Apply for DigiD →
             </a>
