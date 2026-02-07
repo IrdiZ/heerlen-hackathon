@@ -264,8 +264,9 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
     },
     onError: (err) => {
       console.error('[VoiceAgent] Error:', err);
-      setError(err.message || 'Unknown error');
-      emitMessage('system', `❌ Error: ${err.message || 'Unknown error'}`);
+      const errorMsg = typeof err === 'string' ? err : (err as Error)?.message || 'Unknown error';
+      setError(errorMsg);
+      emitMessage('system', `❌ Error: ${errorMsg}`);
     },
   });
 
@@ -286,7 +287,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
 
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      await conversation.startSession({ agentId });
+      await conversation.startSession({ agentId, connectionType: 'websocket' as const });
     } catch (err) {
       console.error('[VoiceAgent] Start failed:', err);
       setError(err instanceof Error ? err.message : 'Failed to start');

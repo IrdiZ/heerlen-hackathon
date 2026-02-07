@@ -2,13 +2,13 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { VoiceAgent } from '@/components/VoiceAgent';
 import { PIIForm } from '@/components/PIIForm';
 import { FormStatus } from '@/components/FormStatus';
 import { Transcript } from '@/components/Transcript';
 import { FormTemplateSelector, TemplateIndicator } from '@/components/FormTemplateSelector';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { ProgressTracker } from '@/components/ProgressTracker';
 import { DevPanel } from '@/components/dev';
 import { useLocalPII } from '@/hooks/useLocalPII';
 import { useExtension } from '@/hooks/useExtension';
@@ -35,13 +35,22 @@ export default function Home() {
   
   const { piiData, updateField, clearAll, loadDemo, getFilledCount, totalFields } = useLocalPII();
   const { isConnected, formSchema: extensionFormSchema, lastFillResults, error, requestFormSchema, fillForm, clearSchema } = useExtension();
-  const { roadmap, createRoadmap, setStepStatus, getProgress } = useRoadmap();
+  const { roadmap, createRoadmap, setStepStatus, updateNotes, clearRoadmap, getProgress } = useRoadmap();
+  const [showRoadmap, setShowRoadmap] = useState(false);
 
   // Allow VoiceAgent to set schema directly (for when agent captures via tool)
   const [voiceAgentSchema, setVoiceAgentSchema] = useState<typeof extensionFormSchema | null>(null);
 
   // Prefer voiceAgentSchema if available, otherwise use extensionFormSchema
   const formSchema = voiceAgentSchema || extensionFormSchema;
+
+  // Auto-show roadmap when loaded from localStorage on first active
+  useEffect(() => {
+    if (roadmap && appState === 'active' && !showRoadmap) {
+      setShowRoadmap(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appState]); // Only trigger on appState change, not on every roadmap/showRoadmap change
 
   // Auto-select template when form schema is captured with a detected template
   useEffect(() => {
@@ -126,11 +135,12 @@ export default function Home() {
 
   const handleCreateRoadmap = useCallback(async (params: CreateRoadmapParams): Promise<string> => {
     const result = createRoadmap(params);
+    setShowRoadmap(true); // Auto-show roadmap when created
     handleMessage({
       role: 'system',
-      content: `📍 Roadmap created: "${result.name}" with ${result.steps.length} steps. View it at /plan`
+      content: `📍 Roadmap created: "${result.name}" with ${result.steps.length} steps`
     });
-    return `Created "${result.name}" with ${result.steps.length} steps. User can view at /plan page.`;
+    return `Created "${result.name}" with ${result.steps.length} steps. The roadmap is now visible on the page.`;
   }, [createRoadmap, handleMessage]);
 
   const handleUpdateRoadmap = useCallback(async (params: UpdateRoadmapParams): Promise<string> => {
@@ -233,16 +243,18 @@ export default function Home() {
             >
               🔒 {t('header.personalDetails')} ({getFilledCount()}/{totalFields})
             </button>
-            <Link
-              href="/plan"
+            <button
+              onClick={() => setShowRoadmap(!showRoadmap)}
               className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md ${
-                roadmap
+                showRoadmap
                   ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  : roadmap
+                    ? 'bg-green-50 text-green-600 hover:bg-green-100'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               📍 {t('header.roadmap')} {roadmap ? `(${getProgress()}%)` : ''}
-            </Link>
+            </button>
             <LanguageSwitcher />
             <button
               onClick={() => setAppState('landing')}
@@ -253,6 +265,28 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      {/* Roadmap Section (shows when toggled) */}
+      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showRoadmap ? 'opacity-100 max-h-[2000px]' : 'opacity-0 max-h-0'}`}>
+        {showRoadmap && (
+          <div className="max-w-4xl mx-auto p-4 sm:p-6 pb-0">
+            {roadmap ? (
+              <ProgressTracker
+                roadmap={roadmap}
+                onSetStatus={setStepStatus}
+                onUpdateNotes={updateNotes}
+                onClear={clearRoadmap}
+              />
+            ) : (
+              <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+                <div className="text-5xl mb-4">📍</div>
+                <h2 className="text-xl font-semibold text-gray-700 mb-2">{t('roadmap.empty')}</h2>
+                <p className="text-gray-500">{t('roadmap.emptyDescription')}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Main content */}
       <div className="max-w-7xl mx-auto p-4 sm:p-6">
