@@ -1,6 +1,6 @@
 // MigrantAI Extension - Popup Script
 
-const APP_URL = 'http://localhost:3000'; // Change for production
+const APP_URL = 'http://localhost:3000';
 
 // Elements
 const captureBtn = document.getElementById('captureBtn');
@@ -13,42 +13,32 @@ const resultText = document.getElementById('resultText');
 // Check connection status on load
 checkConnection();
 
-// Capture button click
+// Capture button click - use background script
 captureBtn.addEventListener('click', async () => {
   captureBtn.disabled = true;
   captureBtn.innerHTML = '<span class="spinner"></span>Capturing...';
   
   try {
-    // Get current tab
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    
-    // Send message to content script to capture
-    const response = await chrome.tabs.sendMessage(tab.id, { type: 'CAPTURE_NOW' });
+    // Send message to BACKGROUND script (not content script)
+    const response = await chrome.runtime.sendMessage({ type: 'MANUAL_CAPTURE' });
     
     if (response && response.success) {
-      // Store the captured data
+      showResult(response.data);
+      captureBtn.innerHTML = '✅ Captured!';
+      
+      // Store for the app to retrieve
       await chrome.storage.local.set({ lastCapture: response.data });
       
-      // Send to background to forward to app
-      chrome.runtime.sendMessage({ 
-        type: 'PAGE_DATA', 
-        data: response.data 
-      });
-      
-      // Show result
-      showResult(response.data);
-      
-      captureBtn.innerHTML = '✅ Captured!';
       setTimeout(() => {
         captureBtn.innerHTML = '📸 Capture This Page';
         captureBtn.disabled = false;
       }, 2000);
     } else {
-      throw new Error('Capture failed');
+      throw new Error(response?.error || 'Capture failed');
     }
   } catch (error) {
     console.error('Capture error:', error);
-    captureBtn.innerHTML = '❌ Error - Try Again';
+    captureBtn.innerHTML = '❌ Error';
     showResult({ error: error.message });
     setTimeout(() => {
       captureBtn.innerHTML = '📸 Capture This Page';
@@ -65,7 +55,6 @@ openAppBtn.addEventListener('click', () => {
 // Check if app is connected
 async function checkConnection() {
   try {
-    // Try to get stored connection status
     const { appConnected } = await chrome.storage.local.get('appConnected');
     updateConnectionUI(appConnected);
   } catch (e) {
@@ -93,9 +82,8 @@ function showResult(data) {
     return;
   }
   
-  // Format summary
   const summary = [
-    `📄 Page: ${data.title || data.url}`,
+    `📄 ${data.title || data.url || 'Page captured'}`,
     `📝 Forms: ${data.forms?.length || 0}`,
     `🔤 Fields: ${countFields(data)}`,
     `🔘 Buttons: ${data.buttons?.length || 0}`
