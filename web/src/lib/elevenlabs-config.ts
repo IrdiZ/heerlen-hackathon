@@ -151,3 +151,4 @@ export const SUPPORTED_LANGUAGES = [
   { code: 'de', name: 'German' },
   { code: 'fr', name: 'French' },
 ];
+// force rebuild Sat Feb  7 19:11:52 UTC 2026
