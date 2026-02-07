@@ -9,9 +9,11 @@ interface FormStatusProps {
   onClear: () => void;
   isConnected: boolean;
   error: string | null;
+  captureHistory?: FormSchema[];
+  onSelectCapture?: (index: number) => void;
 }
 
-export function FormStatus({ schema, fillResults, onClear, isConnected, error }: FormStatusProps) {
+export function FormStatus({ schema, fillResults, onClear, isConnected, error, captureHistory = [], onSelectCapture }: FormStatusProps) {
   const t = useTranslations('formStatus');
 
   if (error) {
@@ -57,11 +59,37 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error }:
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      {/* Capture History Tabs */}
+      {captureHistory.length > 1 && (
+        <div className="bg-gray-100 px-2 py-1 border-b flex gap-1 overflow-x-auto">
+          {captureHistory.map((capture, i) => (
+            <button
+              key={i}
+              onClick={() => onSelectCapture?.(i)}
+              className={`px-2 py-1 text-xs rounded whitespace-nowrap transition-colors ${
+                capture.url === schema?.url && capture.capturedAt === schema?.capturedAt
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-200'
+              }`}
+              title={capture.url}
+            >
+              {capture.title?.slice(0, 20) || `Page ${i + 1}`}
+              {capture.title && capture.title.length > 20 ? '...' : ''}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
         <div>
           <h3 className="font-semibold text-gray-800 truncate max-w-xs">{schema.title || t('formCaptured')}</h3>
           <p className="text-xs text-gray-500 truncate max-w-xs">{schema.url}</p>
+          {schema.capturedAt && (
+            <p className="text-xs text-gray-400">
+              {new Date(schema.capturedAt).toLocaleTimeString()}
+            </p>
+          )}
         </div>
         <button
           onClick={onClear}

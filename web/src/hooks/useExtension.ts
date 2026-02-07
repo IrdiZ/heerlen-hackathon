@@ -29,6 +29,8 @@ export interface FormSchema {
   mainContent?: string;
   pageDescription?: string;
   buttons?: Array<{ id: string; text: string; type: string }>;
+  // Metadata
+  capturedAt?: string;
 }
 
 export interface FillResult {
@@ -65,6 +67,7 @@ async function sendMessageToExtension(message: unknown): Promise<any> {
 export function useExtension() {
   const [isConnected, setIsConnected] = useState(false);
   const [formSchema, setFormSchema] = useState<FormSchema | null>(null);
+  const [captureHistory, setCaptureHistory] = useState<FormSchema[]>([]);
   const [lastFillResults, setLastFillResults] = useState<FillResult[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -95,7 +98,10 @@ export function useExtension() {
         
         if (response?.success && response.schema && response.schema.fields?.length > 0) {
           console.log('[useExtension] ✅ Got captured schema:', response.schema);
-          setFormSchema(response.schema);
+          const newSchema = { ...response.schema, capturedAt: new Date().toISOString() };
+          setFormSchema(newSchema);
+          // Add to history (keep last 10)
+          setCaptureHistory(prev => [newSchema, ...prev.slice(0, 9)]);
           // Clear it so we don't re-read the same capture
           await sendMessageToExtension({ type: 'CLEAR_LAST_CAPTURE' });
         }
@@ -177,15 +183,28 @@ export function useExtension() {
     setLastFillResults([]);
   }, []);
 
+  const selectCapture = useCallback((index: number) => {
+    if (captureHistory[index]) {
+      setFormSchema(captureHistory[index]);
+    }
+  }, [captureHistory]);
+
+  const clearHistory = useCallback(() => {
+    setCaptureHistory([]);
+  }, []);
+
   return {
     isConnected,
     formSchema,
+    captureHistory,
     lastFillResults,
     error,
     pingExtension,
     requestFormSchema,
     fillForm,
     clearSchema,
+    selectCapture,
+    clearHistory,
   };
 }
 
