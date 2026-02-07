@@ -340,6 +340,68 @@ export default function Home() {
                 Navigate Dutch bureaucracy with ease. Speak any language, get instant help with forms, visas, and documents.
               </motion.p>
 
+              {/* Animated AI orb visualization */}
+              <motion.div 
+                className="relative w-48 h-48 mx-auto mb-10"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.35, duration: 0.6 }}
+              >
+                {/* Outer glow ring */}
+                <motion.div 
+                  className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500/20 to-amber-500/20 blur-xl"
+                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                />
+                {/* Middle ring */}
+                <motion.div 
+                  className="absolute inset-4 rounded-full border border-orange-500/30"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                />
+                {/* Inner spinning ring */}
+                <motion.div 
+                  className="absolute inset-8 rounded-full border-2 border-dashed border-orange-400/40"
+                  animate={{ rotate: -360 }}
+                  transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                />
+                {/* Core orb */}
+                <motion.div 
+                  className="absolute inset-12 rounded-full bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600 shadow-lg shadow-orange-500/50"
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                />
+                {/* Glowing center */}
+                <motion.div 
+                  className="absolute inset-16 rounded-full bg-white/80 blur-sm"
+                  animate={{ opacity: [0.6, 1, 0.6] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                />
+                {/* Floating particles */}
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-2 h-2 rounded-full bg-orange-400"
+                    style={{
+                      left: '50%',
+                      top: '50%',
+                    }}
+                    animate={{
+                      x: [0, Math.cos(i * 60 * Math.PI / 180) * 80, 0],
+                      y: [0, Math.sin(i * 60 * Math.PI / 180) * 80, 0],
+                      opacity: [0, 1, 0],
+                      scale: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      delay: i * 0.5,
+                      ease: "easeInOut"
+                    }}
+                  />
+                ))}
+              </motion.div>
+
               {/* CTA buttons */}
               <motion.div
                 className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
