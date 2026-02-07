@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export interface FormField {
   id: string;
@@ -62,9 +62,6 @@ export function useExtension() {
   const [formSchema, setFormSchema] = useState<FormSchema | null>(null);
   const [lastFillResults, setLastFillResults] = useState<FillResult[]>([]);
   const [error, setError] = useState<string | null>(null);
-  
-  // Track if we already have schema to avoid re-polling
-  const hasSchema = useRef(false);
 
   // Check if extension is available and poll for captured data
   useEffect(() => {
@@ -88,28 +85,17 @@ export function useExtension() {
 
     // Poll for captured data from extension storage
     const pollCapture = async () => {
-      // Skip if we already have a schema
-      if (hasSchema.current) {
-        console.log('[useExtension] Skipping poll - already have schema');
-        return;
-      }
-      
       try {
-        console.log('[useExtension] Polling for captured data...');
         const response = await sendMessageToExtension({ type: 'GET_LAST_CAPTURE' });
-        console.log('[useExtension] Poll response:', response);
         
         if (response?.success && response.schema && response.schema.fields?.length > 0) {
-          console.log('[useExtension] ✅ Got captured schema from storage:', response.schema);
+          console.log('[useExtension] ✅ Got captured schema:', response.schema);
           setFormSchema(response.schema);
-          hasSchema.current = true;
-          // Clear it so we don't re-read
+          // Clear it so we don't re-read the same capture
           await sendMessageToExtension({ type: 'CLEAR_LAST_CAPTURE' });
-        } else if (response?.success === false) {
-          console.log('[useExtension] No capture in storage');
         }
       } catch (e) {
-        console.error('[useExtension] Poll error:', e);
+        // Ignore errors during poll
       }
     };
 
@@ -119,13 +105,6 @@ export function useExtension() {
 
     return () => clearInterval(interval);
   }, []);
-
-  // Reset hasSchema ref when formSchema is cleared
-  useEffect(() => {
-    if (!formSchema) {
-      hasSchema.current = false;
-    }
-  }, [formSchema]);
 
   const pingExtension = useCallback(async () => {
     if (!EXTENSION_ID) {
@@ -154,7 +133,6 @@ export function useExtension() {
 
       if (response?.success && response.schema) {
         setFormSchema(response.schema);
-        hasSchema.current = true;
         return response.schema;
       } else {
         setError(response?.error || 'Failed to capture form');
@@ -192,7 +170,6 @@ export function useExtension() {
   const clearSchema = useCallback(() => {
     setFormSchema(null);
     setLastFillResults([]);
-    hasSchema.current = false;
   }, []);
 
   return {
