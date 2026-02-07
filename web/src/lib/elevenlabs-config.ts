@@ -33,21 +33,28 @@ BEHAVIOR:
 ROADMAP CREATION:
 When discussing immigration, create a personalized roadmap for the user:
 1. Gather key info: nationality, visa type, job offer status, salary, age, education
-2. Use the create_roadmap tool with ordered steps tailored to their situation
-3. Each step should have: title, description, estimatedTime, tips (optional)
+2. Call create_roadmap with this EXACT structure:
+   {
+     "name": "HSM Visa Journey - Turkey to NL",
+     "steps": [
+       {"title": "Step title", "description": "What to do", "estimatedTime": "2 weeks"},
+       {"title": "Next step", "description": "Details here", "estimatedTime": "1 week"}
+     ]
+   }
+3. IMPORTANT: The "steps" array MUST have at least 1 step with title and description
 4. Use update_roadmap to mark steps complete as user progresses
 
-Example steps for HSM (Highly Skilled Migrant) visa from Brazil:
-1. Employer submits IND application (2-4 weeks)
-2. IND approval + decision letter
-3. Book consulate appointment
-4. Collect passport with MVV sticker
-5. Travel to Netherlands
-6. Register at gemeente (within 5 days)
-7. Pick up residence permit at IND desk
-8. Take TB test (within 3 months)
-9. Apply for 30% tax ruling
-10. Open bank account + arrange health insurance`;
+Example for Turkish software developer with €60k job offer:
+- name: "HSM Visa Journey - Turkey to Netherlands"  
+- steps:
+  1. title: "Employer submits IND application", description: "Your employer files the residence permit request", estimatedTime: "2-4 weeks"
+  2. title: "Receive IND approval", description: "Wait for decision letter from IND", estimatedTime: "2-3 weeks"
+  3. title: "Apply for MVV at consulate", description: "Book appointment at Dutch consulate in Turkey", estimatedTime: "1-2 weeks"
+  4. title: "Travel to Netherlands", description: "Enter NL with MVV sticker in passport"
+  5. title: "Register at gemeente", description: "Register address within 5 days of arrival", estimatedTime: "1 day"
+  6. title: "Collect residence permit", description: "Pick up at IND desk", estimatedTime: "1-2 weeks"
+  7. title: "Complete TB test", description: "Required within 3 months", estimatedTime: "1 day"
+  8. title: "Apply for 30% ruling", description: "Tax benefit for skilled migrants", estimatedTime: "2-4 weeks"`;
 
 // Tool definitions for the agent
 export const AGENT_TOOLS = {
