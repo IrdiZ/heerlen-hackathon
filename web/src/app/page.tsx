@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { VoiceAgent } from '@/components/VoiceAgent';
 import { PIIForm } from '@/components/PIIForm';
 import { FormStatus } from '@/components/FormStatus';
@@ -125,14 +125,15 @@ function FadeInOnScroll({ children, className = '', delay = 0 }: {
 }
 
 // Page transition variants
-const pageVariants = {
+const pageVariants: Variants = {
   initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] } },
   exit: { opacity: 0, y: -20, transition: { duration: 0.3 } }
 };
 
 // Stagger children animation
-const staggerContainer = {
+const staggerContainer: Variants = {
+  initial: {},
   animate: {
     transition: {
       staggerChildren: 0.1
