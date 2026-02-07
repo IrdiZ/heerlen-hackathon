@@ -142,9 +142,12 @@ export function useExtension() {
         const hasFields = response.schema.fields?.length > 0;
         const hasContent = response.schema.mainContent || response.schema.headings?.length > 0;
         
+        console.log('[useExtension] Raw schema from extension:', response.schema);
+        console.log('[useExtension] mainContent length:', response.schema.mainContent?.length || 0);
+        console.log('[useExtension] mainContent preview:', response.schema.mainContent?.slice(0, 200) || 'NONE');
+        
         if (response?.success && response.schema && (hasFields || hasContent)) {
-          console.log('[useExtension] ✅ Got captured schema:', response.schema);
-          console.log('[useExtension] Fields:', response.schema.fields?.length || 0, 'Content:', !!response.schema.mainContent);
+          console.log('[useExtension] ✅ Accepting schema - Fields:', response.schema.fields?.length || 0, 'Content:', !!response.schema.mainContent);
           const newSchema = { ...response.schema, capturedAt: new Date().toISOString() };
           setFormSchema(newSchema);
           // Add to history (keep last 10)

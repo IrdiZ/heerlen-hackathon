@@ -187,11 +187,16 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
     const hasFields = (currentSchema?.fields?.length ?? 0) > 0;
     const hasContent = !!currentSchema?.mainContent || (currentSchema?.headings?.length ?? 0) > 0;
     
+    console.log('[VoiceAgent] get_current_capture - currentSchema:', currentSchema);
+    console.log('[VoiceAgent] hasFields:', hasFields, 'hasContent:', hasContent);
+    console.log('[VoiceAgent] mainContent length:', currentSchema?.mainContent?.length || 0);
+    console.log('[VoiceAgent] headings:', currentSchema?.headings?.length || 0);
+    
     if (currentSchema && (hasFields || hasContent)) {
-      console.log('[VoiceAgent] Returning existing schema from extension:', currentSchema);
-      console.log('[VoiceAgent] Fields:', currentSchema.fields?.length || 0, 'Has content:', hasContent);
+      const formatted = formatSchemaForAgent(currentSchema);
+      console.log('[VoiceAgent] Formatted for agent (first 500 chars):', formatted.slice(0, 500));
       emitMessage('system', `📋 Found existing capture: ${currentSchema.title}`);
-      return formatSchemaForAgent(currentSchema);
+      return formatted;
     }
 
     // No existing capture
