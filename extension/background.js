@@ -435,6 +435,61 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
     return true;
   }
   
+  // Get last capture from storage (for polling from web app)
+  if (message.type === 'GET_LAST_CAPTURE') {
+    chrome.storage.local.get('lastCapture', ({ lastCapture }) => {
+      if (lastCapture) {
+        // Transform to schema format
+        const schema = {
+          url: lastCapture.url,
+          title: lastCapture.title,
+          fields: []
+        };
+        
+        lastCapture.forms?.forEach(form => {
+          form.fields?.forEach(field => {
+            const rawLabel = field.label || field.placeholder || field.name || field.id;
+            schema.fields.push({
+              id: field.id || field.name,
+              name: field.name,
+              label: humanizeLabel(rawLabel),
+              type: field.type,
+              tag: field.type === 'select' ? 'SELECT' : 'INPUT',
+              required: field.required,
+              options: field.options
+            });
+          });
+        });
+        
+        lastCapture.inputs?.forEach(field => {
+          const rawLabel = field.label || field.placeholder || field.name || field.id;
+          schema.fields.push({
+            id: field.id || field.name,
+            name: field.name,
+            label: humanizeLabel(rawLabel),
+            type: field.type,
+            tag: field.type === 'select' ? 'SELECT' : 'INPUT',
+            required: field.required,
+            options: field.options
+          });
+        });
+        
+        sendResponse({ success: true, schema });
+      } else {
+        sendResponse({ success: false });
+      }
+    });
+    return true;
+  }
+  
+  // Clear last capture from storage
+  if (message.type === 'CLEAR_LAST_CAPTURE') {
+    chrome.storage.local.remove('lastCapture', () => {
+      sendResponse({ success: true });
+    });
+    return true;
+  }
+  
   if (message.type === 'CAPTURE_FORM') {
     captureCurrentTab().then(data => {
       if (data.error) {

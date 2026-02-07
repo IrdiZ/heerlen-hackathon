@@ -9,6 +9,7 @@ import { FormStatus } from '@/components/FormStatus';
 import { Transcript } from '@/components/Transcript';
 import { FormTemplateSelector, TemplateIndicator } from '@/components/FormTemplateSelector';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { DevPanel } from '@/components/dev';
 import { useLocalPII } from '@/hooks/useLocalPII';
 import { useExtension } from '@/hooks/useExtension';
 import { useRoadmap } from '@/hooks/useRoadmap';
@@ -332,6 +333,14 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Developer Panel */}
+      <DevPanel
+        piiData={piiData as unknown as Record<string, unknown>}
+        formSchema={formSchema as unknown as Record<string, unknown> | null}
+        lastFillResults={lastFillResults}
+        extensionConnected={isConnected}
+      />
     </main>
   );
 }

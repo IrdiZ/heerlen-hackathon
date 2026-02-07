@@ -35,10 +35,15 @@ interface VoiceAgentProps {
 
 const EXTENSION_ID = process.env.NEXT_PUBLIC_EXTENSION_ID || '';
 
+// Debug: Log extension ID status on load
+if (typeof window !== 'undefined') {
+  console.log('[VoiceAgent] Extension ID configured:', EXTENSION_ID ? `${EXTENSION_ID.slice(0, 8)}...` : '❌ MISSING - set NEXT_PUBLIC_EXTENSION_ID in .env.local');
+}
+
 // Direct extension communication
 async function capturePageViaExtension(): Promise<FormSchema> {
   if (!EXTENSION_ID) {
-    throw new Error('Extension ID not configured');
+    throw new Error('Extension ID not configured. Go to chrome://extensions, load the unpacked extension, copy its ID, and add NEXT_PUBLIC_EXTENSION_ID=<id> to .env.local');
   }
   
   if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
@@ -94,10 +99,13 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   const [error, setError] = useState<string | null>(null);
   const [extensionConnected, setExtensionConnected] = useState(false);
   const [lastSchema, setLastSchema] = useState<FormSchema | null>(null);
+  const [extensionIdMissing] = useState(!EXTENSION_ID);
 
   // Check extension on mount
   useEffect(() => {
-    pingExtension().then(setExtensionConnected);
+    if (EXTENSION_ID) {
+      pingExtension().then(setExtensionConnected);
+    }
   }, []);
 
   // Emit message to parent
@@ -319,6 +327,19 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
           </span>
         </div>
       </div>
+
+      {extensionIdMissing && (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-300 rounded-lg text-sm text-yellow-800">
+          <strong>⚠️ Extension ID missing!</strong>
+          <ol className="mt-2 ml-4 list-decimal text-xs space-y-1">
+            <li>Go to <code className="bg-yellow-100 px-1 rounded">chrome://extensions</code></li>
+            <li>Load unpacked → select <code className="bg-yellow-100 px-1 rounded">extension/</code> folder</li>
+            <li>Copy the extension ID</li>
+            <li>Add <code className="bg-yellow-100 px-1 rounded">NEXT_PUBLIC_EXTENSION_ID=&lt;id&gt;</code> to <code className="bg-yellow-100 px-1 rounded">.env.local</code></li>
+            <li>Restart dev server</li>
+          </ol>
+        </div>
+      )}
 
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
