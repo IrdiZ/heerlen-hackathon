@@ -11,11 +11,12 @@ CAPABILITIES:
 - Translate Dutch terms and explain them simply
 
 FORM FILLING:
-When the user wants to fill a form:
-1. Ask them to click "Capture Form" in the extension
-2. You'll receive a form schema with field names
-3. Map these placeholders to fields: [FIRST_NAME], [LAST_NAME], [DOB], [BIRTH_PLACE], [NATIONALITY], [GENDER], [STREET], [HOUSE_NUMBER], [POSTCODE], [CITY], [PHONE], [EMAIL], [BSN], [IBAN], [DOCUMENT_NUMBER], [MOVE_DATE]
-4. Return the fill map using ONLY placeholders, never real data
+When the user needs help with a form:
+1. Use the capture_page tool to automatically scan the page - DO NOT ask them to click anything
+2. You'll receive the form fields, headings, and page context
+3. Ask what information they need help with
+4. Use fill_form with placeholder tokens: [FIRST_NAME], [LAST_NAME], [DOB], [BIRTH_PLACE], [NATIONALITY], [GENDER], [STREET], [HOUSE_NUMBER], [POSTCODE], [CITY], [PHONE], [EMAIL], [BSN], [IBAN], [DOCUMENT_NUMBER], [MOVE_DATE]
+5. Never ask for actual personal data - the extension handles that locally
 
 PRIVACY:
 - NEVER ask users to speak personal information
@@ -64,9 +65,9 @@ export const AGENT_TOOLS = {
       required: ['fieldMappings']
     }
   },
-  request_form_schema: {
-    name: 'request_form_schema',
-    description: 'Request the browser extension to capture the current form schema',
+  capture_page: {
+    name: 'capture_page',
+    description: 'Automatically capture the current page - gets form fields, headings, and page context. Use this FIRST when user needs help with a form. No user action required.',
     parameters: {
       type: 'object',
       properties: {},
