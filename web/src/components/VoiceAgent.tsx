@@ -7,6 +7,7 @@
 
 import { useCallback, useState, useEffect } from 'react';
 import { useConversation } from '@elevenlabs/react';
+import { CreateRoadmapParams, UpdateRoadmapParams } from '@/lib/roadmap-types';
 
 interface FormField {
   id: string;
@@ -28,6 +29,8 @@ interface VoiceAgentProps {
   onFormCaptured?: (schema: FormSchema) => void;  // NEW: sync to UI
   onFillForm?: (fieldMappings: Record<string, string>) => Promise<void>;
   onMessage?: (msg: { role: string; content: string }) => void;
+  onCreateRoadmap?: (params: CreateRoadmapParams) => Promise<string>;
+  onUpdateRoadmap?: (params: UpdateRoadmapParams) => Promise<string>;
 }
 
 const EXTENSION_ID = process.env.NEXT_PUBLIC_EXTENSION_ID || '';
@@ -87,7 +90,7 @@ async function pingExtension(): Promise<boolean> {
   });
 }
 
-export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, onMessage }: VoiceAgentProps) {
+export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, onMessage, onCreateRoadmap, onUpdateRoadmap }: VoiceAgentProps) {
   const [error, setError] = useState<string | null>(null);
   const [extensionConnected, setExtensionConnected] = useState(false);
   const [lastSchema, setLastSchema] = useState<FormSchema | null>(null);
@@ -166,9 +169,9 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   // Handle fill_form tool call from agent
   const handleFillForm = useCallback(async (params: { field_mappings?: Record<string, string> }): Promise<string> => {
     console.log('[VoiceAgent] fill_form tool called:', params);
-    
+
     const fieldMappings = params.field_mappings;
-    
+
     if (!fieldMappings || Object.keys(fieldMappings).length === 0) {
       return 'No field mappings provided. Please specify which fields to fill.';
     }
@@ -190,11 +193,51 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
     }
   }, [onFillForm, emitMessage]);
 
+  // Handle create_roadmap tool call from agent
+  const handleCreateRoadmap = useCallback(async (params: CreateRoadmapParams): Promise<string> => {
+    console.log('[VoiceAgent] Agent requested roadmap creation:', params);
+    emitMessage('system', `📍 Creating roadmap: ${params.name}`);
+
+    try {
+      if (onCreateRoadmap) {
+        const result = await onCreateRoadmap(params);
+        emitMessage('system', `✅ Roadmap created with ${params.steps.length} steps. View it at /plan`);
+        return result;
+      }
+      return 'Roadmap handler not configured';
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      emitMessage('system', `❌ Failed to create roadmap: ${errorMsg}`);
+      return `Failed to create roadmap: ${errorMsg}`;
+    }
+  }, [onCreateRoadmap, emitMessage]);
+
+  // Handle update_roadmap tool call from agent
+  const handleUpdateRoadmap = useCallback(async (params: UpdateRoadmapParams): Promise<string> => {
+    console.log('[VoiceAgent] Agent requested roadmap update:', params);
+
+    try {
+      if (onUpdateRoadmap) {
+        const result = await onUpdateRoadmap(params);
+        if (params.status) {
+          emitMessage('system', `✅ Step marked as ${params.status}`);
+        }
+        return result;
+      }
+      return 'Roadmap update handler not configured';
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      return `Failed to update roadmap: ${errorMsg}`;
+    }
+  }, [onUpdateRoadmap, emitMessage]);
+
   // Initialize conversation with client tools
   const conversation = useConversation({
     clientTools: {
       capture_page: handleCapturePage,
       fill_form: handleFillForm,
+      create_roadmap: handleCreateRoadmap,
+      update_roadmap: handleUpdateRoadmap,
     },
     onConnect: () => {
       console.log('[VoiceAgent] Connected to ElevenLabs');

@@ -26,6 +26,7 @@
   "header": {
     "templates": "Templates",
     "personalDetails": "Personal Details",
+    "roadmap": "Roadmap",
     "back": "Back"
   },
   "voiceAgent": {
@@ -99,6 +100,18 @@
   },
   "templates": {
     "autoFillWith": "Auto-Fill with {template}"
+  },
+  "roadmap": {
+    "title": "Your Immigration Roadmap",
+    "empty": "No roadmap yet",
+    "emptyDescription": "Start a voice conversation to create your personalized immigration roadmap",
+    "progress": "{completed} of {total} complete",
+    "nextAction": "Next Action",
+    "estimatedTime": "Est. time",
+    "tips": "Tips",
+    "notes": "Your notes",
+    "clear": "Clear Roadmap",
+    "startConversation": "Start Conversation"
   },
   "checklist": {
     "title": "Immigration Checklist",

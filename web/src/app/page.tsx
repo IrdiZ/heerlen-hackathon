@@ -2,17 +2,19 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { VoiceAgent } from '@/components/VoiceAgent';
 import { PIIForm } from '@/components/PIIForm';
 import { FormStatus } from '@/components/FormStatus';
 import { Transcript } from '@/components/Transcript';
 import { FormTemplateSelector, TemplateIndicator } from '@/components/FormTemplateSelector';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { DutchDataPanel } from '@/components/DutchDataPanel';
 import { useLocalPII } from '@/hooks/useLocalPII';
 import { useExtension } from '@/hooks/useExtension';
+import { useRoadmap } from '@/hooks/useRoadmap';
 import { swapPlaceholders } from '@/lib/placeholders';
 import { FormTemplate, getTemplateById, createFillMapFromTemplate } from '@/lib/form-templates';
+import { CreateRoadmapParams, UpdateRoadmapParams } from '@/lib/roadmap-types';
 
 type AppState = 'landing' | 'active';
 
@@ -28,15 +30,15 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [showPIIForm, setShowPIIForm] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
-  const [showDutchData, setShowDutchData] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<FormTemplate | null>(null);
   
   const { piiData, updateField, clearAll, loadDemo, getFilledCount, totalFields } = useLocalPII();
   const { isConnected, formSchema: extensionFormSchema, lastFillResults, error, requestFormSchema, fillForm, clearSchema } = useExtension();
-  
+  const { roadmap, createRoadmap, setStepStatus, getProgress } = useRoadmap();
+
   // Allow VoiceAgent to set schema directly (for when agent captures via tool)
   const [voiceAgentSchema, setVoiceAgentSchema] = useState<typeof extensionFormSchema | null>(null);
-  
+
   // Prefer voiceAgentSchema if available, otherwise use extensionFormSchema
   const formSchema = voiceAgentSchema || extensionFormSchema;
 
@@ -108,18 +110,35 @@ export default function Home() {
   const handleFillForm = useCallback(async (fieldMappings: Record<string, string>) => {
     // Swap placeholders for real PII values locally
     const realValues = swapPlaceholders(fieldMappings, piiData as unknown as Record<string, string>);
-    
+
     // Send to extension to fill
     const results = await fillForm(realValues);
-    
+
     const filled = results.filter(r => r.status === 'filled').length;
     const failed = results.filter(r => r.status !== 'filled').length;
-    
+
     handleMessage({
       role: 'system',
       content: `Form fill complete: ${filled} fields filled${failed > 0 ? `, ${failed} failed` : ''}`
     });
   }, [piiData, fillForm, handleMessage]);
+
+  const handleCreateRoadmap = useCallback(async (params: CreateRoadmapParams): Promise<string> => {
+    const result = createRoadmap(params);
+    handleMessage({
+      role: 'system',
+      content: `📍 Roadmap created: "${result.name}" with ${result.steps.length} steps. View it at /plan`
+    });
+    return `Created "${result.name}" with ${result.steps.length} steps. User can view at /plan page.`;
+  }, [createRoadmap, handleMessage]);
+
+  const handleUpdateRoadmap = useCallback(async (params: UpdateRoadmapParams): Promise<string> => {
+    if (params.status) {
+      setStepStatus(params.stepId, params.status);
+      return `Step ${params.stepId} marked as ${params.status}`;
+    }
+    return 'Updated';
+  }, [setStepStatus]);
 
   // Landing page
   if (appState === 'landing') {
@@ -206,23 +225,23 @@ export default function Home() {
             <button
               onClick={() => setShowPIIForm(!showPIIForm)}
               className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md ${
-                showPIIForm 
-                  ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' 
+                showPIIForm
+                  ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               🔒 {t('header.personalDetails')} ({getFilledCount()}/{totalFields})
             </button>
-            <button
-              onClick={() => setShowDutchData(!showDutchData)}
+            <Link
+              href="/plan"
               className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md ${
-                showDutchData 
-                  ? 'bg-orange-100 text-orange-700 hover:bg-orange-200' 
+                roadmap
+                  ? 'bg-green-100 text-green-700 hover:bg-green-200'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              🇳🇱 {t('header.dutchData', { defaultValue: 'Dutch Data' })}
-            </button>
+              📍 {t('header.roadmap')} {roadmap ? `(${getProgress()}%)` : ''}
+            </Link>
             <LanguageSwitcher />
             <button
               onClick={() => setAppState('landing')}
@@ -246,6 +265,8 @@ export default function Home() {
                 onFormCaptured={handleFormCaptured}
                 onFillForm={handleFillForm}
                 onMessage={handleMessage}
+                onCreateRoadmap={handleCreateRoadmap}
+                onUpdateRoadmap={handleUpdateRoadmap}
               />
             </div>
 
@@ -308,12 +329,6 @@ export default function Home() {
               )}
             </div>
 
-            {/* Dutch Data Panel (collapsible with animation) */}
-            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showDutchData ? 'opacity-100 max-h-[2000px]' : 'opacity-0 max-h-0'}`}>
-              {showDutchData && (
-                <DutchDataPanel defaultRegion="Heerlen" compact />
-              )}
-            </div>
           </div>
         </div>
       </div>
