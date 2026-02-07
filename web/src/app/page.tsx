@@ -85,27 +85,15 @@ function FeatureCard({ emoji, title, description, delay = 0 }: {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay, ease: "easeOut" }}
-      whileHover={{ 
-        y: -12, 
-        scale: 1.02,
-        transition: { duration: 0.2, ease: "easeOut" }
-      }}
-      className="relative group cursor-default"
+      whileHover={{ y: -4 }}
+      className="group"
     >
-      {/* Gradient border glow on hover */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl opacity-0 group-hover:opacity-100 blur transition-all duration-300" />
-      
-      {/* Card content */}
-      <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20 h-full">
-        <motion.div 
-          className="text-4xl mb-4 w-16 h-16 flex items-center justify-center bg-gradient-to-br from-orange-100 to-amber-50 rounded-xl"
-          whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
-          transition={{ duration: 0.3 }}
-        >
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-orange-200 transition-all duration-300">
+        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-400 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
           {emoji}
-        </motion.div>
-        <h3 className="font-bold text-lg text-gray-900 mb-2">{title}</h3>
-        <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+        </div>
+        <h3 className="font-semibold text-gray-900 mb-2">{title}</h3>
+        <p className="text-sm text-gray-500">{description}</p>
       </div>
     </motion.div>
   );
@@ -290,129 +278,123 @@ export default function Home() {
           initial="initial"
           animate="animate"
           exit="exit"
-          className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden"
+          className="min-h-screen bg-slate-950 text-white relative overflow-hidden"
         >
-          {/* Background decorations */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" />
-            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }} />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
+          {/* Gradient mesh background */}
+          <div className="absolute inset-0">
+            <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-orange-500/30 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-amber-500/20 rounded-full blur-[100px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px]" />
           </div>
 
-          {/* Language Switcher - Top Right */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-            className="absolute top-4 right-4 rtl:right-auto rtl:left-4 z-10"
-          >
-            <LanguageSwitcher />
-          </motion.div>
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:72px_72px]" />
 
-          <motion.div 
-            className="max-w-2xl text-center"
-            variants={staggerContainer}
-            initial="initial"
-            animate="animate"
-          >
-            {/* Logo / Title */}
+          {/* Header */}
+          <header className="relative z-10 flex justify-between items-center px-6 py-4">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">🌍</span>
+              <span className="font-bold text-lg">Welkom.ai</span>
+            </div>
+            <LanguageSwitcher />
+          </header>
+
+          {/* Hero content */}
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4 pb-20">
             <motion.div 
-              className="mb-8"
-              initial={{ opacity: 0, y: -30 }}
+              className="max-w-4xl text-center"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              transition={{ duration: 0.6 }}
             >
-              <motion.h1 
-                className="text-5xl sm:text-6xl font-extrabold mb-6"
+              {/* Badge */}
+              <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+                transition={{ delay: 0.1 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-300 text-sm mb-8"
               >
-                <motion.span
-                  animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                  className="inline-block text-6xl sm:text-7xl"
-                >
-                  🌍
-                </motion.span>{' '}
-                <span className="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 bg-clip-text text-transparent">
-                  {t('landing.title')}
+                <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                AI-powered immigration assistant
+              </motion.div>
+
+              {/* Main headline */}
+              <motion.h1 
+                className="text-5xl sm:text-7xl font-bold mb-6 tracking-tight"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                {t('landing.tagline').split(' ').slice(0, 2).join(' ')}{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500">
+                  {t('landing.tagline').split(' ').slice(2).join(' ')}
                 </span>
               </motion.h1>
+
               <motion.p 
-                className="text-xl sm:text-2xl text-gray-600 font-medium"
+                className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                {t('landing.tagline')}
+                Navigate Dutch bureaucracy with ease. Speak any language, get instant help with forms, visas, and documents.
+              </motion.p>
+
+              {/* CTA buttons */}
+              <motion.div
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <motion.button
+                  onClick={() => setAppState('active')}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300"
+                >
+                  {t('landing.startButton')} →
+                </motion.button>
+                <button className="px-8 py-4 text-lg font-medium text-slate-300 hover:text-white transition-colors">
+                  Learn more
+                </button>
+              </motion.div>
+
+              {/* Feature cards */}
+              <motion.div 
+                className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-left hover:bg-white/10 transition-colors">
+                  <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center text-xl mb-4">🗣️</div>
+                  <h3 className="font-semibold text-white mb-1">{t('landing.features.language.title')}</h3>
+                  <p className="text-sm text-slate-400">{t('landing.features.language.description')}</p>
+                </div>
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-left hover:bg-white/10 transition-colors">
+                  <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center text-xl mb-4">📋</div>
+                  <h3 className="font-semibold text-white mb-1">{t('landing.features.forms.title')}</h3>
+                  <p className="text-sm text-slate-400">{t('landing.features.forms.description')}</p>
+                </div>
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-left hover:bg-white/10 transition-colors">
+                  <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center text-xl mb-4">🔒</div>
+                  <h3 className="font-semibold text-white mb-1">{t('landing.features.privacy.title')}</h3>
+                  <p className="text-sm text-slate-400">{t('landing.features.privacy.description')}</p>
+                </div>
+              </motion.div>
+
+              {/* Trust indicators */}
+              <motion.p 
+                className="mt-10 text-sm text-slate-500"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7 }}
+              >
+                🇳🇱 Built for the Netherlands • 🔐 {t('landing.noAccount')}
               </motion.p>
             </motion.div>
-
-            {/* Features */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-12">
-              <FeatureCard
-                emoji="🗣️"
-                title={t('landing.features.language.title')}
-                description={t('landing.features.language.description')}
-                delay={0.2}
-              />
-              <FeatureCard
-                emoji="📋"
-                title={t('landing.features.forms.title')}
-                description={t('landing.features.forms.description')}
-                delay={0.3}
-              />
-              <FeatureCard
-                emoji="🔒"
-                title={t('landing.features.privacy.title')}
-                description={t('landing.features.privacy.description')}
-                delay={0.4}
-              />
-            </div>
-
-            {/* CTA */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              <motion.button
-                onClick={() => setAppState('active')}
-                whileHover={{ 
-                  scale: 1.05, 
-                  boxShadow: "0 25px 50px -12px rgba(249, 115, 22, 0.5)"
-                }}
-                whileTap={{ scale: 0.98 }}
-                className="relative px-10 sm:px-12 py-4 sm:py-5 text-lg sm:text-xl font-bold text-white bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-2xl overflow-hidden focus:outline-none focus:ring-4 focus:ring-orange-300 focus:ring-offset-2 border border-orange-400/30"
-              >
-                {/* Shine sweep effect */}
-                <motion.span
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full"
-                  animate={{ translateX: ['−100%', '200%'] }}
-                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                />
-                {/* Ripple effect on click */}
-                <motion.span
-                  className="absolute inset-0 bg-white/30"
-                  initial={{ scale: 0, opacity: 0.5 }}
-                  whileTap={{ scale: 3, opacity: 0 }}
-                  transition={{ duration: 0.6 }}
-                  style={{ borderRadius: '50%', transformOrigin: 'center' }}
-                />
-                <span className="relative z-10">{t('landing.startButton')}</span>
-              </motion.button>
-            </motion.div>
-
-            <motion.p 
-              className="mt-6 text-sm text-gray-500"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-            >
-              {t('landing.noAccount')}
-            </motion.p>
-          </motion.div>
+          </div>
         </motion.main>
       </AnimatePresence>
     );
