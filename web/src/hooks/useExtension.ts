@@ -64,12 +64,54 @@ async function sendMessageToExtension(message: unknown): Promise<any> {
   });
 }
 
+// Save capture to database
+async function saveCaptureToDB(schema: FormSchema): Promise<void> {
+  try {
+    await fetch('/api/captures', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(schema),
+    });
+  } catch (e) {
+    console.error('[useExtension] Failed to save capture to DB:', e);
+  }
+}
+
+// Load captures from database
+async function loadCapturesFromDB(): Promise<FormSchema[]> {
+  try {
+    const res = await fetch('/api/captures');
+    if (res.ok) {
+      const data = await res.json();
+      return data.map((c: any) => ({
+        ...c,
+        capturedAt: c.createdAt,
+      }));
+    }
+  } catch (e) {
+    console.error('[useExtension] Failed to load captures from DB:', e);
+  }
+  return [];
+}
+
 export function useExtension() {
   const [isConnected, setIsConnected] = useState(false);
   const [formSchema, setFormSchema] = useState<FormSchema | null>(null);
   const [captureHistory, setCaptureHistory] = useState<FormSchema[]>([]);
   const [lastFillResults, setLastFillResults] = useState<FillResult[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [dbLoaded, setDbLoaded] = useState(false);
+
+  // Load captures from DB on mount
+  useEffect(() => {
+    loadCapturesFromDB().then(captures => {
+      if (captures.length > 0) {
+        setCaptureHistory(captures);
+        setFormSchema(captures[0]); // Set most recent as current
+      }
+      setDbLoaded(true);
+    });
+  }, []);
 
   // Check if extension is available and poll for captured data
   useEffect(() => {
@@ -102,6 +144,8 @@ export function useExtension() {
           setFormSchema(newSchema);
           // Add to history (keep last 10)
           setCaptureHistory(prev => [newSchema, ...prev.slice(0, 9)]);
+          // Save to database
+          saveCaptureToDB(newSchema);
           // Clear it so we don't re-read the same capture
           await sendMessageToExtension({ type: 'CLEAR_LAST_CAPTURE' });
         }

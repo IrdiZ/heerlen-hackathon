@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Capture {
+  id          String   @id @default(cuid())
+  url         String
+  title       String
+  fields      String   // JSON string of fields array
+  headings    String?  // JSON string of headings
+  mainContent String?
+  pageDescription String?
+  buttons     String?  // JSON string of buttons
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model UserData {
+  id        String   @id @default("default")
+  piiData   String   // JSON string of PII fields
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
