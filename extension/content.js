@@ -3,6 +3,72 @@
 
 console.log('MigrantAI content script loaded');
 
+// ============ TOAST NOTIFICATION ============
+
+let toastContainer = null;
+
+function createToastContainer() {
+  if (toastContainer) return toastContainer;
+  
+  toastContainer = document.createElement('div');
+  toastContainer.id = 'migrantai-toast-container';
+  toastContainer.style.cssText = `
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 2147483647;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    pointer-events: none;
+  `;
+  document.body.appendChild(toastContainer);
+  return toastContainer;
+}
+
+function showPageToast(message, type = 'success') {
+  const container = createToastContainer();
+  
+  const toast = document.createElement('div');
+  const bgColor = type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#3b82f6';
+  
+  toast.style.cssText = `
+    background: ${bgColor};
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    margin-top: 8px;
+    pointer-events: auto;
+  `;
+  
+  toast.innerHTML = `
+    <span style="font-size: 16px;">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>
+    <span>${message}</span>
+  `;
+  
+  container.appendChild(toast);
+  
+  // Trigger animation
+  requestAnimationFrame(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+  });
+  
+  // Auto-dismiss after 5 seconds
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(20px)';
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+}
+
 // ============ FORM SCHEMA EXTRACTION ============
 
 function extractFormSchema() {
@@ -108,6 +174,18 @@ function fillForm(fillMap) {
       results.push({ field: fieldId, status: 'error', error: e.message });
     }
   });
+
+  // Show toast notification with result
+  const filledCount = results.filter(r => r.status === 'filled').length;
+  const errorCount = results.filter(r => r.status === 'error' || r.status === 'not_found').length;
+  
+  if (filledCount > 0 && errorCount === 0) {
+    showPageToast(`MigrantAI filled ${filledCount} field${filledCount !== 1 ? 's' : ''}`, 'success');
+  } else if (filledCount > 0) {
+    showPageToast(`Filled ${filledCount} field${filledCount !== 1 ? 's' : ''} (${errorCount} failed)`, 'info');
+  } else {
+    showPageToast('Could not fill any fields', 'error');
+  }
 
   return results;
 }
@@ -225,6 +303,11 @@ function highlightElement(el) {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('Content script received:', message);
+
+  if (message.type === 'PING') {
+    sendResponse({ success: true });
+    return true;
+  }
 
   if (message.type === 'CAPTURE_FORM') {
     try {
