@@ -70,6 +70,14 @@ async function captureCurrentTab() {
       return { error: 'No active tab found' };
     }
     
+    // Can't capture chrome:// or extension pages
+    if (tab.url?.startsWith('chrome://') || 
+        tab.url?.startsWith('chrome-extension://') ||
+        tab.url?.startsWith('about:') ||
+        tab.url?.startsWith('edge://')) {
+      return { error: 'Cannot capture browser internal pages. Navigate to a website first.' };
+    }
+    
     // Inject and execute capture script
     const results = await chrome.scripting.executeScript({
       target: { tabId: tab.id },
