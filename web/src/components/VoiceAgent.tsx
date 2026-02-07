@@ -336,6 +336,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
         description: step.description as string || step.step_description as string || '',
         estimatedTime: step.estimatedTime as string || step.estimated_time as string || step.time as string,
         tips: step.tips as string[] || [],
+        sources: (step.sources as Array<{label: string; url?: string}>) || [],
       })),
     };
 
