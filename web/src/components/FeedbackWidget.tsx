@@ -37,7 +37,7 @@ export function FeedbackWidget({ onSubmit }: FeedbackWidgetProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 p-3 bg-primary-500 text-white rounded-full shadow-lg hover:bg-primary-600 transition-all hover:scale-110 z-50"
+        className="fixed bottom-4 right-4 p-3 bg-orange-500 text-white rounded-full shadow-lg hover:bg-orange-600 transition-all hover:scale-110 z-50"
         title="Send feedback"
       >
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -49,7 +49,7 @@ export function FeedbackWidget({ onSubmit }: FeedbackWidgetProps) {
 
   return (
     <div className="fixed bottom-4 right-4 w-80 bg-white rounded-xl shadow-2xl border z-50 overflow-hidden">
-      <div className="px-4 py-3 bg-primary-500 text-white flex items-center justify-between">
+      <div className="px-4 py-3 bg-orange-500 text-white flex items-center justify-between">
         <span className="font-medium">Send Feedback</span>
         <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -95,7 +95,7 @@ export function FeedbackWidget({ onSubmit }: FeedbackWidgetProps) {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="What could we do better?"
-              className="w-full p-2 border rounded-lg text-sm resize-none h-20 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+              className="w-full p-2 border rounded-lg text-sm resize-none h-20 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
             />
           </div>
 
@@ -103,7 +103,7 @@ export function FeedbackWidget({ onSubmit }: FeedbackWidgetProps) {
           <button
             onClick={handleSubmit}
             disabled={rating === 0}
-            className="w-full py-2 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Send Feedback
           </button>

@@ -41,10 +41,10 @@ export function SuggestedQuestions({ onSelect }: SuggestedQuestionsProps) {
           <button
             key={i}
             onClick={() => onSelect(suggestion.text)}
-            className="group px-3 py-2 bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-primary-50 transition-all text-sm text-left"
+            className="group px-3 py-2 bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-orange-50 transition-all text-sm text-left"
           >
             <span className="mr-2">{suggestion.emoji}</span>
-            <span className="text-gray-700 group-hover:text-primary-700">{suggestion.text}</span>
+            <span className="text-gray-700 group-hover:text-orange-700">{suggestion.text}</span>
             <span className="ml-2 text-xs text-gray-400">({suggestion.lang})</span>
           </button>
         ))}

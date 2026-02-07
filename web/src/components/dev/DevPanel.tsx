@@ -153,7 +153,7 @@ function DevPanelInner({ piiData, formSchema, lastFillResults, voiceAgentStatus,
               onClick={() => setActiveTab(tab.id)}
               className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-gray-800 text-white border-b-2 border-primary-500'
+                  ? 'bg-gray-800 text-white border-b-2 border-orange-500'
                   : 'text-gray-400 hover:text-white hover:bg-gray-800'
               }`}
             >

@@ -131,7 +131,7 @@ function DocumentCard({
                   value={notes}
                   onChange={(e) => onNotesChange(e.target.value)}
                   placeholder="Add personal notes..."
-                  className="w-full mt-1 p-2 border border-gray-300 rounded text-sm resize-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+                  className="w-full mt-1 p-2 border border-gray-300 rounded text-sm resize-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
                   rows={2}
                 />
               </div>
@@ -260,7 +260,7 @@ export function DocumentChecklist() {
             onClick={() => setViewMode('overview')}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               viewMode === 'overview'
-                ? 'bg-primary-500 text-white'
+                ? 'bg-orange-500 text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -270,7 +270,7 @@ export function DocumentChecklist() {
             onClick={() => setViewMode('by-step')}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               viewMode === 'by-step'
-                ? 'bg-primary-500 text-white'
+                ? 'bg-orange-500 text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -292,7 +292,7 @@ export function DocumentChecklist() {
             className={`h-full transition-all duration-500 ${
               overallProgress.percentage === 100
                 ? 'bg-gradient-to-r from-green-400 to-green-600'
-                : 'bg-gradient-to-r from-primary-400 to-primary-600'
+                : 'bg-gradient-to-r from-orange-400 to-orange-600'
             }`}
             style={{ width: `${overallProgress.percentage}%` }}
           />

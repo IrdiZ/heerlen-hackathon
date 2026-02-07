@@ -40,7 +40,7 @@ export default function TestExtensionPage() {
           <h2 className="text-xl font-semibold mb-4">Capture Form Schema</h2>
           <button
             onClick={requestFormSchema}
-            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+            className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
           >
             Capture Current Page Form
           </button>

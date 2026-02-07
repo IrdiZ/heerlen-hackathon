@@ -77,7 +77,7 @@ export function LanguageSwitcher() {
               }}
               className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150 ${
                 locale === currentLocale
-                  ? 'bg-primary-50 text-primary-700 font-medium'
+                  ? 'bg-orange-50 text-orange-700 font-medium'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
               role="option"
@@ -86,7 +86,7 @@ export function LanguageSwitcher() {
               <span className="text-lg">{getFlag(locale)}</span>
               <span>{localeNames[locale]}</span>
               {locale === currentLocale && (
-                <svg className="w-4 h-4 ml-auto text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 ml-auto text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               )}

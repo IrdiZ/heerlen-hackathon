@@ -478,7 +478,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   const getOrbGradient = () => {
     if (error) return 'from-red-500 via-rose-500 to-red-600';
     if (isSpeaking) return 'from-emerald-400 via-green-500 to-teal-500';
-    if (isConnected) return 'from-primary-400 via-indigo-500 to-purple-500';
+    if (isConnected) return 'from-orange-400 via-indigo-500 to-purple-500';
     if (isConnecting) return 'from-amber-400 via-yellow-500 to-orange-500';
     return 'from-indigo-400 via-purple-500 to-pink-500';
   };
@@ -492,7 +492,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-4 left-8 w-2 h-2 bg-indigo-400/30 rounded-full float-animation" style={{ animationDelay: '0s' }} />
         <div className="absolute top-12 right-12 w-1.5 h-1.5 bg-purple-400/40 rounded-full float-animation" style={{ animationDelay: '0.5s' }} />
-        <div className="absolute bottom-16 left-16 w-1 h-1 bg-primary-400/30 rounded-full float-animation" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-16 left-16 w-1 h-1 bg-orange-400/30 rounded-full float-animation" style={{ animationDelay: '1s' }} />
         <div className="absolute bottom-8 right-8 w-2 h-2 bg-pink-400/20 rounded-full float-animation" style={{ animationDelay: '1.5s' }} />
       </div>
 
@@ -501,9 +501,9 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
         {/* Glow rings */}
         {isConnected && (
           <>
-            <div className={`absolute w-24 h-24 rounded-full border-2 ${isSpeaking ? 'border-emerald-400/40' : 'border-primary-400/40'} glow-ring`} />
-            <div className={`absolute w-24 h-24 rounded-full border-2 ${isSpeaking ? 'border-emerald-400/30' : 'border-primary-400/30'} glow-ring`} style={{ animationDelay: '0.5s' }} />
-            <div className={`absolute w-24 h-24 rounded-full border-2 ${isSpeaking ? 'border-emerald-400/20' : 'border-primary-400/20'} glow-ring`} style={{ animationDelay: '1s' }} />
+            <div className={`absolute w-24 h-24 rounded-full border-2 ${isSpeaking ? 'border-emerald-400/40' : 'border-orange-400/40'} glow-ring`} />
+            <div className={`absolute w-24 h-24 rounded-full border-2 ${isSpeaking ? 'border-emerald-400/30' : 'border-orange-400/30'} glow-ring`} style={{ animationDelay: '0.5s' }} />
+            <div className={`absolute w-24 h-24 rounded-full border-2 ${isSpeaking ? 'border-emerald-400/20' : 'border-orange-400/20'} glow-ring`} style={{ animationDelay: '1s' }} />
           </>
         )}
         
@@ -549,7 +549,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
                 ${isConnected 
                   ? isSpeaking 
                     ? 'bg-gradient-to-t from-emerald-500 to-teal-400 waveform-bar-speaking' 
-                    : 'bg-gradient-to-t from-primary-500 to-indigo-400 waveform-bar'
+                    : 'bg-gradient-to-t from-orange-500 to-indigo-400 waveform-bar'
                   : 'bg-gray-300/50 h-2'
                 }
               `}
@@ -568,7 +568,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
             ${isConnected 
               ? isSpeaking 
                 ? 'bg-emerald-400 shadow-lg shadow-emerald-400/50 status-dot-animated' 
-                : 'bg-primary-400 shadow-lg shadow-blue-400/50 status-dot-animated'
+                : 'bg-orange-400 shadow-lg shadow-blue-400/50 status-dot-animated'
               : isConnecting 
                 ? 'bg-amber-400 shadow-lg shadow-amber-400/50 status-dot-animated' 
                 : error 
@@ -700,7 +700,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
                     key={i}
                     className={`
                       w-1.5 h-1.5 rounded-full 
-                      ${isSpeaking ? 'bg-emerald-400' : 'bg-primary-400'}
+                      ${isSpeaking ? 'bg-emerald-400' : 'bg-orange-400'}
                       animate-bounce
                     `} 
                     style={{ animationDelay: `${i * 150}ms` }}
@@ -715,7 +715,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
               px-2 py-0.5 rounded-full text-xs font-medium
               ${isSpeaking 
                 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' 
-                : 'bg-primary-500/20 text-blue-300 border border-primary-500/30'
+                : 'bg-orange-500/20 text-blue-300 border border-orange-500/30'
               }
             `}>
               LIVE

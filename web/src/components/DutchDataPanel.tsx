@@ -41,7 +41,7 @@ export function DutchDataPanel({ defaultRegion = 'Heerlen', compact = false }: D
             onClick={() => togglePanel('stats')}
             className={`flex-1 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
               activePanel === 'stats'
-                ? 'bg-primary-100 text-primary-700 border-2 border-blue-300'
+                ? 'bg-orange-100 text-orange-700 border-2 border-blue-300'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-2 border-transparent'
             }`}
           >
@@ -99,7 +99,7 @@ export function DutchDataPanel({ defaultRegion = 'Heerlen', compact = false }: D
           onClick={() => setActivePanel(activePanel === 'stats' ? 'none' : 'stats')}
           className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
             activePanel === 'stats'
-              ? 'bg-primary-50 text-primary-700 border-b-2 border-primary-500'
+              ? 'bg-orange-50 text-orange-700 border-b-2 border-orange-500'
               : 'text-gray-600 hover:bg-gray-50'
           }`}
         >

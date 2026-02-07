@@ -29,12 +29,12 @@ export function QuickStartGuide({ onDismiss }: QuickStartGuideProps) {
   ];
 
   return (
-    <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 mb-6">
+    <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-6">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold text-primary-800">Quick Start</h3>
+        <h3 className="font-semibold text-orange-800">Quick Start</h3>
         <button
           onClick={onDismiss}
-          className="text-blue-400 hover:text-primary-600 text-sm"
+          className="text-blue-400 hover:text-orange-600 text-sm"
         >
           Dismiss
         </button>
@@ -43,8 +43,8 @@ export function QuickStartGuide({ onDismiss }: QuickStartGuideProps) {
         {steps.map((step, i) => (
           <div key={i} className="text-center">
             <div className="text-2xl mb-1">{step.emoji}</div>
-            <div className="text-sm font-medium text-primary-800">{step.title}</div>
-            <div className="text-xs text-primary-600">{step.desc}</div>
+            <div className="text-sm font-medium text-orange-800">{step.title}</div>
+            <div className="text-xs text-orange-600">{step.desc}</div>
           </div>
         ))}
       </div>

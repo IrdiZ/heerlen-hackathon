@@ -28,13 +28,13 @@ export function RoadmapStepCard({
 
   const statusColors: Record<RoadmapStepStatus, string> = {
     'pending': 'text-slate-400',
-    'in-progress': 'text-primary-500',
+    'in-progress': 'text-orange-500',
     'complete': 'text-emerald-500',
   };
 
   const statusBgColors: Record<RoadmapStepStatus, string> = {
     'pending': 'bg-slate-100 hover:bg-slate-200',
-    'in-progress': 'bg-primary-100 hover:bg-blue-200',
+    'in-progress': 'bg-orange-100 hover:bg-blue-200',
     'complete': 'bg-emerald-100 hover:bg-emerald-200',
   };
 
@@ -118,7 +118,7 @@ export function RoadmapStepCard({
       <div
         className={`card-hover relative rounded-2xl overflow-hidden backdrop-blur-sm border-2 transition-all duration-300 ${
           isNext && step.status !== 'complete'
-            ? 'next-card border-primary-400/50 bg-gradient-to-br from-white via-blue-50/50 to-indigo-50/30 shadow-xl shadow-blue-500/10'
+            ? 'next-card border-orange-400/50 bg-gradient-to-br from-white via-blue-50/50 to-indigo-50/30 shadow-xl shadow-blue-500/10'
             : step.status === 'complete'
             ? 'border-emerald-200/50 bg-gradient-to-br from-emerald-50/80 to-white shadow-lg shadow-emerald-500/5'
             : 'border-slate-200/50 bg-white/80 shadow-md hover:shadow-xl hover:border-slate-300/50'
@@ -126,7 +126,7 @@ export function RoadmapStepCard({
       >
         {/* Decorative gradient overlay for next step */}
         {isNext && step.status !== 'complete' && (
-          <div className="absolute inset-0 bg-gradient-to-r from-primary-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 via-transparent to-purple-500/5 pointer-events-none" />
         )}
 
         {/* Confetti particles for completed steps */}
@@ -159,7 +159,7 @@ export function RoadmapStepCard({
                 step.status === 'complete'
                   ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 text-white'
                   : step.status === 'in-progress'
-                  ? 'bg-gradient-to-br from-primary-400 to-primary-600 text-white'
+                  ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white'
                   : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'
               }`}
             >
@@ -171,7 +171,7 @@ export function RoadmapStepCard({
             </div>
             {/* Pulse effect for in-progress */}
             {step.status === 'in-progress' && (
-              <div className="absolute inset-0 rounded-full bg-primary-400 animate-ping opacity-30" />
+              <div className="absolute inset-0 rounded-full bg-orange-400 animate-ping opacity-30" />
             )}
           </div>
 
@@ -182,7 +182,7 @@ export function RoadmapStepCard({
                 Step {step.order}
               </span>
               {isNext && step.status !== 'complete' && (
-                <span className="next-badge px-2.5 py-0.5 text-xs font-bold bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-full shadow-lg shadow-blue-500/30">
+                <span className="next-badge px-2.5 py-0.5 text-xs font-bold bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full shadow-lg shadow-blue-500/30">
                   Next
                 </span>
               )}
@@ -196,7 +196,7 @@ export function RoadmapStepCard({
               className={`font-semibold text-base transition-all duration-300 ${
                 step.status === 'complete'
                   ? 'line-through text-slate-400 decoration-emerald-400 decoration-2'
-                  : 'text-slate-800 group-hover:text-primary-600'
+                  : 'text-slate-800 group-hover:text-orange-600'
               }`}
             >
               {step.title}
@@ -206,11 +206,11 @@ export function RoadmapStepCard({
           {/* Expand indicator with smooth rotation */}
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 group-hover:bg-slate-200 transition-all duration-300 ${
-              isExpanded ? 'rotate-180 bg-primary-100' : ''
+              isExpanded ? 'rotate-180 bg-orange-100' : ''
             }`}
           >
             <svg
-              className="w-4 h-4 text-slate-500 transition-colors group-hover:text-primary-500"
+              className="w-4 h-4 text-slate-500 transition-colors group-hover:text-orange-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -247,7 +247,7 @@ export function RoadmapStepCard({
                       ? status === 'complete'
                         ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30'
                         : status === 'in-progress'
-                        ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-blue-500/30'
+                        ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg shadow-blue-500/30'
                         : 'bg-slate-200 text-slate-700'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:shadow-md'
                   }`}
@@ -279,7 +279,7 @@ export function RoadmapStepCard({
             {/* Sources with hover effects */}
             {step.sources && step.sources.length > 0 && (
               <div className="mt-5 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100/50">
-                <h4 className="text-sm font-bold text-primary-800 mb-3 flex items-center gap-2">
+                <h4 className="text-sm font-bold text-orange-800 mb-3 flex items-center gap-2">
                   <span className="text-lg">🔗</span>
                   Sources
                 </h4>
@@ -291,7 +291,7 @@ export function RoadmapStepCard({
                           href={source.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="source-link inline-flex items-center gap-1.5 text-primary-600 font-medium"
+                          className="source-link inline-flex items-center gap-1.5 text-orange-600 font-medium"
                         >
                           <span>{source.label}</span>
                           <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -317,7 +317,7 @@ export function RoadmapStepCard({
                 value={step.notes || ''}
                 onChange={(e) => onNotesChange(e.target.value)}
                 placeholder="Add your notes, appointment dates, reference numbers..."
-                className="w-full px-4 py-3 text-sm bg-slate-50/50 border-2 border-slate-200/50 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-500/20 focus:border-primary-400 transition-all duration-300 resize-none placeholder:text-slate-400"
+                className="w-full px-4 py-3 text-sm bg-slate-50/50 border-2 border-slate-200/50 rounded-xl focus:outline-none focus:ring-4 focus:ring-orange-500/20 focus:border-orange-400 transition-all duration-300 resize-none placeholder:text-slate-400"
                 rows={2}
               />
             </div>
