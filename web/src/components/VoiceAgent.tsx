@@ -183,8 +183,13 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
     console.log('[VoiceAgent] get_current_capture tool called');
 
     // Check if there's a schema from extension popup
-    if (currentSchema && currentSchema.fields?.length > 0) {
+    // Accept if has fields OR has page content (for info/requirements pages)
+    const hasFields = (currentSchema?.fields?.length ?? 0) > 0;
+    const hasContent = !!currentSchema?.mainContent || (currentSchema?.headings?.length ?? 0) > 0;
+    
+    if (currentSchema && (hasFields || hasContent)) {
       console.log('[VoiceAgent] Returning existing schema from extension:', currentSchema);
+      console.log('[VoiceAgent] Fields:', currentSchema.fields?.length || 0, 'Has content:', hasContent);
       emitMessage('system', `📋 Found existing capture: ${currentSchema.title}`);
       return formatSchemaForAgent(currentSchema);
     }

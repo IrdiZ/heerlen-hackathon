@@ -138,8 +138,13 @@ export function useExtension() {
       try {
         const response = await sendMessageToExtension({ type: 'GET_LAST_CAPTURE' });
         
-        if (response?.success && response.schema && response.schema.fields?.length > 0) {
+        // Accept if has fields OR has page content (for info/requirements pages)
+        const hasFields = response.schema.fields?.length > 0;
+        const hasContent = response.schema.mainContent || response.schema.headings?.length > 0;
+        
+        if (response?.success && response.schema && (hasFields || hasContent)) {
           console.log('[useExtension] ✅ Got captured schema:', response.schema);
+          console.log('[useExtension] Fields:', response.schema.fields?.length || 0, 'Content:', !!response.schema.mainContent);
           const newSchema = { ...response.schema, capturedAt: new Date().toISOString() };
           setFormSchema(newSchema);
           // Add to history (keep last 10)
