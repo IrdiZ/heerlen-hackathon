@@ -3,6 +3,111 @@
 
 console.log('MigrantAI content script loaded');
 
+// ============ FORM TEMPLATES ============
+// Inline template definitions for URL detection (synced with web/src/lib/form-templates.ts)
+
+const FORM_TEMPLATES = [
+  {
+    id: 'gemeente-registration',
+    nameNL: 'Gemeente Inschrijving',
+    nameEN: 'Municipality Registration',
+    urlPatterns: [
+      'gemeente\\.nl.*inschrijving',
+      'gemeente\\.nl.*registration',
+      'gemeente\\.nl.*verhuizing',
+      'mijn\\.overheid\\.nl.*brp',
+      'amsterdam\\.nl.*registration',
+      'rotterdam\\.nl.*registration',
+      'denhaag\\.nl.*registration',
+      'utrecht\\.nl.*registration',
+    ],
+    category: 'government',
+  },
+  {
+    id: 'digid-application',
+    nameNL: 'DigiD Aanvraag',
+    nameEN: 'DigiD Application',
+    urlPatterns: [
+      'digid\\.nl.*aanvragen',
+      'digid\\.nl.*apply',
+      'digid\\.nl.*request',
+      'mijn\\.digid\\.nl',
+    ],
+    category: 'government',
+  },
+  {
+    id: 'bsn-request',
+    nameNL: 'BSN Aanvraag / RNI Inschrijving',
+    nameEN: 'BSN Request / RNI Registration',
+    urlPatterns: [
+      'rfrni\\.nl',
+      'rfrni\\.amsterdam\\.nl',
+      'belastingdienst\\.nl.*bsn',
+      'rfrni\\.',
+    ],
+    category: 'government',
+  },
+  {
+    id: 'health-insurance',
+    nameNL: 'Zorgverzekering Aanmelden',
+    nameEN: 'Health Insurance Registration',
+    urlPatterns: [
+      'cz\\.nl.*aanmelden',
+      'zilverenkruis\\.nl.*register',
+      'zilveren-kruis\\.nl',
+      'vgz\\.nl.*aanmelden',
+      'menzis\\.nl.*aanmelden',
+      'unive\\.nl.*zorg',
+      'ohra\\.nl.*zorg',
+      'aegon\\.nl.*zorg',
+      'anderzorg\\.nl',
+      'ditzo\\.nl',
+      'zorgverzekering',
+    ],
+    category: 'healthcare',
+  },
+  {
+    id: 'bank-account',
+    nameNL: 'Bankrekening Openen',
+    nameEN: 'Bank Account Opening',
+    urlPatterns: [
+      'ing\\.nl.*rekening.*openen',
+      'abnamro\\.nl.*rekening.*openen',
+      'rabobank\\.nl.*rekening.*openen',
+      'snsbank\\.nl.*rekening',
+      'asnbank\\.nl.*rekening',
+      'triodos\\.nl.*rekening',
+      'bunq\\.com.*signup',
+      'n26\\.com.*signup',
+      'revolut\\.com.*signup',
+    ],
+    category: 'finance',
+  },
+  {
+    id: 'zorgtoeslag',
+    nameNL: 'Zorgtoeslag Aanvragen',
+    nameEN: 'Healthcare Allowance Application',
+    urlPatterns: [
+      'toeslagen\\.nl.*zorgtoeslag',
+      'belastingdienst\\.nl.*zorgtoeslag',
+      'mijntoeslagen\\.nl',
+    ],
+    category: 'government',
+  },
+];
+
+function detectTemplateByUrl(url) {
+  for (const template of FORM_TEMPLATES) {
+    for (const pattern of template.urlPatterns) {
+      const regex = new RegExp(pattern, 'i');
+      if (regex.test(url)) {
+        return template;
+      }
+    }
+  }
+  return null;
+}
+
 // ============ TOAST NOTIFICATION ============
 
 let toastContainer = null;
@@ -136,11 +241,20 @@ function extractFormSchema() {
     fields.push(field);
   });
 
+  // Detect template based on URL
+  const detectedTemplate = detectTemplateByUrl(window.location.href);
+
   return {
     url: window.location.href,
     title: document.title,
     fields: fields,
-    extractedAt: new Date().toISOString()
+    extractedAt: new Date().toISOString(),
+    detectedTemplate: detectedTemplate ? {
+      id: detectedTemplate.id,
+      nameEN: detectedTemplate.nameEN,
+      nameNL: detectedTemplate.nameNL,
+      category: detectedTemplate.category,
+    } : null,
   };
 }
 

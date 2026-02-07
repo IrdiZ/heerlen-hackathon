@@ -5,8 +5,33 @@ const statusEl = document.getElementById('status');
 const fieldCountEl = document.getElementById('fieldCount');
 const toastEl = document.getElementById('toast');
 const connectionIndicator = document.getElementById('connectionIndicator');
+const templateBadge = document.getElementById('templateBadge');
+const templateIcon = document.getElementById('templateIcon');
+const templateName = document.getElementById('templateName');
+const templateNameNL = document.getElementById('templateNameNL');
 
 let toastTimeout = null;
+
+const CATEGORY_ICONS = {
+  government: '🏛️',
+  finance: '🏦',
+  healthcare: '🏥',
+  utilities: '🔌',
+};
+
+function showTemplate(template) {
+  if (!template) {
+    templateBadge.classList.remove('visible', 'government', 'finance', 'healthcare', 'utilities');
+    return;
+  }
+  
+  templateIcon.textContent = CATEGORY_ICONS[template.category] || '📋';
+  templateName.textContent = template.nameEN;
+  templateNameNL.textContent = template.nameNL;
+  
+  templateBadge.classList.remove('government', 'finance', 'healthcare', 'utilities');
+  templateBadge.classList.add('visible', template.category);
+}
 
 function showToast(type, message) {
   if (toastTimeout) clearTimeout(toastTimeout);
