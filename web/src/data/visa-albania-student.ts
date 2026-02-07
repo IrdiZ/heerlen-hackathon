@@ -36,14 +36,15 @@ to collect your MVV. Plan for a 1-2 day trip (5-6 hour bus ride from Tirana).`,
       step: 1,
       title: 'University Admission',
       description: `Apply to a Dutch university or university of applied sciences (HBO). 
-You need a conditional or unconditional admission letter. Many programs use Studielink for applications.`,
+You need a conditional or unconditional admission letter. Non-EU students typically apply DIRECTLY through university portals, not Studielink.`,
       duration: '2-8 weeks',
       responsible: 'applicant',
       tips: [
-        'Apply via Studielink: https://www.studielink.nl',
+        '⚠️ Non-EU students: Apply directly via university website, NOT Studielink',
+        'Studielink (studielink.nl) is primarily for Dutch/EU students',
         'Check program requirements on https://www.studyinholland.nl',
         'Deadlines: 15 January (most programs) or 1 May (some HBO programs)',
-        'English proficiency: IELTS 6.0-7.0 or TOEFL 80-100 typically required'
+        'English proficiency: IELTS 6.0-6.5 or TOEFL 80-90 typically required'
       ]
     },
     {
@@ -69,7 +70,7 @@ to IND on your behalf. You'll need to provide documents and proof of finances.`,
       responsible: 'applicant',
       tips: [
         'University international office guides you through this',
-        'Financial proof needed: €13,350/year (2026 amount) in bank account',
+        'Financial proof needed: €13,569.24/year (2026 amount) in bank account',
         'Bank statement must be recent (< 1 month old)',
         'Blocked account (like DUO loan commitment) can also work'
       ]
@@ -174,7 +175,7 @@ and get your BSN (citizen service number). Open Dutch bank account.`,
       },
       {
         name: 'Proof of Sufficient Funds',
-        description: '€13,350 minimum in bank account (2026 amount)',
+        description: '€13,569.24 minimum in bank account (2026 amount)',
         legalizationRequired: false,
         notes: 'Bank statement < 1 month old. Can also use: scholarship letter, sponsor declaration, DUO loan commitment'
       },
@@ -198,12 +199,14 @@ and get your BSN (citizen service number). Open Dutch bank account.`,
         legalizationRequired: false,
         notes: 'Usually IELTS 6.0-6.5 for Bachelor, 6.5-7.0 for Master'
       },
+      /* TB Test NOT required - Albania is EXEMPT (see IND form 7644)
       {
         name: 'TB Test Certificate',
         description: 'Tuberculosis test from approved clinic',
         legalizationRequired: false,
-        notes: 'Albania requires TB testing for Netherlands visa'
+        notes: 'Albania is EXEMPT from TB testing requirement'
       }
+      */
     ],
     employer: [
       {
@@ -218,7 +221,7 @@ and get your BSN (citizen service number). Open Dutch bank account.`,
   fees: [
     {
       type: 'TEV Application (Student)',
-      amount: 225,
+      amount: 254,
       currency: 'EUR',
       notes: '2026 rate for study purpose. Usually paid by/through university.'
     },
@@ -239,8 +242,8 @@ and get your BSN (citizen service number). Open Dutch bank account.`,
   salaryRequirements: [
     {
       category: 'Financial Requirement (Study)',
-      monthlyGross: 1112,
-      notes: '€13,350/year = ~€1,112/month. Must show this amount available for first year.'
+      monthlyGross: 1130.77,
+      notes: '€13,569.24/year = €1,130.77/month. Must show this amount available for first year.'
     }
   ],
 
@@ -270,7 +273,7 @@ and get your BSN (citizen service number). Open Dutch bank account.`,
     },
     {
       title: 'Insufficient Funds Proof',
-      description: 'Bank statement not showing €13,350 or statement too old.',
+      description: 'Bank statement not showing €13,569.24 or statement too old.',
       prevention: 'Have money in account 1+ month before application. Get fresh statement (< 1 month old).'
     },
     {

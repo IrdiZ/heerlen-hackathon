@@ -238,12 +238,14 @@ permit (verblijfsvergunning) at the IND desk. Biometrics will be collected if no
         notes: 'Apostille required for use in Netherlands',
         source: 'Albanian Civil Registry Office'
       },
+      /* TB Test NOT required - Albania is EXEMPT
       {
         name: 'TB Test Certificate',
-        description: 'Tuberculosis test result (if required)',
+        description: 'Tuberculosis test result',
         legalizationRequired: false,
-        notes: 'Albania is currently on the list of countries requiring TB testing'
+        notes: 'Albania is EXEMPT from TB testing - see IND form 7644'
       },
+      */
       {
         name: 'Criminal Record Certificate',
         description: 'Police clearance certificate (may be required)',
@@ -282,13 +284,13 @@ permit (verblijfsvergunning) at the IND desk. Biometrics will be collected if no
   fees: [
     {
       type: 'TEV Application (Highly Skilled Migrant)',
-      amount: 350,
+      amount: 423,
       currency: 'EUR',
       notes: '2026 rates, increased by 4.4% from 2025. Paid by employer or applicant as agreed.'
     },
     {
       type: 'Sponsor Recognition Application',
-      amount: 4584,
+      amount: 5080,
       currency: 'EUR',
       notes: 'One-time fee for employer, valid indefinitely'
     },
