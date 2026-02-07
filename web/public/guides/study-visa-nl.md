@@ -11,7 +11,7 @@ Non-EU students need a student residence permit to study in the Netherlands.
 - No criminal record
 
 ## Timeline
-1. **Get admission letter** (1-3 months) - Source: https://www.studyinholland.nl
+1. **Get admission letter** (1-3 months) - Source: https://www.rijksoverheid.nl/onderwerpen/hoger-onderwijs
 2. **Apply for residence permit** - Institution applies to IND - Source: https://ind.nl/en/residence-permits/study
 3. **Receive MVV** at consulate (2-3 weeks) - Source: https://ind.nl/en/short-stay/mvv
 4. **Travel to NL** - Enter with MVV

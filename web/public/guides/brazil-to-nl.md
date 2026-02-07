@@ -32,7 +32,7 @@ Brazilian citizens need an MVV (Machtiging tot Voorlopig Verblijf) entry visa an
 
 **Sources:**
 - https://ind.nl/en/residence-permits/work/highly-skilled-migrant
-- https://expatlaw.nl/dutch-highly-skilled-migrant
+- https://ind.nl/en/residence-permits/work/highly-skilled-migrant
 
 ### 2. Intra-Company Transfer (ICT)
 **Best for:** Employees transferred within multinational companies

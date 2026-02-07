@@ -34,7 +34,7 @@ Join your family member who lives in the Netherlands.
 4. **Travel to NL**
 5. **Register at gemeente** - Source: https://www.government.nl/topics/personal-data/registering-with-your-municipality
 6. **Collect residence permit**
-7. **Complete integration course** within 3 years - Source: https://inburgeren.nl
+7. **Complete integration course** within 3 years - Source: https://www.rijksoverheid.nl/onderwerpen/inburgeren-in-nederland
 
 ## Costs
 - Application fee: €210

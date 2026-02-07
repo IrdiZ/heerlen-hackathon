@@ -14,7 +14,7 @@ Entrepreneurs can get a startup visa to launch innovative businesses in NL.
 Find list at: https://ind.nl/en/residence-permits/work/start-up#facilitators
 
 ## Timeline
-1. **Find facilitator** - Apply to startup incubator - Source: https://www.startupdelta.org
+1. **Find facilitator** - Apply to startup incubator - Source: https://ind.nl/en/residence-permits/work/start-up#facilitators
 2. **Get accepted** - Facilitator signs mentorship agreement
 3. **Apply for residence permit** via facilitator - Source: https://ind.nl/en/residence-permits/work/start-up
 4. **Receive MVV** at consulate (2-3 weeks)

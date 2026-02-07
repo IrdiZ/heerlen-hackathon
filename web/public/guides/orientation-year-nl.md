@@ -17,7 +17,7 @@
 - No previous orientation year
 
 ## Timeline
-1. **Check university ranking** - Source: https://www.timeshighereducation.com/world-university-rankings
+1. **Check university ranking** - Source: https://ind.nl/en/residence-permits/work/orientation-year-for-graduates
 2. **Apply to IND** - Can apply from abroad or in NL - Source: https://ind.nl/en/residence-permits/work/orientation-year-for-graduates
 3. **Receive permit** (2-4 weeks)
 4. **Search for work** (1 year)
