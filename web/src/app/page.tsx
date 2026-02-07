@@ -12,6 +12,8 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ProgressTracker } from '@/components/ProgressTracker';
 import { DevPanel } from '@/components/dev';
 import { CountrySelector } from '@/components/CountrySelector';
+import StatsShowcase from '@/components/StatsShowcase';
+import { JourneyTimeline } from '@/components/JourneyTimeline';
 import { useLocalPII } from '@/hooks/useLocalPII';
 import { useExtension } from '@/hooks/useExtension';
 import { useRoadmap } from '@/hooks/useRoadmap';
@@ -449,6 +451,11 @@ export default function Home() {
                 🇳🇱 Built for the Netherlands • 🔐 {t('landing.noAccount')}
               </motion.p>
             </motion.div>
+          </div>
+
+          {/* Stats Showcase Section */}
+          <div className="relative z-10 w-full max-w-6xl mx-auto px-4 py-16">
+            <StatsShowcase />
           </div>
         </motion.main>
       </AnimatePresence>

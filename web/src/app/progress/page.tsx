@@ -9,6 +9,7 @@ import {
   StepStatus,
   ImmigrationStep,
 } from '@/lib/immigration-steps';
+import { JourneyTimeline } from '@/components/JourneyTimeline';
 
 // Confetti particle interface
 interface ConfettiParticle {
