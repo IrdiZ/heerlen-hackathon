@@ -202,19 +202,49 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   }, [onFillForm, emitMessage]);
 
   // Handle create_roadmap tool call from agent
-  const handleCreateRoadmap = useCallback(async (params: CreateRoadmapParams): Promise<string> => {
-    console.log('[VoiceAgent] Agent requested roadmap creation:', params);
+  const handleCreateRoadmap = useCallback(async (rawParams: unknown): Promise<string> => {
+    console.log('[VoiceAgent] Agent requested roadmap creation, raw params:', JSON.stringify(rawParams, null, 2));
+
+    // Normalize params - ElevenLabs might wrap or structure differently
+    let params: CreateRoadmapParams;
+    const raw = rawParams as Record<string, unknown>;
+
+    // Try to extract name and steps from various possible structures
+    const name = raw.name as string || raw.roadmap_name as string || 'Immigration Roadmap';
+    const steps = raw.steps as Array<Record<string, unknown>> ||
+                  (raw.roadmap as Record<string, unknown>)?.steps as Array<Record<string, unknown>> ||
+                  [];
+
+    if (!steps || !Array.isArray(steps) || steps.length === 0) {
+      console.error('[VoiceAgent] Invalid steps:', steps);
+      emitMessage('system', `❌ Roadmap creation failed: No steps provided`);
+      return 'Failed to create roadmap: No steps were provided. Please specify the steps for the roadmap.';
+    }
+
+    // Normalize steps structure
+    params = {
+      name,
+      steps: steps.map((step) => ({
+        title: step.title as string || step.step_title as string || 'Step',
+        description: step.description as string || step.step_description as string || '',
+        estimatedTime: step.estimatedTime as string || step.estimated_time as string || step.time as string,
+        tips: step.tips as string[] || [],
+      })),
+    };
+
+    console.log('[VoiceAgent] Normalized params:', JSON.stringify(params, null, 2));
     emitMessage('system', `📍 Creating roadmap: ${params.name}`);
 
     try {
       if (onCreateRoadmap) {
         const result = await onCreateRoadmap(params);
-        emitMessage('system', `✅ Roadmap created with ${params.steps.length} steps. View it at /plan`);
+        emitMessage('system', `✅ Roadmap created with ${params.steps.length} steps`);
         return result;
       }
       return 'Roadmap handler not configured';
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      console.error('[VoiceAgent] Roadmap creation error:', err);
       emitMessage('system', `❌ Failed to create roadmap: ${errorMsg}`);
       return `Failed to create roadmap: ${errorMsg}`;
     }
