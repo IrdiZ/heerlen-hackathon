@@ -203,26 +203,48 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
 
   // Handle create_roadmap tool call from agent
   const handleCreateRoadmap = useCallback(async (rawParams: unknown): Promise<string> => {
-    console.log('[VoiceAgent] Agent requested roadmap creation, raw params:', JSON.stringify(rawParams, null, 2));
+    console.log('[VoiceAgent] create_roadmap called with:', rawParams);
+    console.log('[VoiceAgent] Type:', typeof rawParams);
+    console.log('[VoiceAgent] JSON:', JSON.stringify(rawParams, null, 2));
 
-    // Normalize params - ElevenLabs might wrap or structure differently
-    let params: CreateRoadmapParams;
-    const raw = rawParams as Record<string, unknown>;
+    // ElevenLabs client tools might pass params in different ways
+    let raw: Record<string, unknown> = {};
+
+    if (rawParams && typeof rawParams === 'object') {
+      raw = rawParams as Record<string, unknown>;
+      // Check if params are wrapped in 'parameters', 'args', or 'input'
+      if (raw.parameters && typeof raw.parameters === 'object') {
+        raw = raw.parameters as Record<string, unknown>;
+      } else if (raw.args && typeof raw.args === 'object') {
+        raw = raw.args as Record<string, unknown>;
+      } else if (raw.input && typeof raw.input === 'object') {
+        raw = raw.input as Record<string, unknown>;
+      }
+    }
+
+    console.log('[VoiceAgent] Unwrapped raw:', JSON.stringify(raw, null, 2));
 
     // Try to extract name and steps from various possible structures
     const name = raw.name as string || raw.roadmap_name as string || 'Immigration Roadmap';
-    const steps = raw.steps as Array<Record<string, unknown>> ||
-                  (raw.roadmap as Record<string, unknown>)?.steps as Array<Record<string, unknown>> ||
-                  [];
+    let steps = raw.steps as Array<Record<string, unknown>> ||
+                (raw.roadmap as Record<string, unknown>)?.steps as Array<Record<string, unknown>>;
+
+    // If steps is undefined but we have the data at top level, try parsing differently
+    if (!steps && raw.name) {
+      // Sometimes the whole object IS the params
+      steps = (rawParams as Record<string, unknown>).steps as Array<Record<string, unknown>>;
+    }
+
+    console.log('[VoiceAgent] Extracted - name:', name, 'steps:', steps);
 
     if (!steps || !Array.isArray(steps) || steps.length === 0) {
-      console.error('[VoiceAgent] Invalid steps:', steps);
-      emitMessage('system', `❌ Roadmap creation failed: No steps provided`);
-      return 'Failed to create roadmap: No steps were provided. Please specify the steps for the roadmap.';
+      console.error('[VoiceAgent] Invalid steps. Raw params were:', rawParams);
+      emitMessage('system', `❌ Roadmap creation failed: No steps received from agent`);
+      return 'Failed to create roadmap: No steps were provided. Please try again and specify the immigration steps.';
     }
 
     // Normalize steps structure
-    params = {
+    const params: CreateRoadmapParams = {
       name,
       steps: steps.map((step) => ({
         title: step.title as string || step.step_title as string || 'Step',
@@ -232,7 +254,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
       })),
     };
 
-    console.log('[VoiceAgent] Normalized params:', JSON.stringify(params, null, 2));
+    console.log('[VoiceAgent] Final params:', JSON.stringify(params, null, 2));
     emitMessage('system', `📍 Creating roadmap: ${params.name}`);
 
     try {
