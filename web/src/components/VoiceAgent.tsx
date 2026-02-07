@@ -466,114 +466,274 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   const isConnected = status === 'connected';
   const isConnecting = status === 'connecting';
 
+  // Determine orb animation class
+  const getOrbClass = () => {
+    if (isConnecting) return 'connecting-animation';
+    if (isSpeaking) return 'orb-speaking';
+    if (isConnected) return 'orb-listening';
+    return 'orb-idle';
+  };
+
+  // Determine orb gradient colors
+  const getOrbGradient = () => {
+    if (error) return 'from-red-500 via-rose-500 to-red-600';
+    if (isSpeaking) return 'from-emerald-400 via-green-500 to-teal-500';
+    if (isConnected) return 'from-blue-400 via-indigo-500 to-purple-500';
+    if (isConnecting) return 'from-amber-400 via-yellow-500 to-orange-500';
+    return 'from-indigo-400 via-purple-500 to-pink-500';
+  };
+
   return (
-    <div className="voice-agent">
-      {/* Status indicators */}
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <div className="flex items-center gap-2">
-          <div className={`w-3 h-3 rounded-full transition-colors ${
-            isConnected ? 'bg-green-500' :
-            isConnecting ? 'bg-yellow-500 animate-pulse' :
-            error ? 'bg-red-500' :
-            'bg-gray-300'
-          } ${isSpeaking ? 'animate-pulse' : ''}`} />
-          <span className="text-sm text-gray-600">
-            {isConnected ? (isSpeaking ? '🔊 Speaking...' : '🎤 Listening...') :
-             isConnecting ? 'Connecting...' :
-             error ? 'Error' :
-             'Ready'}
-          </span>
+    <div className="voice-agent voice-agent-container rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+      {/* Background shimmer effect */}
+      <div className="absolute inset-0 shimmer-effect opacity-20 pointer-events-none" />
+      
+      {/* Floating particles effect */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-4 left-8 w-2 h-2 bg-indigo-400/30 rounded-full float-animation" style={{ animationDelay: '0s' }} />
+        <div className="absolute top-12 right-12 w-1.5 h-1.5 bg-purple-400/40 rounded-full float-animation" style={{ animationDelay: '0.5s' }} />
+        <div className="absolute bottom-16 left-16 w-1 h-1 bg-blue-400/30 rounded-full float-animation" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-8 right-8 w-2 h-2 bg-pink-400/20 rounded-full float-animation" style={{ animationDelay: '1.5s' }} />
+      </div>
+
+      {/* Central Orb Section */}
+      <div className="relative flex flex-col items-center mb-6">
+        {/* Glow rings */}
+        {isConnected && (
+          <>
+            <div className={`absolute w-24 h-24 rounded-full border-2 ${isSpeaking ? 'border-emerald-400/40' : 'border-blue-400/40'} glow-ring`} />
+            <div className={`absolute w-24 h-24 rounded-full border-2 ${isSpeaking ? 'border-emerald-400/30' : 'border-blue-400/30'} glow-ring`} style={{ animationDelay: '0.5s' }} />
+            <div className={`absolute w-24 h-24 rounded-full border-2 ${isSpeaking ? 'border-emerald-400/20' : 'border-blue-400/20'} glow-ring`} style={{ animationDelay: '1s' }} />
+          </>
+        )}
+        
+        {/* Main Orb */}
+        <div 
+          className={`
+            relative w-24 h-24 rounded-full 
+            bg-gradient-to-br ${getOrbGradient()}
+            flex items-center justify-center
+            transition-all duration-500 ease-out
+            ${getOrbClass()}
+          `}
+        >
+          {/* Inner glow */}
+          <div className="absolute inset-2 rounded-full bg-white/20 blur-sm" />
+          
+          {/* Microphone Icon */}
+          <div className={`relative z-10 ${isConnected && !isSpeaking ? 'mic-animated' : ''}`}>
+            {isConnecting ? (
+              <svg className="w-10 h-10 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            ) : isSpeaking ? (
+              <svg className="w-10 h-10 text-white/90" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM8 12a4 4 0 0 0 8 0h2a6 6 0 0 1-5 5.91V21h3v2H8v-2h3v-3.09A6 6 0 0 1 6 12h2z"/>
+                <circle cx="12" cy="8" r="1" className="animate-ping" />
+              </svg>
+            ) : (
+              <svg className="w-10 h-10 text-white/90" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM8 12a4 4 0 0 0 8 0h2a6 6 0 0 1-5 5.91V21h3v2H8v-2h3v-3.09A6 6 0 0 1 6 12h2z"/>
+              </svg>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center gap-1">
-          <div className={`w-2 h-2 rounded-full ${extensionConnected ? 'bg-green-400' : 'bg-gray-300'}`} />
-          <span className="text-xs text-gray-400">
-            {extensionConnected ? 'Extension ✓' : 'No extension'}
+        {/* Audio Waveform Visualization */}
+        <div className="flex items-end justify-center gap-1 h-10 mt-4">
+          {[...Array(7)].map((_, i) => (
+            <div
+              key={i}
+              className={`
+                w-1 rounded-full transition-all duration-150
+                ${isConnected 
+                  ? isSpeaking 
+                    ? 'bg-gradient-to-t from-emerald-500 to-teal-400 waveform-bar-speaking' 
+                    : 'bg-gradient-to-t from-blue-500 to-indigo-400 waveform-bar'
+                  : 'bg-gray-300/50 h-2'
+                }
+              `}
+              style={{ 
+                animationDelay: `${i * 0.1}s`,
+                height: isConnected ? undefined : '8px'
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Status Text */}
+        <div className="mt-3 flex items-center gap-2">
+          <div className={`
+            w-2.5 h-2.5 rounded-full transition-all duration-500
+            ${isConnected 
+              ? isSpeaking 
+                ? 'bg-emerald-400 shadow-lg shadow-emerald-400/50 status-dot-animated' 
+                : 'bg-blue-400 shadow-lg shadow-blue-400/50 status-dot-animated'
+              : isConnecting 
+                ? 'bg-amber-400 shadow-lg shadow-amber-400/50 status-dot-animated' 
+                : error 
+                  ? 'bg-red-400 shadow-lg shadow-red-400/50' 
+                  : 'bg-gray-400/50'
+            }
+          `} />
+          <span className={`
+            text-sm font-medium tracking-wide transition-colors duration-500
+            ${isConnected 
+              ? isSpeaking ? 'text-emerald-300' : 'text-blue-300'
+              : isConnecting ? 'text-amber-300' 
+              : error ? 'text-red-300' : 'text-gray-400'
+            }
+          `}>
+            {isConnected ? (isSpeaking ? 'Speaking...' : 'Listening...') :
+             isConnecting ? 'Connecting...' :
+             error ? 'Error' :
+             'Ready to chat'}
           </span>
         </div>
       </div>
 
+      {/* Extension Status - Subtle */}
+      <div className="flex justify-center mb-4">
+        <div className={`
+          inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs
+          transition-all duration-300
+          ${extensionConnected 
+            ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20' 
+            : 'bg-gray-500/10 text-gray-400 border border-gray-500/20'
+          }
+        `}>
+          <div className={`w-1.5 h-1.5 rounded-full ${extensionConnected ? 'bg-emerald-400' : 'bg-gray-500'}`} />
+          {extensionConnected ? 'Extension connected' : 'No extension'}
+        </div>
+      </div>
+
       {extensionIdMissing && (
-        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-300 rounded-lg text-sm text-yellow-800">
-          <strong>⚠️ Extension ID missing!</strong>
-          <ol className="mt-2 ml-4 list-decimal text-xs space-y-1">
-            <li>Go to <code className="bg-yellow-100 px-1 rounded">chrome://extensions</code></li>
-            <li>Load unpacked → select <code className="bg-yellow-100 px-1 rounded">extension/</code> folder</li>
+        <div className="mb-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-sm text-amber-200 backdrop-blur-sm">
+          <strong className="flex items-center gap-2 text-amber-300">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            Extension ID missing
+          </strong>
+          <ol className="mt-2 ml-4 list-decimal text-xs space-y-1 text-amber-200/80">
+            <li>Go to <code className="bg-amber-500/20 px-1.5 py-0.5 rounded">chrome://extensions</code></li>
+            <li>Load unpacked → select <code className="bg-amber-500/20 px-1.5 py-0.5 rounded">extension/</code> folder</li>
             <li>Copy the extension ID</li>
-            <li>Add <code className="bg-yellow-100 px-1 rounded">NEXT_PUBLIC_EXTENSION_ID=&lt;id&gt;</code> to <code className="bg-yellow-100 px-1 rounded">.env.local</code></li>
+            <li>Add to <code className="bg-amber-500/20 px-1.5 py-0.5 rounded">.env.local</code></li>
             <li>Restart dev server</li>
           </ol>
         </div>
       )}
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+        <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-sm text-red-200 backdrop-blur-sm flex items-start gap-3">
+          <svg className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          </svg>
           {error}
         </div>
       )}
 
+      {/* Main Action Button */}
       <button
         onClick={isConnected ? endConversation : startConversation}
         disabled={isConnecting}
         className={`
-          w-full py-4 px-6 rounded-xl font-semibold text-lg
-          transition-all duration-200 transform
+          relative w-full py-4 px-6 rounded-2xl font-semibold text-lg
+          transition-all duration-300 ease-out transform
+          overflow-hidden group
           ${isConnected
-            ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/30'
-            : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30'
+            ? 'bg-gradient-to-r from-rose-500 via-red-500 to-pink-500 text-white shadow-xl shadow-red-500/25 hover:shadow-red-500/40'
+            : 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-xl shadow-purple-500/25 hover:shadow-purple-500/40'
           }
-          ${isConnecting ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'}
+          ${isConnecting ? 'opacity-60 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98] hover:-translate-y-0.5'}
         `}
       >
+        {/* Button shimmer effect */}
+        <div className="absolute inset-0 shimmer-effect opacity-30 group-hover:opacity-50 transition-opacity" />
+        
         {isConnected ? (
-          <span className="flex items-center justify-center gap-3">
-            <span className="relative flex h-4 w-4">
+          <span className="relative flex items-center justify-center gap-3">
+            <span className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-white"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
             </span>
             End Conversation
           </span>
         ) : isConnecting ? (
-          <span className="flex items-center justify-center gap-2">
-            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <span className="relative flex items-center justify-center gap-3">
+            <svg className="w-5 h-5 connecting-animation" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             Connecting...
           </span>
         ) : (
-          <span>🎤 Start Voice Chat</span>
+          <span className="relative flex items-center justify-center gap-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM8 12a4 4 0 0 0 8 0h2a6 6 0 0 1-5 5.91V21h3v2H8v-2h3v-3.09A6 6 0 0 1 6 12h2z"/>
+            </svg>
+            Start Voice Chat
+          </span>
         )}
       </button>
 
+      {/* Tip Card */}
       {!isConnected && !isConnecting && !error && (
-        <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
-          <p className="text-sm text-blue-800">
-            <strong>💡 Tip:</strong> Say &quot;I&apos;m stuck&quot; when on a form and I&apos;ll help you fill it.
+        <div className="mt-4 p-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-2xl border border-indigo-500/20 backdrop-blur-sm">
+          <p className="text-sm text-indigo-200/90 flex items-start gap-2">
+            <span className="text-lg">💡</span>
+            <span>
+              <strong className="text-indigo-200">Tip:</strong> Say &quot;I&apos;m stuck&quot; when on a form and I&apos;ll help you fill it.
+            </span>
           </p>
         </div>
       )}
 
+      {/* Active Session Indicator */}
       {isConnected && (
-        <div className="mt-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-100">
-          <div className="flex items-center gap-3">
-            <div className="flex gap-1">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+        <div className="mt-4 p-4 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 rounded-2xl border border-emerald-500/20 backdrop-blur-sm">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex gap-0.5">
+                {[...Array(3)].map((_, i) => (
+                  <span 
+                    key={i}
+                    className={`
+                      w-1.5 h-1.5 rounded-full 
+                      ${isSpeaking ? 'bg-emerald-400' : 'bg-blue-400'}
+                      animate-bounce
+                    `} 
+                    style={{ animationDelay: `${i * 150}ms` }}
+                  />
+                ))}
+              </div>
+              <span className={`text-sm font-medium ${isSpeaking ? 'text-emerald-300' : 'text-blue-300'}`}>
+                {isSpeaking ? 'AI is speaking...' : 'Listening to you...'}
+              </span>
             </div>
-            <span className="text-sm text-green-800">
-              {isSpeaking ? 'Speaking...' : 'Listening...'}
-            </span>
+            <div className={`
+              px-2 py-0.5 rounded-full text-xs font-medium
+              ${isSpeaking 
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' 
+                : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+              }
+            `}>
+              LIVE
+            </div>
           </div>
         </div>
       )}
 
-      {/* Show last captured schema */}
+      {/* Last Captured Schema */}
       {lastSchema && lastSchema.fields && lastSchema.fields.length > 0 && (
-        <div className="mt-4 p-3 bg-gray-50 rounded-lg border text-xs">
-          <div className="font-medium text-gray-700 mb-1">Last capture: {lastSchema.title}</div>
-          <div className="text-gray-500">{lastSchema.fields.length} fields detected</div>
+        <div className="mt-4 p-4 bg-gray-500/10 rounded-2xl border border-gray-500/20 backdrop-blur-sm">
+          <div className="flex items-center gap-2 text-gray-300 mb-1">
+            <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span className="text-sm font-medium">{lastSchema.title}</span>
+          </div>
+          <div className="text-xs text-gray-500">{lastSchema.fields.length} fields detected</div>
         </div>
       )}
     </div>
