@@ -7,27 +7,22 @@ import { FormStatus } from '@/components/FormStatus';
 import { Transcript } from '@/components/Transcript';
 import { useLocalPII } from '@/hooks/useLocalPII';
 import { useExtension } from '@/hooks/useExtension';
+import { useConversationHistory } from '@/hooks/useConversationHistory';
 import { swapPlaceholders } from '@/lib/placeholders';
 
 type AppState = 'landing' | 'active';
 
-interface Message {
-  role: string;
-  content: string;
-  timestamp: Date;
-}
-
 export default function Home() {
   const [appState, setAppState] = useState<AppState>('landing');
-  const [messages, setMessages] = useState<Message[]>([]);
   const [showPIIForm, setShowPIIForm] = useState(false);
   
   const { piiData, updateField, clearAll, loadDemo, getFilledCount, totalFields } = useLocalPII();
   const { isConnected, formSchema, lastFillResults, error, requestFormSchema, fillForm, clearSchema } = useExtension();
+  const { messages, addMessage, clearHistory } = useConversationHistory();
 
   const handleMessage = useCallback((msg: { role: string; content: string }) => {
-    setMessages(prev => [...prev, { ...msg, timestamp: new Date() }]);
-  }, []);
+    addMessage(msg);
+  }, [addMessage]);
 
   const handleFormSchemaRequest = useCallback(async () => {
     const schema = await requestFormSchema();
@@ -125,6 +120,12 @@ export default function Home() {
               }`}
             >
               🔒 Personal Details ({getFilledCount()}/{totalFields})
+            </button>
+            <button
+              onClick={clearHistory}
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-600 transition-colors"
+            >
+              🗑️ Clear Conversation
             </button>
             <button
               onClick={() => setAppState('landing')}
