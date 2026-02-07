@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { VoiceAgent } from '@/components/VoiceAgent';
 import { PIIForm } from '@/components/PIIForm';
 import { FormStatus } from '@/components/FormStatus';
 import { Transcript } from '@/components/Transcript';
 import { FormTemplateSelector, TemplateIndicator } from '@/components/FormTemplateSelector';
-import { DutchDataPanel } from '@/components/DutchDataPanel';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useLocalPII } from '@/hooks/useLocalPII';
 import { useExtension } from '@/hooks/useExtension';
 import { swapPlaceholders } from '@/lib/placeholders';
@@ -22,11 +22,11 @@ interface Message {
 }
 
 export default function Home() {
+  const t = useTranslations();
   const [appState, setAppState] = useState<AppState>('landing');
   const [messages, setMessages] = useState<Message[]>([]);
   const [showPIIForm, setShowPIIForm] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
-  const [showDutchData, setShowDutchData] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<FormTemplate | null>(null);
   
   const { piiData, updateField, clearAll, loadDemo, getFilledCount, totalFields } = useLocalPII();
@@ -111,14 +111,19 @@ export default function Home() {
   if (appState === 'landing') {
     return (
       <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col items-center justify-center p-4 sm:p-8 animate-fade-in">
+        {/* Language Switcher - Top Right */}
+        <div className="absolute top-4 right-4 rtl:right-auto rtl:left-4">
+          <LanguageSwitcher />
+        </div>
+
         <div className="max-w-2xl text-center">
           {/* Logo / Title */}
           <div className="mb-8 animate-slide-up">
             <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-              🌍 MigrantAI
+              🌍 {t('landing.title')}
             </h1>
             <p className="text-lg sm:text-xl text-gray-600">
-              Your voice, your language, your guide to the Netherlands
+              {t('landing.tagline')}
             </p>
           </div>
 
@@ -126,18 +131,18 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-12">
             <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 transition-transform">
               <div className="text-3xl mb-3">🗣️</div>
-              <h3 className="font-semibold text-gray-800">Any Language</h3>
-              <p className="text-sm text-gray-500 mt-1">Speak naturally in your native language</p>
+              <h3 className="font-semibold text-gray-800">{t('landing.features.language.title')}</h3>
+              <p className="text-sm text-gray-500 mt-1">{t('landing.features.language.description')}</p>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 transition-transform">
               <div className="text-3xl mb-3">📋</div>
-              <h3 className="font-semibold text-gray-800">Form Filling</h3>
-              <p className="text-sm text-gray-500 mt-1">Auto-fill Dutch government forms</p>
+              <h3 className="font-semibold text-gray-800">{t('landing.features.forms.title')}</h3>
+              <p className="text-sm text-gray-500 mt-1">{t('landing.features.forms.description')}</p>
             </div>
             <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 transition-transform">
               <div className="text-3xl mb-3">🔒</div>
-              <h3 className="font-semibold text-gray-800">Privacy First</h3>
-              <p className="text-sm text-gray-500 mt-1">Your data never leaves your browser</p>
+              <h3 className="font-semibold text-gray-800">{t('landing.features.privacy.title')}</h3>
+              <p className="text-sm text-gray-500 mt-1">{t('landing.features.privacy.description')}</p>
             </div>
           </div>
 
@@ -146,28 +151,12 @@ export default function Home() {
             onClick={() => setAppState('active')}
             className="px-10 sm:px-12 py-4 sm:py-5 text-lg sm:text-xl font-semibold text-white bg-blue-600 rounded-full hover:bg-blue-700 active:bg-blue-800 transition-all duration-200 transform hover:scale-105 active:scale-100 shadow-xl hover:shadow-2xl"
           >
-            Start Conversation
+            {t('landing.startButton')}
           </button>
 
           <p className="mt-6 text-sm text-gray-500">
-            No account needed • Free to use • Works offline for forms
+            {t('landing.noAccount')}
           </p>
-
-          {/* Quick Links */}
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/progress"
-              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white rounded-lg shadow hover:shadow-md hover:text-orange-600 transition-all"
-            >
-              📊 Progress Dashboard
-            </Link>
-            <Link
-              href="/documents"
-              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white rounded-lg shadow hover:shadow-md hover:text-blue-600 transition-all"
-            >
-              📄 Document Tracker
-            </Link>
-          </div>
         </div>
       </main>
     );
@@ -181,7 +170,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🌍</span>
-            <h1 className="text-xl font-bold text-gray-800">MigrantAI</h1>
+            <h1 className="text-xl font-bold text-gray-800">{t('landing.title')}</h1>
           </div>
           <div className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center sm:justify-end">
             {selectedTemplate && (
@@ -190,22 +179,6 @@ export default function Home() {
                 onClick={() => setSelectedTemplate(null)}
               />
             )}
-            <Link
-              href="/documents"
-              className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md bg-gray-100 text-gray-600 hover:bg-gray-200"
-            >
-              📄 Documents
-            </Link>
-            <button
-              onClick={() => setShowDutchData(!showDutchData)}
-              className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md ${
-                showDutchData 
-                  ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              🇳🇱 Dutch Data
-            </button>
             <button
               onClick={() => setShowTemplates(!showTemplates)}
               className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md ${
@@ -214,7 +187,7 @@ export default function Home() {
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              📋 Templates
+              📋 {t('header.templates')}
             </button>
             <button
               onClick={() => setShowPIIForm(!showPIIForm)}
@@ -224,13 +197,14 @@ export default function Home() {
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              🔒 Personal Details ({getFilledCount()}/{totalFields})
+              🔒 {t('header.personalDetails')} ({getFilledCount()}/{totalFields})
             </button>
+            <LanguageSwitcher />
             <button
               onClick={() => setAppState('landing')}
               className="text-gray-500 hover:text-gray-700 transition-colors duration-200 px-2 py-1 rounded hover:bg-gray-100"
             >
-              ← Back
+              ← {t('header.back')}
             </button>
           </div>
         </div>
@@ -253,7 +227,7 @@ export default function Home() {
             {/* Transcript */}
             <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 h-80 sm:h-96">
               <div className="px-4 py-3 border-b">
-                <h2 className="font-semibold text-gray-800">Conversation</h2>
+                <h2 className="font-semibold text-gray-800">{t('transcript.title')}</h2>
               </div>
               <div className="h-[calc(100%-52px)]">
                 <Transcript messages={messages} />
@@ -279,16 +253,9 @@ export default function Home() {
                 className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center gap-2"
               >
                 <span>✨</span>
-                <span>Auto-Fill with {selectedTemplate.nameEN}</span>
+                <span>{t('templates.autoFillWith', { template: selectedTemplate.nameEN })}</span>
               </button>
             )}
-
-            {/* Dutch Data Panel (collapsible with animation) */}
-            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showDutchData ? 'opacity-100 max-h-[2000px]' : 'opacity-0 max-h-0'}`}>
-              {showDutchData && (
-                <DutchDataPanel defaultRegion="Heerlen" compact={true} />
-              )}
-            </div>
 
             {/* Form Templates (collapsible with animation) */}
             <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showTemplates ? 'opacity-100 max-h-[2000px]' : 'opacity-0 max-h-0'}`}>

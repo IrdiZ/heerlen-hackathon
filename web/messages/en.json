@@ -1,0 +1,343 @@
+{
+  "metadata": {
+    "title": "MigrantAI - Your Guide to the Netherlands",
+    "description": "Voice-first AI assistant helping immigrants navigate Dutch bureaucracy in any language"
+  },
+  "landing": {
+    "title": "MigrantAI",
+    "tagline": "Your voice, your language, your guide to the Netherlands",
+    "features": {
+      "language": {
+        "title": "Any Language",
+        "description": "Speak naturally in your native language"
+      },
+      "forms": {
+        "title": "Form Filling",
+        "description": "Auto-fill Dutch government forms"
+      },
+      "privacy": {
+        "title": "Privacy First",
+        "description": "Your data never leaves your browser"
+      }
+    },
+    "startButton": "Start Conversation",
+    "noAccount": "No account needed • Free to use • Works offline for forms"
+  },
+  "header": {
+    "templates": "Templates",
+    "personalDetails": "Personal Details",
+    "back": "Back"
+  },
+  "voiceAgent": {
+    "status": {
+      "connecting": "Connecting",
+      "speaking": "Agent speaking...",
+      "listening": "Listening...",
+      "ready": "Ready"
+    },
+    "startConversation": "Start Conversation",
+    "endConversation": "End Conversation",
+    "languageHint": "Speak in any language — I'll respond in yours"
+  },
+  "transcript": {
+    "title": "Conversation",
+    "empty": "Start a conversation to see the transcript"
+  },
+  "formStatus": {
+    "error": "Error",
+    "extensionConnected": "Extension Connected",
+    "extensionNotDetected": "Extension Not Detected",
+    "captureHint": "Navigate to a form and click \"Capture Form\" in the extension",
+    "installHint": "Install the MigrantAI extension to enable form filling",
+    "formCaptured": "Form Captured",
+    "clear": "Clear",
+    "fillResults": "Fill Results",
+    "filled": "filled",
+    "failed": "failed",
+    "field": "Field",
+    "type": "Type",
+    "status": "Status",
+    "fieldsDetected": "{count} fields detected"
+  },
+  "piiForm": {
+    "title": "Secure Local Form",
+    "subtitle": "This data never leaves your browser",
+    "fields": "fields",
+    "loadDemo": "Load Demo Data",
+    "clearAll": "Clear All",
+    "sections": {
+      "personalInfo": "Personal Info",
+      "address": "Address",
+      "contact": "Contact",
+      "documents": "Documents"
+    },
+    "fieldLabels": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dateOfBirth": "Date of Birth",
+      "birthPlace": "Birth Place",
+      "nationality": "Nationality",
+      "gender": "Gender",
+      "street": "Street",
+      "houseNumber": "House Number",
+      "postcode": "Postcode",
+      "city": "City",
+      "phone": "Phone",
+      "email": "Email",
+      "bsn": "BSN (optional)",
+      "iban": "IBAN (optional)",
+      "documentNumber": "Document Number",
+      "moveDate": "Move Date"
+    },
+    "genderOptions": {
+      "select": "Select...",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "preferNot": "Prefer not to say"
+    }
+  },
+  "templates": {
+    "autoFillWith": "Auto-Fill with {template}"
+  },
+  "checklist": {
+    "title": "Immigration Checklist",
+    "subtitle": "Your step-by-step guide to settling in the Netherlands",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all",
+    "progress": "Your Progress",
+    "complete": "complete",
+    "allComplete": "All steps complete! Welcome to the Netherlands!",
+    "next": "Next",
+    "nextStep": "Next step",
+    "status": {
+      "notStarted": "Not started",
+      "inProgress": "In progress",
+      "complete": "Complete"
+    },
+    "requiredDocs": "Required Documents",
+    "tips": "Tips",
+    "commonMistakes": "Common Mistakes",
+    "yourNotes": "Your Notes",
+    "notesPlaceholder": "Add personal notes, appointment dates, reference numbers...",
+    "resetChecklist": "Reset checklist",
+    "resetConfirm": "Reset all progress?",
+    "yesReset": "Yes, reset",
+    "cancel": "Cancel",
+    "steps": {
+      "gemeente": {
+        "title": "Gemeente Registration",
+        "description": "Register at your local municipality (gemeente) within 5 days of arrival. This is your first and most important step - everything else depends on it.",
+        "time": "1-2 weeks for appointment + same day processing",
+        "docs": [
+          "Valid passport or ID",
+          "Birth certificate (apostilled/legalized)",
+          "Rental contract or proof of address",
+          "Marriage certificate (if applicable)",
+          "Work permit or residence permit"
+        ],
+        "tips": [
+          "Book your appointment online ASAP - slots fill up fast",
+          "Bring original documents + copies",
+          "Heerlen gemeente: https://www.heerlen.nl",
+          "Some gemeentes accept walk-ins early morning"
+        ],
+        "mistakes": [
+          "Waiting too long to register (5-day rule!)",
+          "Forgetting apostille on birth certificate",
+          "Not bringing original documents",
+          "Wrong type of proof of address"
+        ]
+      },
+      "bsn": {
+        "title": "BSN Number",
+        "description": "Your Burgerservicenummer (BSN) is your citizen service number. You get it automatically after gemeente registration - it's on your registration confirmation letter.",
+        "time": "Received immediately at gemeente registration",
+        "docs": [
+          "Gemeente registration confirmation",
+          "Valid passport or ID"
+        ],
+        "tips": [
+          "Your BSN is on your registration letter - save it!",
+          "Memorize it - you'll need it for everything",
+          "Keep a photo of it on your phone",
+          "Never share your BSN publicly"
+        ],
+        "mistakes": [
+          "Losing the registration letter with BSN",
+          "Confusing BSN with other numbers",
+          "Sharing BSN on social media or unsecured channels"
+        ]
+      },
+      "bank": {
+        "title": "Dutch Bank Account",
+        "description": "Open a Dutch bank account to receive salary, pay rent, and handle daily transactions. Most landlords and employers require a Dutch IBAN.",
+        "time": "1-2 weeks for card delivery",
+        "docs": [
+          "Valid passport or ID",
+          "BSN number",
+          "Proof of address (gemeente registration)",
+          "Employment contract (helpful but not always required)"
+        ],
+        "tips": [
+          "ING, ABN AMRO, Rabobank are the big three",
+          "bunq and N26 are faster (fully digital)",
+          "ING has good English support",
+          "Some banks offer appointments in English"
+        ],
+        "mistakes": [
+          "Trying to open account before having BSN",
+          "Not bringing all required documents",
+          "Expecting instant card - it takes 1-2 weeks",
+          "Forgetting to activate the card when it arrives"
+        ]
+      },
+      "health": {
+        "title": "Health Insurance (Zorgverzekering)",
+        "description": "Dutch health insurance is MANDATORY. You must get basic insurance (basisverzekering) within 4 months of registration. The government may fine you if you don't.",
+        "time": "15-30 minutes online, coverage starts immediately",
+        "docs": [
+          "BSN number",
+          "Dutch bank account (for payments)",
+          "Proof of residence"
+        ],
+        "tips": [
+          "Compare on Independer.nl or Zorgwijzer.nl",
+          "Basic package is ~€130-150/month in 2024",
+          "Consider aanvullende verzekering for dental/physio",
+          "Zorgtoeslag (healthcare allowance) if income is low",
+          "Popular providers: CZ, VGZ, Zilveren Kruis, Menzis"
+        ],
+        "mistakes": [
+          "Waiting more than 4 months (€400+ fine!)",
+          "Not applying for zorgtoeslag subsidy",
+          "Choosing based on price alone without checking coverage",
+          "Forgetting to cancel coverage from home country"
+        ]
+      },
+      "digid": {
+        "title": "DigiD Activation",
+        "description": "DigiD is your digital identity for Dutch government services. You'll need it for taxes, healthcare claims, and many official procedures.",
+        "time": "3-5 business days for activation letter",
+        "docs": [
+          "BSN number",
+          "Dutch mobile phone number",
+          "Access to your registered address (for activation letter)"
+        ],
+        "tips": [
+          "Apply at digid.nl/aanvragen",
+          "Activation code comes by postal mail",
+          "Download DigiD app for easier login",
+          "Enable SMS verification for extra security"
+        ],
+        "mistakes": [
+          "Throwing away the activation letter by accident",
+          "Using wrong BSN during application",
+          "Not setting up the DigiD app",
+          "Forgetting password (recovery is slow)"
+        ]
+      },
+      "tax": {
+        "title": "Tax Registration (Belastingdienst)",
+        "description": "If you're working, you need to be registered with the Dutch Tax Authority. Your employer handles most of this, but you should understand the basics.",
+        "time": "Automatic via employer, or 2-4 weeks if registering yourself",
+        "docs": [
+          "BSN number",
+          "Employment contract",
+          "DigiD (for online portal access)",
+          "Previous year tax documents (if applicable)"
+        ],
+        "tips": [
+          "Your employer deducts taxes automatically (loonheffing)",
+          "File annual tax return by May 1st",
+          "Use the 30% ruling if eligible (tax benefit for skilled migrants)",
+          "Toeslagen portal for allowances (rent, healthcare, childcare)"
+        ],
+        "mistakes": [
+          "Not checking if you qualify for 30% ruling",
+          "Missing tax return deadline (May 1st)",
+          "Not claiming eligible deductions",
+          "Ignoring letters from Belastingdienst"
+        ]
+      }
+    }
+  },
+  "faq": {
+    "title": "Common Questions",
+    "subtitle": "Quick answers about Dutch immigration",
+    "all": "All",
+    "askAI": "Ask AI about this",
+    "categories": {
+      "registration": "Registration",
+      "documents": "Documents & ID",
+      "banking": "Banking",
+      "healthcare": "Healthcare",
+      "work": "Work & Taxes",
+      "housing": "Housing"
+    },
+    "questions": {
+      "bsnWhat": {
+        "question": "What is a BSN number?",
+        "answer": "The BSN (Burgerservicenummer) is your Dutch citizen service number. It's a unique personal identification number used for all government services, healthcare, banking, and employment. You receive it automatically when you register at the gemeente."
+      },
+      "gemeenteRegister": {
+        "question": "How do I register at the gemeente?",
+        "answer": "Book an appointment at your local gemeente (municipality) within 5 days of arriving. Bring your passport, birth certificate, rental contract or proof of address, and any relevant family documents. After registration, you'll receive your BSN."
+      },
+      "digidWhat": {
+        "question": "What is DigiD and do I need it?",
+        "answer": "DigiD is the Dutch digital identity system used to access government services online. You'll need it for taxes, healthcare declarations, and many official processes. Apply at digid.nl after getting your BSN - activation takes about a week."
+      },
+      "healthInsurance": {
+        "question": "Is health insurance mandatory in the Netherlands?",
+        "answer": "Yes, basic health insurance (basisverzekering) is mandatory for everyone living or working in the Netherlands. You must arrange it within 4 months of arrival. Prices are around €120-150/month. Popular insurers include CZ, Zilveren Kruis, and VGZ."
+      },
+      "bankAccount": {
+        "question": "How do I open a Dutch bank account?",
+        "answer": "Most banks require a BSN, valid ID, and proof of address. ING, ABN AMRO, and Rabobank are the big three. Bunq and N26 are digital alternatives that may have easier requirements for newcomers. Expect the process to take 1-2 weeks."
+      },
+      "workPermit": {
+        "question": "Do I need a work permit?",
+        "answer": "EU/EEA citizens can work freely. Non-EU citizens typically need a work permit (TWV) or residence permit that allows work. Highly skilled migrants and certain categories have special schemes. Check with IND for your specific situation."
+      },
+      "housingRegistration": {
+        "question": "Can I register at a temporary address?",
+        "answer": "Yes, but the main tenant must give permission. Some landlords don't allow registration (especially in room rentals). Without registration, you can't get a BSN. Make sure your housing contract allows registration before signing."
+      },
+      "thirtyRuling": {
+        "question": "What is the 30% ruling?",
+        "answer": "A tax benefit for highly skilled migrants recruited from abroad. 30% of your salary can be paid tax-free for up to 5 years. You must meet specific criteria: recruited from abroad, have specific expertise, and salary thresholds. Your employer must apply."
+      }
+    }
+  },
+  "offline": {
+    "youreOffline": "You're offline. Some features may be limited.",
+    "viewCached": "View cached info →",
+    "backOnline": "You're back online!"
+  },
+  "quickStart": {
+    "title": "Quick Start",
+    "dismiss": "Dismiss",
+    "steps": {
+      "talk": {
+        "title": "Start talking",
+        "description": "Click the button and speak in your language"
+      },
+      "fill": {
+        "title": "Fill your details",
+        "description": "Enter personal info in the secure form (stays local)"
+      },
+      "capture": {
+        "title": "Capture a form",
+        "description": "Navigate to a Dutch form, click \"Capture\" in extension"
+      },
+      "autoFill": {
+        "title": "Auto-fill",
+        "description": "AI maps your data to the form fields automatically"
+      }
+    }
+  },
+  "languageSwitcher": {
+    "label": "Language"
+  }
+}

@@ -1,0 +1,343 @@
+{
+  "metadata": {
+    "title": "MigrantAI - Hollanda Rehberiniz",
+    "description": "Göçmenlerin Hollanda bürokrasisiyle her dilde başa çıkmasına yardımcı olan sesli AI asistanı"
+  },
+  "landing": {
+    "title": "MigrantAI",
+    "tagline": "Sesiniz, diliniz, Hollanda rehberiniz",
+    "features": {
+      "language": {
+        "title": "Herhangi Bir Dil",
+        "description": "Ana dilinizde doğal şekilde konuşun"
+      },
+      "forms": {
+        "title": "Form Doldurma",
+        "description": "Hollanda devlet formlarını otomatik doldurma"
+      },
+      "privacy": {
+        "title": "Önce Gizlilik",
+        "description": "Verileriniz tarayıcınızdan asla çıkmaz"
+      }
+    },
+    "startButton": "Konuşmayı Başlat",
+    "noAccount": "Hesap gerekmiyor • Ücretsiz • Formlar için çevrimdışı çalışır"
+  },
+  "header": {
+    "templates": "Şablonlar",
+    "personalDetails": "Kişisel Bilgiler",
+    "back": "Geri"
+  },
+  "voiceAgent": {
+    "status": {
+      "connecting": "Bağlanıyor",
+      "speaking": "Asistan konuşuyor...",
+      "listening": "Dinliyor...",
+      "ready": "Hazır"
+    },
+    "startConversation": "Konuşmayı Başlat",
+    "endConversation": "Konuşmayı Bitir",
+    "languageHint": "Herhangi bir dilde konuşun — sizin dilinizde yanıt vereceğim"
+  },
+  "transcript": {
+    "title": "Konuşma",
+    "empty": "Transkripti görmek için konuşmaya başlayın"
+  },
+  "formStatus": {
+    "error": "Hata",
+    "extensionConnected": "Uzantı Bağlı",
+    "extensionNotDetected": "Uzantı Algılanmadı",
+    "captureHint": "Bir forma gidin ve uzantıda \"Formu Yakala\" düğmesine tıklayın",
+    "installHint": "Form doldurmayı etkinleştirmek için MigrantAI uzantısını yükleyin",
+    "formCaptured": "Form Yakalandı",
+    "clear": "Temizle",
+    "fillResults": "Doldurma Sonuçları",
+    "filled": "dolduruldu",
+    "failed": "başarısız",
+    "field": "Alan",
+    "type": "Tür",
+    "status": "Durum",
+    "fieldsDetected": "{count} alan algılandı"
+  },
+  "piiForm": {
+    "title": "Güvenli Yerel Form",
+    "subtitle": "Bu veriler tarayıcınızdan asla çıkmaz",
+    "fields": "alan",
+    "loadDemo": "Demo Verileri Yükle",
+    "clearAll": "Tümünü Temizle",
+    "sections": {
+      "personalInfo": "Kişisel Bilgiler",
+      "address": "Adres",
+      "contact": "İletişim",
+      "documents": "Belgeler"
+    },
+    "fieldLabels": {
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "dateOfBirth": "Doğum Tarihi",
+      "birthPlace": "Doğum Yeri",
+      "nationality": "Uyruk",
+      "gender": "Cinsiyet",
+      "street": "Sokak",
+      "houseNumber": "Ev Numarası",
+      "postcode": "Posta Kodu",
+      "city": "Şehir",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "bsn": "BSN (isteğe bağlı)",
+      "iban": "IBAN (isteğe bağlı)",
+      "documentNumber": "Belge Numarası",
+      "moveDate": "Taşınma Tarihi"
+    },
+    "genderOptions": {
+      "select": "Seçin...",
+      "male": "Erkek",
+      "female": "Kadın",
+      "other": "Diğer",
+      "preferNot": "Belirtmemeyi tercih ederim"
+    }
+  },
+  "templates": {
+    "autoFillWith": "{template} ile Otomatik Doldur"
+  },
+  "checklist": {
+    "title": "Göç Kontrol Listesi",
+    "subtitle": "Hollanda'ya yerleşmek için adım adım rehberiniz",
+    "expandAll": "Tümünü genişlet",
+    "collapseAll": "Tümünü daralt",
+    "progress": "İlerlemeniz",
+    "complete": "tamamlandı",
+    "allComplete": "Tüm adımlar tamamlandı! Hollanda'ya hoş geldiniz!",
+    "next": "Sonraki",
+    "nextStep": "Sonraki adım",
+    "status": {
+      "notStarted": "Başlanmadı",
+      "inProgress": "Devam ediyor",
+      "complete": "Tamamlandı"
+    },
+    "requiredDocs": "Gerekli Belgeler",
+    "tips": "İpuçları",
+    "commonMistakes": "Yaygın Hatalar",
+    "yourNotes": "Notlarınız",
+    "notesPlaceholder": "Kişisel notlar, randevu tarihleri, referans numaraları ekleyin...",
+    "resetChecklist": "Listeyi sıfırla",
+    "resetConfirm": "Tüm ilerleme sıfırlansın mı?",
+    "yesReset": "Evet, sıfırla",
+    "cancel": "İptal",
+    "steps": {
+      "gemeente": {
+        "title": "Belediye Kaydı",
+        "description": "Varışınızdan sonraki 5 gün içinde yerel belediyenize (gemeente) kayıt olun. Bu ilk ve en önemli adımınız — diğer her şey buna bağlı.",
+        "time": "Randevu için 1-2 hafta + aynı gün işlem",
+        "docs": [
+          "Geçerli pasaport veya kimlik",
+          "Doğum belgesi (apostil/legalize edilmiş)",
+          "Kira sözleşmesi veya adres kanıtı",
+          "Evlilik cüzdanı (varsa)",
+          "Çalışma veya oturma izni"
+        ],
+        "tips": [
+          "Randevunuzu en kısa sürede online alın - yerler hızla doluyor",
+          "Orijinal belgeler + kopyalar getirin",
+          "Heerlen belediyesi: https://www.heerlen.nl",
+          "Bazı belediyeler sabah erken randevusuz kabul eder"
+        ],
+        "mistakes": [
+          "Kayıt için çok beklemek (5 gün kuralı!)",
+          "Doğum belgesinde apostil unutmak",
+          "Orijinal belgeleri getirmemek",
+          "Yanlış türde adres kanıtı"
+        ]
+      },
+      "bsn": {
+        "title": "BSN Numarası",
+        "description": "Burgerservicenummer (BSN) vatandaş hizmet numaranızdır. Belediye kaydından sonra otomatik olarak alırsınız - kayıt onay mektubunuzda yazılıdır.",
+        "time": "Belediye kaydında hemen alınır",
+        "docs": [
+          "Belediye kayıt onayı",
+          "Geçerli pasaport veya kimlik"
+        ],
+        "tips": [
+          "BSN'iniz kayıt mektubunuzda - saklayın!",
+          "Ezberleyin - her şey için gerekecek",
+          "Telefonunuzda fotoğrafını tutun",
+          "BSN'inizi asla herkese açık paylaşmayın"
+        ],
+        "mistakes": [
+          "BSN'li kayıt mektubunu kaybetmek",
+          "BSN'i başka numaralarla karıştırmak",
+          "BSN'i sosyal medyada veya güvensiz kanallarda paylaşmak"
+        ]
+      },
+      "bank": {
+        "title": "Hollanda Banka Hesabı",
+        "description": "Maaş almak, kira ödemek ve günlük işlemler için Hollanda banka hesabı açın. Çoğu ev sahibi ve işveren Hollanda IBAN'ı ister.",
+        "time": "Kart teslimatı için 1-2 hafta",
+        "docs": [
+          "Geçerli pasaport veya kimlik",
+          "BSN numarası",
+          "Adres kanıtı (belediye kaydı)",
+          "İş sözleşmesi (yararlı ama her zaman gerekli değil)"
+        ],
+        "tips": [
+          "ING, ABN AMRO, Rabobank üç büyük banka",
+          "bunq ve N26 daha hızlı (tamamen dijital)",
+          "ING iyi İngilizce destek sunuyor",
+          "Bazı bankalar İngilizce randevu veriyor"
+        ],
+        "mistakes": [
+          "BSN almadan hesap açmaya çalışmak",
+          "Gerekli tüm belgeleri getirmemek",
+          "Anında kart beklemek - 1-2 hafta sürer",
+          "Kart geldiğinde aktive etmeyi unutmak"
+        ]
+      },
+      "health": {
+        "title": "Sağlık Sigortası (Zorgverzekering)",
+        "description": "Hollanda sağlık sigortası ZORUNLUDUR. Kayıttan sonraki 4 ay içinde temel sigorta (basisverzekering) almanız gerekir. Yapmazsanız hükümet ceza kesebilir.",
+        "time": "Online 15-30 dakika, kapsam hemen başlar",
+        "docs": [
+          "BSN numarası",
+          "Hollanda banka hesabı (ödemeler için)",
+          "İkamet kanıtı"
+        ],
+        "tips": [
+          "Independer.nl veya Zorgwijzer.nl'de karşılaştırın",
+          "Temel paket 2024'te aylık ~€130-150",
+          "Diş/fizik tedavi için ek sigorta düşünün",
+          "Düşük gelirde Zorgtoeslag (sağlık ödeneği)",
+          "Popüler sağlayıcılar: CZ, VGZ, Zilveren Kruis, Menzis"
+        ],
+        "mistakes": [
+          "4 aydan fazla beklemek (€400+ ceza!)",
+          "Zorgtoeslag sübvansiyonuna başvurmamak",
+          "Kapsamı kontrol etmeden sadece fiyata göre seçmek",
+          "Ana ülkedeki kapsamı iptal etmeyi unutmak"
+        ]
+      },
+      "digid": {
+        "title": "DigiD Aktivasyonu",
+        "description": "DigiD, Hollanda devlet hizmetleri için dijital kimliğinizdir. Vergiler, sağlık talepleri ve birçok resmi işlem için gereklidir.",
+        "time": "Aktivasyon mektubu için 3-5 iş günü",
+        "docs": [
+          "BSN numarası",
+          "Hollanda cep telefonu numarası",
+          "Kayıtlı adresinize erişim (aktivasyon mektubu için)"
+        ],
+        "tips": [
+          "digid.nl/aanvragen'da başvurun",
+          "Aktivasyon kodu postayla gelir",
+          "Kolay giriş için DigiD uygulamasını indirin",
+          "Ekstra güvenlik için SMS doğrulamayı etkinleştirin"
+        ],
+        "mistakes": [
+          "Aktivasyon mektubunu yanlışlıkla atmak",
+          "Başvuruda yanlış BSN kullanmak",
+          "DigiD uygulamasını kurmamak",
+          "Şifreyi unutmak (kurtarma yavaş)"
+        ]
+      },
+      "tax": {
+        "title": "Vergi Kaydı (Belastingdienst)",
+        "description": "Çalışıyorsanız, Hollanda Vergi Dairesine kayıtlı olmanız gerekir. İşvereniniz çoğunu halleder ama temelleri anlamalısınız.",
+        "time": "İşveren aracılığıyla otomatik, kendiniz kaydolursanız 2-4 hafta",
+        "docs": [
+          "BSN numarası",
+          "İş sözleşmesi",
+          "DigiD (online portal erişimi için)",
+          "Önceki yıl vergi belgeleri (varsa)"
+        ],
+        "tips": [
+          "İşvereniniz vergileri otomatik keser (loonheffing)",
+          "Yıllık vergi beyannamesini 1 Mayıs'a kadar verin",
+          "Uygunsanız %30 kuralını kullanın (nitelikli göçmenler için vergi avantajı)",
+          "Ödenekler için Toeslagen portalı (kira, sağlık, çocuk bakımı)"
+        ],
+        "mistakes": [
+          "%30 kuralı için uygunluğu kontrol etmemek",
+          "Vergi beyannamesi son tarihini kaçırmak (1 Mayıs)",
+          "Uygun kesintileri talep etmemek",
+          "Belastingdienst mektuplarını görmezden gelmek"
+        ]
+      }
+    }
+  },
+  "faq": {
+    "title": "Sık Sorulan Sorular",
+    "subtitle": "Hollanda göçü hakkında hızlı cevaplar",
+    "all": "Tümü",
+    "askAI": "Bunu AI'a sor",
+    "categories": {
+      "registration": "Kayıt",
+      "documents": "Belgeler ve Kimlik",
+      "banking": "Bankacılık",
+      "healthcare": "Sağlık",
+      "work": "İş ve Vergiler",
+      "housing": "Konut"
+    },
+    "questions": {
+      "bsnWhat": {
+        "question": "BSN numarası nedir?",
+        "answer": "BSN (Burgerservicenummer) Hollanda vatandaş hizmet numaranızdır. Tüm devlet hizmetleri, sağlık, bankacılık ve istihdam için kullanılan benzersiz kişisel kimlik numarasıdır. Belediyeye kayıt olduğunuzda otomatik olarak alırsınız."
+      },
+      "gemeenteRegister": {
+        "question": "Belediyeye nasıl kayıt olurum?",
+        "answer": "Varışınızdan sonraki 5 gün içinde yerel belediyenizde (gemeente) randevu alın. Pasaportunuzu, doğum belgenizi, kira sözleşmesi veya adres kanıtınızı ve ilgili aile belgelerini getirin. Kayıttan sonra BSN'inizi alacaksınız."
+      },
+      "digidWhat": {
+        "question": "DigiD nedir ve buna ihtiyacım var mı?",
+        "answer": "DigiD, devlet hizmetlerine online erişim için kullanılan Hollanda dijital kimlik sistemidir. Vergiler, sağlık beyanları ve birçok resmi işlem için gereklidir. BSN aldıktan sonra digid.nl'de başvurun - aktivasyon yaklaşık bir hafta sürer."
+      },
+      "healthInsurance": {
+        "question": "Hollanda'da sağlık sigortası zorunlu mu?",
+        "answer": "Evet, temel sağlık sigortası (basisverzekering) Hollanda'da yaşayan veya çalışan herkes için zorunludur. Varıştan sonraki 4 ay içinde ayarlamalısınız. Fiyatlar aylık yaklaşık €120-150. Popüler sigortacılar: CZ, Zilveren Kruis ve VGZ."
+      },
+      "bankAccount": {
+        "question": "Hollanda banka hesabı nasıl açarım?",
+        "answer": "Çoğu banka BSN, geçerli kimlik ve adres kanıtı ister. ING, ABN AMRO ve Rabobank üç büyük bankadır. Bunq ve N26 yeni gelenler için daha kolay gereksinimleri olabilecek dijital alternatiflerdir. Sürecin 1-2 hafta sürmesini bekleyin."
+      },
+      "workPermit": {
+        "question": "Çalışma iznine ihtiyacım var mı?",
+        "answer": "AB/AEA vatandaşları özgürce çalışabilir. AB dışı vatandaşlar genellikle çalışma izni (TWV) veya çalışmaya izin veren oturma izni gerektirir. Yüksek nitelikli göçmenler ve belirli kategorilerin özel programları vardır. Özel durumunuz için IND'ye danışın."
+      },
+      "housingRegistration": {
+        "question": "Geçici adrese kayıt yaptırabilir miyim?",
+        "answer": "Evet, ama ana kiracının izin vermesi gerekir. Bazı ev sahipleri kayda izin vermez (özellikle oda kiralarda). Kayıt olmadan BSN alamazsınız. İmzalamadan önce kira sözleşmenizin kayda izin verdiğinden emin olun."
+      },
+      "thirtyRuling": {
+        "question": "%30 kuralı nedir?",
+        "answer": "Yurt dışından işe alınan yüksek nitelikli göçmenler için vergi avantajı. Maaşınızın %30'u 5 yıla kadar vergisiz ödenebilir. Belirli kriterleri karşılamanız gerekir: yurt dışından işe alınmış olmak, belirli uzmanlığa sahip olmak ve maaş eşikleri. İşvereniniz başvurmalıdır."
+      }
+    }
+  },
+  "offline": {
+    "youreOffline": "Çevrimdışısınız. Bazı özellikler sınırlı olabilir.",
+    "viewCached": "Önbelleğe alınmış bilgileri görüntüle →",
+    "backOnline": "Tekrar çevrimiçisiniz!"
+  },
+  "quickStart": {
+    "title": "Hızlı Başlangıç",
+    "dismiss": "Kapat",
+    "steps": {
+      "talk": {
+        "title": "Konuşmaya başlayın",
+        "description": "Düğmeye tıklayın ve dilinizde konuşun"
+      },
+      "fill": {
+        "title": "Bilgilerinizi doldurun",
+        "description": "Kişisel bilgileri güvenli forma girin (yerel kalır)"
+      },
+      "capture": {
+        "title": "Form yakalayın",
+        "description": "Hollanda formuna gidin, uzantıda \"Yakala\" tıklayın"
+      },
+      "autoFill": {
+        "title": "Otomatik doldur",
+        "description": "AI verilerinizi form alanlarıyla otomatik eşleştirir"
+      }
+    }
+  },
+  "languageSwitcher": {
+    "label": "Dil"
+  }
+}
