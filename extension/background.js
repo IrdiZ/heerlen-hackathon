@@ -441,11 +441,16 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
     chrome.storage.local.get('lastCapture', ({ lastCapture }) => {
       console.log('[MigrantAI] lastCapture from storage:', lastCapture ? 'exists' : 'null');
       if (lastCapture) {
-        // Transform to schema format
+        // Transform to schema format with full context
         const schema = {
           url: lastCapture.url,
           title: lastCapture.title,
-          fields: []
+          fields: [],
+          // Extra context
+          headings: lastCapture.headings || [],
+          mainContent: lastCapture.mainContent || '',
+          pageDescription: lastCapture.pageDescription || '',
+          buttons: lastCapture.buttons || []
         };
         
         lastCapture.forms?.forEach(form => {
@@ -497,11 +502,16 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
       if (data.error) {
         sendResponse({ success: false, error: data.error });
       } else {
-        // Transform to expected schema format
+        // Transform to expected schema format with full context
         const schema = {
           url: data.url,
           title: data.title,
-          fields: []
+          fields: [],
+          // Extra context
+          headings: data.headings || [],
+          mainContent: data.mainContent || '',
+          pageDescription: data.pageDescription || '',
+          buttons: data.buttons || []
         };
         
         // Flatten form fields with humanized labels

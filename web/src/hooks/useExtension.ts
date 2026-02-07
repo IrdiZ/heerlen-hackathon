@@ -24,6 +24,11 @@ export interface FormSchema {
   title: string;
   fields: FormField[];
   detectedTemplate?: DetectedTemplate | null;
+  // Extra context
+  headings?: Array<{ level: string; text: string }>;
+  mainContent?: string;
+  pageDescription?: string;
+  buttons?: Array<{ id: string; text: string; type: string }>;
 }
 
 export interface FillResult {

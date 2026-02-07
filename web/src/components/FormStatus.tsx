@@ -71,6 +71,24 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error }:
         </button>
       </div>
 
+      {/* Page context (headings, description) */}
+      {(schema.headings?.length || schema.pageDescription) && (
+        <div className="px-4 py-2 bg-gray-50 border-b text-xs space-y-1">
+          {schema.pageDescription && (
+            <p className="text-gray-600 italic">{schema.pageDescription.slice(0, 150)}...</p>
+          )}
+          {schema.headings && schema.headings.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {schema.headings.slice(0, 5).map((h, i) => (
+                <span key={i} className="bg-gray-200 px-2 py-0.5 rounded text-gray-700">
+                  {h.text?.slice(0, 30)}{h.text && h.text.length > 30 ? '...' : ''}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Fill results summary */}
       {fillResults.length > 0 && (
         <div className="px-4 py-3 bg-blue-50 border-b flex items-center gap-4">
