@@ -222,37 +222,68 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   const handleCreateRoadmap = useCallback(async (rawParams: unknown): Promise<string> => {
     console.log('[VoiceAgent] create_roadmap called with:', rawParams);
     console.log('[VoiceAgent] Type:', typeof rawParams);
-    console.log('[VoiceAgent] JSON:', JSON.stringify(rawParams, null, 2));
+
+    // Handle string parameters (JSON parsing)
+    let parsed = rawParams;
+    if (typeof rawParams === 'string') {
+      try {
+        parsed = JSON.parse(rawParams);
+        console.log('[VoiceAgent] Parsed from string');
+      } catch {
+        console.error('[VoiceAgent] Failed to parse string params');
+      }
+    }
 
     // ElevenLabs client tools might pass params in different ways
     let raw: Record<string, unknown> = {};
 
-    if (rawParams && typeof rawParams === 'object') {
-      raw = rawParams as Record<string, unknown>;
-      // Check if params are wrapped in 'parameters', 'args', or 'input'
-      if (raw.parameters && typeof raw.parameters === 'object') {
-        raw = raw.parameters as Record<string, unknown>;
-      } else if (raw.args && typeof raw.args === 'object') {
-        raw = raw.args as Record<string, unknown>;
-      } else if (raw.input && typeof raw.input === 'object') {
-        raw = raw.input as Record<string, unknown>;
+    if (parsed && typeof parsed === 'object') {
+      raw = parsed as Record<string, unknown>;
+      // Check if params are wrapped in common wrapper keys
+      const wrapperKeys = ['parameters', 'args', 'input', 'arguments', 'params', 'data'];
+      for (const key of wrapperKeys) {
+        if (raw[key] && typeof raw[key] === 'object') {
+          raw = raw[key] as Record<string, unknown>;
+          console.log(`[VoiceAgent] Unwrapped from '${key}'`);
+          break;
+        }
       }
     }
 
-    console.log('[VoiceAgent] Unwrapped raw:', JSON.stringify(raw, null, 2));
+    console.log('[VoiceAgent] Keys available:', Object.keys(raw));
 
-    // Try to extract name and steps from various possible structures
-    const name = raw.name as string || raw.roadmap_name as string || 'Immigration Roadmap';
-    let steps = raw.steps as Array<Record<string, unknown>> ||
-                (raw.roadmap as Record<string, unknown>)?.steps as Array<Record<string, unknown>>;
-
-    // If steps is undefined but we have the data at top level, try parsing differently
-    if (!steps && raw.name) {
-      // Sometimes the whole object IS the params
-      steps = (rawParams as Record<string, unknown>).steps as Array<Record<string, unknown>>;
+    // Try to extract name from various possible keys
+    const name = (raw.name || raw.roadmap_name || raw.roadmapName || raw.title || 'Immigration Roadmap') as string;
+    
+    // Try to extract steps from various possible keys
+    let steps: Array<Record<string, unknown>> | undefined;
+    const stepKeys = ['steps', 'roadmap_steps', 'roadmapSteps', 'items', 'milestones'];
+    
+    for (const key of stepKeys) {
+      const candidate = raw[key];
+      if (Array.isArray(candidate) && candidate.length > 0) {
+        steps = candidate as Array<Record<string, unknown>>;
+        console.log(`[VoiceAgent] Found steps at '${key}':`, steps.length);
+        break;
+      }
+    }
+    
+    // Also check nested roadmap object
+    if (!steps) {
+      const roadmapObj = raw.roadmap as Record<string, unknown> | undefined;
+      if (roadmapObj) {
+        for (const key of stepKeys) {
+          const candidate = roadmapObj[key];
+          if (Array.isArray(candidate) && candidate.length > 0) {
+            steps = candidate as Array<Record<string, unknown>>;
+            console.log(`[VoiceAgent] Found steps at roadmap.${key}:`, steps.length);
+            break;
+          }
+        }
+      }
     }
 
-    console.log('[VoiceAgent] Extracted - name:', name, 'steps:', steps);
+    console.log('[VoiceAgent] Extracted - name:', name, 'steps:', steps?.length ?? 0);
 
     if (!steps || !Array.isArray(steps) || steps.length === 0) {
       console.error('[VoiceAgent] Invalid steps. Raw params were:', JSON.stringify(rawParams, null, 2));
