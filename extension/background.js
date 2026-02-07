@@ -4,6 +4,101 @@
 let appPort = null;
 let lastCapturedData = null;
 
+// Dutch field name patterns → English human-readable labels
+const DUTCH_FIELD_PATTERNS = {
+  // Personal info
+  'voornaam': 'First Name',
+  'voorletters': 'Initials',
+  'achternaam': 'Last Name',
+  'familienaam': 'Family Name',
+  'tussenvoegsel': 'Prefix (van/de)',
+  'geboortedatum': 'Date of Birth',
+  'geboorteplaats': 'Place of Birth',
+  'geslacht': 'Gender',
+  'nationaliteit': 'Nationality',
+  'burgerservicenummer': 'BSN',
+  'bsn': 'BSN (Citizen Service Number)',
+  
+  // Address
+  'straat': 'Street',
+  'straatnaam': 'Street Name',
+  'huisnummer': 'House Number',
+  'toevoeging': 'Addition',
+  'postcode': 'Postal Code',
+  'woonplaats': 'City',
+  'plaats': 'City',
+  'gemeente': 'Municipality',
+  'land': 'Country',
+  
+  // Contact
+  'telefoon': 'Phone',
+  'telefoonnummer': 'Phone Number',
+  'mobiel': 'Mobile',
+  'email': 'Email',
+  'emailadres': 'Email Address',
+  
+  // Documents
+  'paspoort': 'Passport',
+  'paspoortnummer': 'Passport Number',
+  'documentnummer': 'Document Number',
+  'geldigheid': 'Validity',
+  'verloopdatum': 'Expiry Date',
+  'afgiftedatum': 'Issue Date',
+  
+  // Immigration specific
+  'verblijf': 'Residence',
+  'verblijfsdoel': 'Purpose of Stay',
+  'verblijfstitel': 'Residence Permit',
+  'visum': 'Visa',
+  'mvv': 'MVV (Entry Visa)',
+  'aankomstdatum': 'Arrival Date',
+  'werkgever': 'Employer',
+  'sponsor': 'Sponsor',
+  
+  // Financial
+  'iban': 'Bank Account (IBAN)',
+  'rekeningnummer': 'Account Number',
+  'inkomen': 'Income',
+  'salaris': 'Salary',
+  
+  // Common form words
+  'datum': 'Date',
+  'handtekening': 'Signature',
+  'opmerkingen': 'Comments',
+  'toelichting': 'Explanation',
+  'bijlage': 'Attachment',
+  'akkoord': 'Agreement',
+  'ja': 'Yes',
+  'nee': 'No',
+};
+
+// Humanize a field label using Dutch patterns
+function humanizeLabel(rawLabel) {
+  if (!rawLabel) return 'Unknown Field';
+  
+  const lower = rawLabel.toLowerCase().trim();
+  
+  // Check exact match first
+  if (DUTCH_FIELD_PATTERNS[lower]) {
+    return DUTCH_FIELD_PATTERNS[lower];
+  }
+  
+  // Check if label contains any pattern
+  for (const [pattern, label] of Object.entries(DUTCH_FIELD_PATTERNS)) {
+    if (lower.includes(pattern)) {
+      return label;
+    }
+  }
+  
+  // Fallback: convert camelCase/snake_case to Title Case
+  return rawLabel
+    .replace(/([A-Z])/g, ' $1')      // camelCase → camel Case
+    .replace(/[_-]/g, ' ')           // snake_case → snake case
+    .replace(/\b\w/g, c => c.toUpperCase())  // capitalize words
+    .replace(/\s+/g, ' ')            // clean up spaces
+    .trim();
+}
+
 // Listen for connections from our web app
 chrome.runtime.onConnectExternal.addListener((port) => {
   console.log('[MigrantAI] Web app connected');
@@ -352,13 +447,14 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
           fields: []
         };
         
-        // Flatten form fields
+        // Flatten form fields with humanized labels
         data.forms?.forEach(form => {
           form.fields?.forEach(field => {
+            const rawLabel = field.label || field.placeholder || field.name || field.id;
             schema.fields.push({
               id: field.id || field.name,
               name: field.name,
-              label: field.label || field.placeholder || field.name || field.id,
+              label: humanizeLabel(rawLabel),
               type: field.type,
               tag: field.type === 'select' ? 'SELECT' : 'INPUT',
               required: field.required,
@@ -367,12 +463,13 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
           });
         });
         
-        // Add standalone inputs
+        // Add standalone inputs with humanized labels
         data.inputs?.forEach(field => {
+          const rawLabel = field.label || field.placeholder || field.name || field.id;
           schema.fields.push({
             id: field.id || field.name,
             name: field.name,
-            label: field.label || field.placeholder || field.name || field.id,
+            label: humanizeLabel(rawLabel),
             type: field.type,
             tag: field.type === 'select' ? 'SELECT' : 'INPUT',
             required: field.required,
@@ -393,6 +490,11 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
       result.errors?.forEach(e => results.push({ field: e.selector, status: 'error' }));
       sendResponse({ success: true, results });
     });
+    return true;
+  }
+  
+  if (message.type === 'VISUAL_CAPTURE') {
+    handleVisualCapture().then(sendResponse);
     return true;
   }
   
@@ -509,14 +611,5 @@ Return JSON format:
   
   return { description: content, fields: [] };
 }
-
-// Add VISUAL_CAPTURE to external message handler
-chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
-  if (message.type === 'VISUAL_CAPTURE') {
-    handleVisualCapture().then(sendResponse);
-    return true;
-  }
-  // ... rest handled below
-});
 
 console.log('[MigrantAI] Background script loaded');

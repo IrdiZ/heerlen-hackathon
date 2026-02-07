@@ -89,25 +89,33 @@ openAppBtn.addEventListener('click', () => {
   chrome.tabs.create({ url: APP_URL });
 });
 
-// Check if extension is working (not persistent connection - just self-test)
+// Check if extension is working with 3-attempt retry
 async function checkConnection() {
-  try {
-    // Just check if background script responds
-    const response = await chrome.runtime.sendMessage({ type: 'PING' });
-    console.log('[Popup] PING response:', response);
-    updateConnectionUI(response?.success === true);
-  } catch (e) {
-    console.log('[Popup] PING failed:', e);
-    // Retry once after short delay (wake up service worker)
-    setTimeout(async () => {
-      try {
-        const retry = await chrome.runtime.sendMessage({ type: 'PING' });
-        updateConnectionUI(retry?.success === true);
-      } catch (e2) {
-        updateConnectionUI(false);
+  const maxAttempts = 3;
+  const retryDelay = 300;
+  
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      console.log(`[Popup] PING attempt ${attempt}/${maxAttempts}`);
+      const response = await chrome.runtime.sendMessage({ type: 'PING' });
+      console.log('[Popup] PING response:', response);
+      
+      if (response?.success === true) {
+        updateConnectionUI(true);
+        return;
       }
-    }, 500);
+    } catch (e) {
+      console.log(`[Popup] PING attempt ${attempt} failed:`, e.message);
+    }
+    
+    // Wait before retry (except on last attempt)
+    if (attempt < maxAttempts) {
+      await new Promise(r => setTimeout(r, retryDelay));
+    }
   }
+  
+  // All attempts failed
+  updateConnectionUI(false);
 }
 
 // Update connection UI
