@@ -89,6 +89,15 @@ export function useChecklist() {
     }
   }, []);
 
+  const importChecklist = useCallback((data: ChecklistState) => {
+    // Merge with initial state to ensure all steps exist
+    const merged = { ...initialState, ...data };
+    setChecklist(merged);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+    }
+  }, []);
+
   const getCompletedCount = useCallback(() => {
     return Object.values(checklist).filter(s => s.status === 'complete').length;
   }, [checklist]);
@@ -129,6 +138,7 @@ export function useChecklist() {
     markInProgress,
     markPending,
     resetAll,
+    importChecklist,
     getCompletedCount,
     getProgress,
     getNextStep,

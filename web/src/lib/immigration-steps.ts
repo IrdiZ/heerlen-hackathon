@@ -167,6 +167,34 @@ export const IMMIGRATION_STEPS: ImmigrationStep[] = [
     ],
     order: 6,
   },
+  {
+    id: 'zorgtoeslag',
+    title: 'Zorgtoeslag (Healthcare Allowance)',
+    description:
+      'Zorgtoeslag is a monthly healthcare subsidy from the government to help cover the cost of your basic health insurance. If your income is below certain thresholds, you may qualify.',
+    requiredDocuments: [
+      'DigiD (required for online application)',
+      'BSN number',
+      'Dutch bank account (IBAN)',
+      'Proof of income (salary slips)',
+      'Health insurance policy number',
+    ],
+    estimatedTime: '15 minutes online, 4-6 weeks for first payment',
+    tips: [
+      'Apply via toeslagen.nl using DigiD',
+      'Maximum income ~€38,000/year for singles (2024)',
+      'Can get up to ~€150/month back',
+      'Apply within 3 months to get backdated payments',
+      'Update if your income or situation changes',
+    ],
+    commonMistakes: [
+      'Not applying because you didn\'t know it exists',
+      'Missing the 3-month backdating window',
+      'Forgetting to update when income changes (leads to repayment!)',
+      'Not having DigiD activated first',
+    ],
+    order: 7,
+  },
 ];
 
 export const getStepById = (id: string): ImmigrationStep | undefined => {

@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import Link from 'next/link';
 import { VoiceAgent } from '@/components/VoiceAgent';
 import { PIIForm } from '@/components/PIIForm';
 import { FormStatus } from '@/components/FormStatus';
 import { Transcript } from '@/components/Transcript';
 import { FormTemplateSelector, TemplateIndicator } from '@/components/FormTemplateSelector';
+import { DutchDataPanel } from '@/components/DutchDataPanel';
 import { useLocalPII } from '@/hooks/useLocalPII';
 import { useExtension } from '@/hooks/useExtension';
 import { swapPlaceholders } from '@/lib/placeholders';
@@ -24,6 +26,7 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [showPIIForm, setShowPIIForm] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [showDutchData, setShowDutchData] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<FormTemplate | null>(null);
   
   const { piiData, updateField, clearAll, loadDemo, getFilledCount, totalFields } = useLocalPII();
@@ -149,6 +152,22 @@ export default function Home() {
           <p className="mt-6 text-sm text-gray-500">
             No account needed • Free to use • Works offline for forms
           </p>
+
+          {/* Quick Links */}
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <Link
+              href="/progress"
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white rounded-lg shadow hover:shadow-md hover:text-orange-600 transition-all"
+            >
+              📊 Progress Dashboard
+            </Link>
+            <Link
+              href="/documents"
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white rounded-lg shadow hover:shadow-md hover:text-blue-600 transition-all"
+            >
+              📄 Document Tracker
+            </Link>
+          </div>
         </div>
       </main>
     );
@@ -171,6 +190,22 @@ export default function Home() {
                 onClick={() => setSelectedTemplate(null)}
               />
             )}
+            <Link
+              href="/documents"
+              className="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md bg-gray-100 text-gray-600 hover:bg-gray-200"
+            >
+              📄 Documents
+            </Link>
+            <button
+              onClick={() => setShowDutchData(!showDutchData)}
+              className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md ${
+                showDutchData 
+                  ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              🇳🇱 Dutch Data
+            </button>
             <button
               onClick={() => setShowTemplates(!showTemplates)}
               className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md ${
@@ -247,6 +282,13 @@ export default function Home() {
                 <span>Auto-Fill with {selectedTemplate.nameEN}</span>
               </button>
             )}
+
+            {/* Dutch Data Panel (collapsible with animation) */}
+            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showDutchData ? 'opacity-100 max-h-[2000px]' : 'opacity-0 max-h-0'}`}>
+              {showDutchData && (
+                <DutchDataPanel defaultRegion="Heerlen" compact={true} />
+              )}
+            </div>
 
             {/* Form Templates (collapsible with animation) */}
             <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showTemplates ? 'opacity-100 max-h-[2000px]' : 'opacity-0 max-h-0'}`}>
