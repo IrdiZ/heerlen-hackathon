@@ -94,9 +94,19 @@ async function checkConnection() {
   try {
     // Just check if background script responds
     const response = await chrome.runtime.sendMessage({ type: 'PING' });
+    console.log('[Popup] PING response:', response);
     updateConnectionUI(response?.success === true);
   } catch (e) {
-    updateConnectionUI(false);
+    console.log('[Popup] PING failed:', e);
+    // Retry once after short delay (wake up service worker)
+    setTimeout(async () => {
+      try {
+        const retry = await chrome.runtime.sendMessage({ type: 'PING' });
+        updateConnectionUI(retry?.success === true);
+      } catch (e2) {
+        updateConnectionUI(false);
+      }
+    }, 500);
   }
 }
 
