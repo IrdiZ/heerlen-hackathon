@@ -11,6 +11,7 @@ import { FormTemplateSelector, TemplateIndicator } from '@/components/FormTempla
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ProgressTracker } from '@/components/ProgressTracker';
 import { DevPanel } from '@/components/dev';
+import { CountrySelector } from '@/components/CountrySelector';
 import { useLocalPII } from '@/hooks/useLocalPII';
 import { useExtension } from '@/hooks/useExtension';
 import { useRoadmap } from '@/hooks/useRoadmap';
@@ -402,24 +403,16 @@ export default function Home() {
                 ))}
               </motion.div>
 
-              {/* CTA buttons */}
+              {/* Country Selector */}
               <motion.div
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
+                className="w-full max-w-4xl mx-auto mb-16"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
               >
-                <motion.button
-                  onClick={() => setAppState('active')}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="px-8 py-4 text-lg font-semibold bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300"
-                >
-                  {t('landing.startButton')} →
-                </motion.button>
-                <button className="px-8 py-4 text-lg font-medium text-slate-300 hover:text-white transition-colors">
-                  Learn more
-                </button>
+                <CountrySelector 
+                  onStartJourney={() => setAppState('active')}
+                />
               </motion.div>
 
               {/* Feature cards */}

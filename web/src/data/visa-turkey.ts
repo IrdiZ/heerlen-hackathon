@@ -1,9 +1,17 @@
 /**
- * Turkey → Netherlands Visa Requirements for Kennismigrant (Highly Skilled Migrant)
- * Work Sponsorship Guide
+ * Turkey → Netherlands Visa Requirements
+ * Highly Skilled Migrant (Kennismigrant) & Student Visa Guide
  * 
  * Last Updated: February 2026
- * Sources: IND.nl, NetherlandsWorldwide.nl, business.gov.nl
+ * 
+ * Official Sources:
+ * - IND (Immigration and Naturalisation Service): https://ind.nl/en
+ * - IND - Turkish Citizens: https://ind.nl/en/turkish-citizens-and-living-in-the-netherlands
+ * - IND - Required Amounts: https://ind.nl/en/required-amounts-income-requirements
+ * - IND - Fees: https://ind.nl/en/fees-costs-of-an-application
+ * - Netherlands Worldwide - MVV Turkey: https://www.netherlandsworldwide.nl/visa-the-netherlands/mvv-long-stay/apply-turkiye
+ * - Netherlands Worldwide - Legalisation Turkey: https://www.netherlandsworldwide.nl/legalisation/foreign-documents/turkiye
+ * - HCCH Apostille Turkey: https://www.hcch.net/en/states/authorities/details3/?aid=350
  */
 
 export interface VisaStep {
@@ -111,34 +119,54 @@ export const salaryThresholds2025: SalaryThreshold[] = [
 
 // ============================================================================
 // APPLICATION FEES
+// Source: https://ind.nl/en/fees-costs-of-an-application
 // ============================================================================
 
 export const applicationFees: Fee[] = [
   {
-    description: 'First application - Highly Skilled Migrant (employee)',
-    amount: 405,
+    description: 'First application - Highly Skilled Migrant (standard rate)',
+    amount: 423,
     currency: 'EUR',
-    notes: '2025 rates - Turkish citizens may pay reduced rates under EU-Turkey Association Agreement'
+    notes: '2026 rates - Standard fee for non-Turkish citizens'
   },
   {
-    description: 'Extension - Highly Skilled Migrant',
-    amount: 405,
+    description: 'First application - Highly Skilled Migrant (Turkish citizens)',
+    amount: 72,
     currency: 'EUR',
+    notes: 'Reduced rate under EU-Turkey Association Agreement'
+  },
+  {
+    description: 'Extension - Highly Skilled Migrant (standard rate)',
+    amount: 423,
+    currency: 'EUR',
+  },
+  {
+    description: 'Extension - Highly Skilled Migrant (Turkish citizens)',
+    amount: 72,
+    currency: 'EUR',
+    notes: 'Reduced rate under EU-Turkey Association Agreement'
   },
   {
     description: 'Family member (spouse/partner/child) - First application',
-    amount: 243,
+    amount: 215,
     currency: 'EUR',
+    notes: '2026 rates'
+  },
+  {
+    description: 'Family member (Turkish citizens)',
+    amount: 72,
+    currency: 'EUR',
+    notes: 'Reduced rate under EU-Turkey Association Agreement'
   },
   {
     description: 'Recognized Sponsor Registration (standard)',
-    amount: 4866,
+    amount: 5080,
     currency: 'EUR',
-    notes: 'One-time fee, valid for 5 years'
+    notes: 'One-time fee, valid indefinitely'
   },
   {
     description: 'Recognized Sponsor Registration (reduced - <50 employees or <1.5 years old)',
-    amount: 2432,
+    amount: 2540,
     currency: 'EUR',
   }
 ];
@@ -157,7 +185,7 @@ export const turkishCitizenBenefits = {
     },
     {
       benefit: 'Reduced application fees',
-      details: 'Lower rates apply for work-related residence permits under the Association Agreement'
+      details: 'Turkish citizens pay only €72 for work permit applications instead of the standard €423'
     },
     {
       benefit: 'Self-application option',
@@ -170,7 +198,153 @@ export const turkishCitizenBenefits = {
       title: 'IND - Turkish citizens and living in the Netherlands',
       url: 'https://ind.nl/en/turkish-citizens-and-living-in-the-netherlands',
       description: 'Official IND page on special rules for Turkish nationals'
+    },
+    {
+      title: 'IND - Fees and Costs',
+      url: 'https://ind.nl/en/fees-costs-of-an-application',
+      description: 'Official fee amounts including reduced rates for Turkish citizens'
     }
+  ]
+};
+
+// ============================================================================
+// STUDENT VISA REQUIREMENTS
+// Source: https://ind.nl/en/required-amounts-income-requirements
+// ============================================================================
+
+export interface StudentFinancialRequirement {
+  studyType: string;
+  monthlyAmount: number;
+  currency: string;
+  notes?: string;
+}
+
+export const studentVisaRequirements = {
+  title: 'Student Residence Permit (Study)',
+  description: 'Turkish students can study in the Netherlands with a student residence permit. The educational institution must be a recognized sponsor and applies on behalf of the student.',
+  mvvRequired: true,
+  
+  financialRequirements2026: [
+    {
+      studyType: 'HBO (University of Applied Sciences) / University (WO)',
+      monthlyAmount: 1130.77,
+      currency: 'EUR',
+      notes: 'Must demonstrate sufficient funds for entire study period'
+    },
+    {
+      studyType: 'MBO (Vocational Education) / Secondary Education',
+      monthlyAmount: 928.58,
+      currency: 'EUR',
+      notes: 'For vocational or secondary education programs'
+    }
+  ] as StudentFinancialRequirement[],
+  
+  process: [
+    {
+      step: 1,
+      title: 'Admission to Dutch Educational Institution',
+      description: 'Obtain admission letter from a recognized Dutch educational institution'
+    },
+    {
+      step: 2,
+      title: 'Institution Applies for Permit',
+      description: 'The educational institution (as recognized sponsor) submits the TEV application on your behalf'
+    },
+    {
+      step: 3,
+      title: 'Proof of Finances',
+      description: 'Provide proof of sufficient funds (bank statement, scholarship letter, or sponsor guarantee)'
+    },
+    {
+      step: 4,
+      title: 'IND Processing',
+      description: 'IND reviews the application (2-4 weeks for recognized sponsors)'
+    },
+    {
+      step: 5,
+      title: 'MVV Collection',
+      description: 'After approval, collect MVV sticker at Dutch Embassy in Ankara or Consulate in Istanbul'
+    },
+    {
+      step: 6,
+      title: 'Travel and Register',
+      description: 'Travel to NL, register at municipality, take TB test, collect residence permit'
+    }
+  ],
+  
+  documentRequirements: [
+    {
+      name: 'Valid Passport',
+      description: 'At least 6 months validity beyond intended stay',
+      needsApostille: false,
+      needsTranslation: false
+    },
+    {
+      name: 'Admission Letter',
+      description: 'Official admission letter from Dutch educational institution',
+      needsApostille: false,
+      needsTranslation: false
+    },
+    {
+      name: 'Educational Certificates',
+      description: 'Previous diplomas and transcripts',
+      needsApostille: true,
+      needsTranslation: true,
+      notes: 'Apostille from Turkish authorities required'
+    },
+    {
+      name: 'Proof of Financial Means',
+      description: 'Bank statements or scholarship letter showing sufficient funds',
+      needsApostille: false,
+      needsTranslation: false
+    },
+    {
+      name: 'Antecedents Certificate',
+      description: 'Declaration about criminal history (IND form)',
+      needsApostille: false,
+      needsTranslation: false
+    }
+  ],
+  
+  fees: [
+    {
+      description: 'Student residence permit - First application (Turkish citizens)',
+      amount: 72,
+      currency: 'EUR',
+      notes: 'Reduced rate under EU-Turkey Association Agreement'
+    },
+    {
+      description: 'Student residence permit - First application (standard)',
+      amount: 222,
+      currency: 'EUR',
+      notes: 'Standard rate for non-Turkish citizens'
+    }
+  ],
+  
+  links: [
+    {
+      title: 'IND - Study in the Netherlands',
+      url: 'https://ind.nl/en/residence-permits/study',
+      description: 'Official IND page for student residence permits'
+    },
+    {
+      title: 'IND - Financial Requirements for Study',
+      url: 'https://ind.nl/en/required-amounts-income-requirements',
+      description: 'Current financial requirements for students'
+    },
+    {
+      title: 'Study in Holland',
+      url: 'https://www.studyinholland.nl',
+      description: 'Official portal for international students in the Netherlands'
+    }
+  ],
+  
+  tips: [
+    'Educational institution handles the application - contact their international office',
+    'Turkish citizens pay reduced fees under the EU-Turkey Association Agreement',
+    'Financial proof can be: personal bank account, scholarship, or sponsor guarantee',
+    'Students can work up to 16 hours per week alongside studies',
+    'Consider applying for orientation year (zoekjaar) after graduation'
   ]
 };
 
@@ -655,6 +829,7 @@ export const commonMistakes: CommonMistake[] = [
 // ============================================================================
 
 export const importantLinks: ResourceLink[] = [
+  // Work Visa Links
   {
     title: 'IND - Highly Skilled Migrant Main Page',
     url: 'https://ind.nl/en/residence-permits/work/highly-skilled-migrant',
@@ -681,9 +856,38 @@ export const importantLinks: ResourceLink[] = [
     description: 'Current application fees'
   },
   {
+    title: 'IND - Become Recognized Sponsor',
+    url: 'https://ind.nl/en/residence-permits/work/apply-for-recognition-as-sponsor',
+    description: 'How employers can become recognized sponsors'
+  },
+  {
+    title: 'IND - Public Register of Recognized Sponsors',
+    url: 'https://ind.nl/en/public-register-recognised-sponsors',
+    description: 'Check if an employer is already a recognized sponsor'
+  },
+  
+  // Student Visa Links
+  {
+    title: 'IND - Study in the Netherlands',
+    url: 'https://ind.nl/en/residence-permits/study',
+    description: 'Official IND page for student residence permits'
+  },
+  {
+    title: 'Study in Holland',
+    url: 'https://www.studyinholland.nl',
+    description: 'Official portal for international students'
+  },
+  
+  // Embassy & MVV Links
+  {
     title: 'NetherlandsWorldwide - MVV in Turkey',
     url: 'https://www.netherlandsworldwide.nl/visa-the-netherlands/mvv-long-stay/apply-turkiye',
     description: 'How to collect MVV at Dutch embassy/consulate'
+  },
+  {
+    title: 'NetherlandsWorldwide - Embassies in Turkey',
+    url: 'https://www.netherlandsworldwide.nl/contact/embassies-consulates-general/turkiye',
+    description: 'Contact information for Dutch missions in Turkey'
   },
   {
     title: 'NetherlandsWorldwide - Document Legalisation Turkey',
@@ -691,56 +895,97 @@ export const importantLinks: ResourceLink[] = [
     description: 'Which Turkish documents need apostille'
   },
   {
+    title: 'HCCH - Turkish Apostille Authorities',
+    url: 'https://www.hcch.net/en/states/authorities/details3/?aid=350',
+    description: 'Official Turkish authorities that issue apostilles'
+  },
+  
+  // VFS Global (Schengen Only)
+  {
     title: 'VFS Global - Netherlands Turkey',
     url: 'https://visa.vfsglobal.com/tur/en/nld',
-    description: 'VFS Global portal for Schengen visa (not for MVV)'
+    description: '⚠️ For Schengen (short-stay) visa ONLY - NOT for MVV'
   },
+  {
+    title: 'VFS Global - Book Appointment',
+    url: 'https://visa.vfsglobal.com/tur/en/nld/book-an-appointment',
+    description: 'Schengen visa appointments only - MVV appointments via embassy email'
+  },
+  
+  // General Information
   {
     title: 'Business.gov.nl - Highly Skilled Migrant',
     url: 'https://business.gov.nl/coming-to-the-netherlands/permits-and-visa/residence-permit-for-highly-skilled-migrant/',
     description: 'Government business portal with employer information'
-  },
-  {
-    title: 'IND - Become Recognized Sponsor',
-    url: 'https://ind.nl/en/residence-permits/work/apply-for-recognition-as-sponsor',
-    description: 'How employers can become recognized sponsors'
   }
 ];
 
 // ============================================================================
 // EMBASSY/CONSULATE CONTACT INFO
+// Source: https://www.netherlandsworldwide.nl/contact/embassies-consulates-general/turkiye
 // ============================================================================
 
 export const dutchMissionsInTurkey = {
   embassy: {
     name: 'Royal Netherlands Embassy in Ankara',
     address: 'Hollanda Caddesi No:5, Yıldız, 06550 Çankaya/Ankara',
+    phone: '+90 312 409 18 00',
     generalEmail: 'ank-ca@minbuza.nl',
     mvvAppointmentEmail: 'ank-inburgering@minbuza.nl',
     orangeCarpetEmail: 'ank-orange@minbuza.nl',
-    website: 'https://www.netherlandsworldwide.nl/contact/embassies-consulates-general/turkiye'
+    website: 'https://www.netherlandsworldwide.nl/contact/embassies-consulates-general/turkiye',
+    mvvBookingNotes: 'Email ank-inburgering@minbuza.nl to schedule MVV collection appointment'
   },
   consulateGeneral: {
     name: 'Consulate General of the Netherlands in Istanbul',
     address: 'İstiklal Caddesi No:197, Beyoğlu, 34433 Istanbul',
+    phone: '+90 212 393 21 21',
     generalEmail: 'ist-ca@minbuza.nl',
+    mvvAppointmentEmail: 'ist-ca@minbuza.nl',
     orangeCarpetEmail: 'ist-orange@minbuza.nl',
-    website: 'https://www.netherlandsworldwide.nl/contact/embassies-consulates-general/turkiye'
+    website: 'https://www.netherlandsworldwide.nl/contact/embassies-consulates-general/turkiye',
+    mvvBookingNotes: 'Email ist-ca@minbuza.nl to schedule MVV collection appointment'
   },
-  vfsGlobalCenters: [
-    'Ankara',
-    'Antalya', 
-    'Bodrum',
-    'Bursa',
-    'Edirne',
-    'Gaziantep',
-    'Istanbul',
-    'Izmir'
-  ],
+  vfsGlobal: {
+    description: '⚠️ VFS Global handles ONLY Schengen (short-stay) visa applications',
+    website: 'https://visa.vfsglobal.com/tur/en/nld',
+    appointmentUrl: 'https://visa.vfsglobal.com/tur/en/nld/book-an-appointment',
+    centers: [
+      'Ankara',
+      'Antalya', 
+      'Bodrum',
+      'Bursa',
+      'Edirne',
+      'Gaziantep',
+      'Istanbul',
+      'Izmir'
+    ],
+    importantNote: 'MVV (long-stay entry visa) is NOT processed through VFS Global. You must book directly with the Embassy or Consulate-General by email.'
+  },
   notes: [
     'VFS Global handles Schengen (short-stay) visa applications only',
     'MVV (long-stay entry visa) is collected directly at embassy or consulate-general',
-    'Make MVV appointment by email, not through VFS Global'
+    'Make MVV appointment by email, not through VFS Global',
+    'IND approval letter will specify which location (Ankara or Istanbul) to use',
+    'MVV sticker preparation takes up to 10 working days',
+    'Biometric data (fingerprints, photo) will be collected at appointment'
+  ],
+  links: [
+    {
+      title: 'Netherlands Worldwide - MVV in Turkey',
+      url: 'https://www.netherlandsworldwide.nl/visa-the-netherlands/mvv-long-stay/apply-turkiye',
+      description: 'Official instructions for MVV collection in Turkey'
+    },
+    {
+      title: 'Netherlands Worldwide - Embassies Turkey',
+      url: 'https://www.netherlandsworldwide.nl/contact/embassies-consulates-general/turkiye',
+      description: 'Contact information for Dutch missions in Turkey'
+    },
+    {
+      title: 'VFS Global Turkey (Schengen only)',
+      url: 'https://visa.vfsglobal.com/tur/en/nld',
+      description: 'For short-stay Schengen visa only - NOT for MVV'
+    }
   ]
 };
 
@@ -779,10 +1024,58 @@ export const thirtyPercentRuling = {
 };
 
 // ============================================================================
+// OFFICIAL SOURCES
+// ============================================================================
+
+export const officialSources = [
+  {
+    name: 'IND - Highly Skilled Migrant',
+    url: 'https://ind.nl/en/residence-permits/work/highly-skilled-migrant',
+    description: 'Main IND page for highly skilled migrant residence permit'
+  },
+  {
+    name: 'IND - Turkish Citizens',
+    url: 'https://ind.nl/en/turkish-citizens-and-living-in-the-netherlands',
+    description: 'Special rules for Turkish citizens under EU-Turkey Association Agreement'
+  },
+  {
+    name: 'IND - Required Amounts (Salary & Financial Requirements)',
+    url: 'https://ind.nl/en/required-amounts-income-requirements',
+    description: '2026 salary thresholds and student financial requirements'
+  },
+  {
+    name: 'IND - Fees and Costs',
+    url: 'https://ind.nl/en/fees-costs-of-an-application',
+    description: 'Current application fees including reduced rates for Turkish citizens'
+  },
+  {
+    name: 'IND - MVV (Provisional Residence Permit)',
+    url: 'https://ind.nl/en/provisional-residence-permit-mvv',
+    description: 'Information about MVV requirements'
+  },
+  {
+    name: 'Netherlands Worldwide - MVV Turkey',
+    url: 'https://www.netherlandsworldwide.nl/visa-the-netherlands/mvv-long-stay/apply-turkiye',
+    description: 'How to collect MVV at Dutch embassy/consulate in Turkey'
+  },
+  {
+    name: 'Netherlands Worldwide - Legalisation Turkey',
+    url: 'https://www.netherlandsworldwide.nl/legalisation/foreign-documents/turkiye',
+    description: 'Which Turkish documents need apostille'
+  },
+  {
+    name: 'HCCH - Turkish Apostille Authorities',
+    url: 'https://www.hcch.net/en/states/authorities/details3/?aid=350',
+    description: 'Official Turkish authorities that issue apostilles'
+  }
+];
+
+// ============================================================================
 // EXPORT DEFAULT DATA OBJECT
 // ============================================================================
 
 export default {
+  // Highly Skilled Migrant (Work Visa)
   salaryThresholds2026,
   salaryThresholds2025,
   applicationFees,
@@ -790,9 +1083,21 @@ export default {
   visaProcess,
   processingTimes,
   commonMistakes,
+  
+  // Student Visa
+  studentVisaRequirements,
+  
+  // General Information
   importantLinks,
   dutchMissionsInTurkey,
   thirtyPercentRuling,
+  officialSources,
+  
+  // Metadata
   lastUpdated: '2026-02-07',
-  disclaimer: 'This information is provided for guidance only. Always verify current requirements with official IND sources (ind.nl) as immigration rules change frequently.'
+  mvvRequired: true,
+  nationality: 'Turkish',
+  destinationCountry: 'Netherlands',
+  
+  disclaimer: 'This information is provided for guidance only. Always verify current requirements with official IND sources (ind.nl) as immigration rules change frequently. Fee amounts and salary thresholds are updated annually - check IND website for latest figures.'
 };

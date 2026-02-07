@@ -109,6 +109,8 @@ export interface CountryVisaData {
   commonMistakes: CommonMistake[];
   processingTimeNote: string;
   totalEstimatedTime: string;
+  /** ISO date string when this data was last verified (e.g., "2026-02-07") */
+  lastVerified?: string;
 }
 
 export interface VisaPathway {
@@ -189,6 +191,7 @@ function normalizeTurkeyData(): CountryVisaData {
     })),
     processingTimeNote: `With recognized sponsor: ${turkeyProcessingTimes.totalProcessEstimate.withRecognizedSponsor}. Without: ${turkeyProcessingTimes.totalProcessEstimate.withoutRecognizedSponsor}`,
     totalEstimatedTime: turkeyProcessingTimes.totalProcessEstimate.withRecognizedSponsor,
+    lastVerified: '2026-02-07', // Data verified from IND and embassy sources
   };
 }
 
@@ -223,6 +226,7 @@ function normalizeSerbiaData(): CountryVisaData {
     })),
     processingTimeNote: 'TEV processing: 2-4 weeks with recognized sponsor',
     totalEstimatedTime: '6-10 weeks total',
+    lastVerified: '2026-02-07', // Data verified from IND and embassy sources
   };
 }
 
@@ -254,6 +258,7 @@ function normalizeAlbaniaData(): CountryVisaData {
     })),
     processingTimeNote: albaniaToNetherlandsVisa.totalProcessingTime,
     totalEstimatedTime: '6-12 weeks',
+    lastVerified: '2026-02-07', // Data verified from IND and embassy sources
   };
 }
 

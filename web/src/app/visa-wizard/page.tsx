@@ -13,6 +13,7 @@ import {
   SALARY_THRESHOLDS,
   COUNTRY_FLAGS,
 } from '@/lib/visa-wizard-data';
+import { DataFreshnessIndicator, DataFreshnessBadge } from '@/components/DataFreshnessIndicator';
 
 // ============================================================================
 // Intake Form Component
@@ -272,7 +273,15 @@ function CountryInfoCard({ countryData }: { countryData: CountryVisaData }) {
         <div className="flex items-center gap-3">
           <span className="text-3xl">{countryData.flag}</span>
           <div>
-            <h3 className="font-semibold text-white">{countryData.country} → Netherlands</h3>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="font-semibold text-white">{countryData.country} → Netherlands</h3>
+              {countryData.lastVerified && (
+                <DataFreshnessBadge 
+                  lastVerified={countryData.lastVerified} 
+                  sourceName={`${countryData.country} Visa Data`}
+                />
+              )}
+            </div>
             <p className="text-sm text-slate-400">Country-specific requirements</p>
           </div>
         </div>
@@ -281,6 +290,14 @@ function CountryInfoCard({ countryData }: { countryData: CountryVisaData }) {
 
       {isExpanded && (
         <div className="border-t p-5 space-y-4 animate-fade-in">
+          {/* Data Freshness Warning */}
+          {countryData.lastVerified && (
+            <DataFreshnessIndicator
+              lastVerified={countryData.lastVerified}
+              sourceName={`${countryData.country} Visa Data`}
+            />
+          )}
+
           {/* Requirements badges */}
           <div className="flex flex-wrap gap-2">
             {countryData.requiresMVV && (
