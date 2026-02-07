@@ -97,7 +97,7 @@ export function LiveConsole() {
                 <pre className="mt-1 text-gray-400 overflow-x-auto text-[10px]">
                   {JSON.stringify(tc.params, null, 2)}
                 </pre>
-                {tc.result && (
+                {tc.result !== undefined && tc.result !== null && (
                   <pre className="mt-1 text-green-300 overflow-x-auto text-[10px]">
                     → {JSON.stringify(tc.result, null, 2)}
                   </pre>
