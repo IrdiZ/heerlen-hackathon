@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { VoiceAgent } from '@/components/VoiceAgent';
 import { PIIForm } from '@/components/PIIForm';
 import { FormStatus } from '@/components/FormStatus';
 import { Transcript } from '@/components/Transcript';
+import { FormTemplateSelector, TemplateIndicator } from '@/components/FormTemplateSelector';
 import { useLocalPII } from '@/hooks/useLocalPII';
 import { useExtension } from '@/hooks/useExtension';
 import { swapPlaceholders } from '@/lib/placeholders';
+import { FormTemplate, getTemplateById, createFillMapFromTemplate } from '@/lib/form-templates';
 
 type AppState = 'landing' | 'active';
 
@@ -21,9 +23,22 @@ export default function Home() {
   const [appState, setAppState] = useState<AppState>('landing');
   const [messages, setMessages] = useState<Message[]>([]);
   const [showPIIForm, setShowPIIForm] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<FormTemplate | null>(null);
   
   const { piiData, updateField, clearAll, loadDemo, getFilledCount, totalFields } = useLocalPII();
   const { isConnected, formSchema, lastFillResults, error, requestFormSchema, fillForm, clearSchema } = useExtension();
+
+  // Auto-select template when form schema is captured with a detected template
+  useEffect(() => {
+    if (formSchema?.detectedTemplate && !selectedTemplate) {
+      const template = getTemplateById(formSchema.detectedTemplate.id);
+      if (template) {
+        setSelectedTemplate(template);
+        setShowTemplates(true);
+      }
+    }
+  }, [formSchema, selectedTemplate]);
 
   const handleMessage = useCallback((msg: { role: string; content: string }) => {
     setMessages(prev => [...prev, { ...msg, timestamp: new Date() }]);
@@ -32,12 +47,46 @@ export default function Home() {
   const handleFormSchemaRequest = useCallback(async () => {
     const schema = await requestFormSchema();
     if (schema) {
-      handleMessage({ 
-        role: 'system', 
-        content: `Form captured: ${schema.fields.length} fields detected on "${schema.title}"` 
-      });
+      let message = `Form captured: ${schema.fields.length} fields detected on "${schema.title}"`;
+      
+      // If template was auto-detected, mention it
+      if (schema.detectedTemplate) {
+        message += ` (Template detected: ${schema.detectedTemplate.nameEN})`;
+      }
+      
+      handleMessage({ role: 'system', content: message });
     }
   }, [requestFormSchema, handleMessage]);
+
+  const handleTemplateSelect = useCallback((template: FormTemplate) => {
+    setSelectedTemplate(template);
+    handleMessage({
+      role: 'system',
+      content: `Template selected: ${template.nameEN} (${template.nameNL})`
+    });
+  }, [handleMessage]);
+
+  const handleTemplateBasedFill = useCallback(async () => {
+    if (!selectedTemplate || !formSchema) return;
+    
+    // Create fill map from template and actual form fields
+    const formFieldIds = formSchema.fields.map(f => f.id);
+    const fillMap = createFillMapFromTemplate(selectedTemplate, formFieldIds);
+    
+    // Swap placeholders for real PII values
+    const realValues = swapPlaceholders(fillMap, piiData as unknown as Record<string, string>);
+    
+    // Send to extension to fill
+    const results = await fillForm(realValues);
+    
+    const filled = results.filter(r => r.status === 'filled').length;
+    const failed = results.filter(r => r.status !== 'filled').length;
+    
+    handleMessage({
+      role: 'system',
+      content: `Template-based fill complete: ${filled} fields filled${failed > 0 ? `, ${failed} failed` : ''}`
+    });
+  }, [selectedTemplate, formSchema, piiData, fillForm, handleMessage]);
 
   const handleFillForm = useCallback(async (fieldMappings: Record<string, string>) => {
     // Swap placeholders for real PII values locally
@@ -115,7 +164,23 @@ export default function Home() {
             <span className="text-2xl">🌍</span>
             <h1 className="text-xl font-bold text-gray-800">MigrantAI</h1>
           </div>
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center sm:justify-end">
+            {selectedTemplate && (
+              <TemplateIndicator
+                template={selectedTemplate}
+                onClick={() => setSelectedTemplate(null)}
+              />
+            )}
+            <button
+              onClick={() => setShowTemplates(!showTemplates)}
+              className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md ${
+                showTemplates 
+                  ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              📋 Templates
+            </button>
             <button
               onClick={() => setShowPIIForm(!showPIIForm)}
               className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md ${
@@ -161,7 +226,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right: Form Status + PII Form */}
+          {/* Right: Form Status + Templates + PII Form */}
           <div className="space-y-4 sm:space-y-6">
             {/* Form Status */}
             <FormStatus
@@ -171,6 +236,29 @@ export default function Home() {
               isConnected={isConnected}
               error={error}
             />
+
+            {/* Template-based Fill Button */}
+            {selectedTemplate && formSchema && formSchema.fields.length > 0 && (
+              <button
+                onClick={handleTemplateBasedFill}
+                className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <span>✨</span>
+                <span>Auto-Fill with {selectedTemplate.nameEN}</span>
+              </button>
+            )}
+
+            {/* Form Templates (collapsible with animation) */}
+            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showTemplates ? 'opacity-100 max-h-[2000px]' : 'opacity-0 max-h-0'}`}>
+              {showTemplates && (
+                <FormTemplateSelector
+                  piiData={piiData}
+                  currentUrl={formSchema?.url}
+                  onSelectTemplate={handleTemplateSelect}
+                  selectedTemplateId={selectedTemplate?.id}
+                />
+              )}
+            </div>
 
             {/* PII Form (collapsible with animation) */}
             <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showPIIForm ? 'opacity-100 max-h-[2000px]' : 'opacity-0 max-h-0'}`}>

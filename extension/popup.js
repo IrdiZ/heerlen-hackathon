@@ -106,15 +106,21 @@ captureBtn.addEventListener('click', async () => {
 
       if (response.success && response.schema) {
         const count = response.schema.fields.length;
+        const template = response.schema.detectedTemplate;
+        
         if (count === 0) {
           setStatus('info', 'No form fields found on this page.');
           showToast('info', 'No form fields found');
           setConnectionStatus('connected');
+          showTemplate(null);
         } else {
           setStatus('success', `✓ Captured ${count} form field${count !== 1 ? 's' : ''}!`);
           fieldCountEl.innerHTML = `<span class="badge">${count}</span> fields from: ${response.schema.title || response.schema.url}`;
           showToast('success', `Captured ${count} field${count !== 1 ? 's' : ''}!`);
           setConnectionStatus('connected');
+          
+          // Show detected template if any
+          showTemplate(template);
           
           // Log the schema for debugging
           console.log('Captured schema:', response.schema);

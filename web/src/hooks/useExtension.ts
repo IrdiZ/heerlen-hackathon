@@ -12,10 +12,18 @@ export interface FormField {
   options?: Array<{ value: string; text?: string; label?: string }>;
 }
 
+export interface DetectedTemplate {
+  id: string;
+  nameEN: string;
+  nameNL: string;
+  category: 'government' | 'finance' | 'healthcare' | 'utilities';
+}
+
 export interface FormSchema {
   url: string;
   title: string;
   fields: FormField[];
+  detectedTemplate?: DetectedTemplate | null;
 }
 
 export interface FillResult {
