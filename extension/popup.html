@@ -158,6 +158,46 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    
+    .settings {
+      margin-top: 12px;
+      font-size: 12px;
+    }
+    
+    .settings summary {
+      cursor: pointer;
+      opacity: 0.8;
+    }
+    
+    .settings-content {
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 8px;
+    }
+    
+    .settings label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      opacity: 0.9;
+    }
+    
+    .settings input {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.9);
+      color: #333;
+    }
+    
+    .settings .hint {
+      font-size: 10px;
+      opacity: 0.7;
+      margin-top: 6px;
+    }
   </style>
 </head>
 <body>
@@ -180,7 +220,11 @@
   </div>
   
   <button class="btn btn-primary" id="captureBtn">
-    📸 Capture This Page
+    ⚡ Quick Capture (Fields)
+  </button>
+  
+  <button class="btn btn-primary" id="visualCaptureBtn" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); margin-top: 8px;">
+    👁️ Visual Capture (AI)
   </button>
   
   <button class="btn btn-secondary" id="openAppBtn">
@@ -197,9 +241,21 @@
       <li>Open MigrantAI and start voice chat</li>
       <li>Navigate to the form you're stuck on</li>
       <li>Say "I'm stuck" to the voice agent</li>
-      <li>Or click "Capture This Page" manually</li>
+      <li>Or click capture buttons above</li>
     </ol>
   </div>
+  
+  <details class="settings">
+    <summary>⚙️ Settings</summary>
+    <div class="settings-content">
+      <label>OpenAI API Key (for Visual Capture)</label>
+      <input type="password" id="apiKeyInput" placeholder="sk-..." />
+      <button class="btn btn-secondary" id="saveKeyBtn" style="margin-top: 8px; padding: 8px;">
+        Save Key
+      </button>
+      <p class="hint">Your key is stored locally and never shared.</p>
+    </div>
+  </details>
   
   <script src="popup.js"></script>
 </body>

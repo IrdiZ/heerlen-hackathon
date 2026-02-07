@@ -41,6 +41,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
   
+  // Visual capture from popup
+  if (message.type === 'VISUAL_CAPTURE') {
+    handleVisualCapture().then(sendResponse);
+    return true;
+  }
+  
   if (message.type === 'PAGE_DATA') {
     lastCapturedData = message.data;
     
@@ -392,6 +398,125 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
   
   sendResponse({ success: false, error: 'Unknown message type' });
   return true;
+});
+
+// Handle VISUAL_CAPTURE - screenshot + GPT-4V analysis
+async function handleVisualCapture() {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    
+    if (!tab) {
+      return { success: false, error: 'No active tab found' };
+    }
+    
+    // Can't capture browser pages
+    if (tab.url?.startsWith('chrome://') || tab.url?.startsWith('chrome-extension://')) {
+      return { success: false, error: 'Cannot capture browser pages. Navigate to a website first.' };
+    }
+    
+    // Capture screenshot
+    const screenshot = await chrome.tabs.captureVisibleTab(null, { format: 'jpeg', quality: 80 });
+    
+    // Get API key from storage
+    const { openaiApiKey } = await chrome.storage.local.get('openaiApiKey');
+    
+    if (!openaiApiKey) {
+      // Return screenshot but no analysis
+      return { 
+        success: true, 
+        screenshot,
+        analysis: 'No OpenAI API key configured. Add your key in extension settings to enable AI analysis.',
+        fields: []
+      };
+    }
+    
+    // Send to GPT-4V for analysis
+    const analysis = await analyzeScreenshot(screenshot, openaiApiKey);
+    
+    return {
+      success: true,
+      screenshot,
+      analysis: analysis.description,
+      fields: analysis.fields,
+      url: tab.url,
+      title: tab.title
+    };
+  } catch (error) {
+    console.error('[MigrantAI] Visual capture error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Analyze screenshot with GPT-4V
+async function analyzeScreenshot(imageDataUrl, apiKey) {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a form analysis assistant helping immigrants fill out Dutch government forms. Analyze the screenshot and:
+1. Describe what type of form this is
+2. List all visible form fields with their labels
+3. Identify which fields are required
+4. Note any validation errors visible
+5. Suggest what information is needed for each field
+
+Return JSON format:
+{
+  "description": "Brief description of the form",
+  "formType": "e.g., BSN registration, IND application",
+  "fields": [
+    {"label": "Field name", "type": "text/select/date/etc", "required": true/false, "hint": "What to enter"}
+  ],
+  "errors": ["Any visible error messages"],
+  "tips": ["Helpful tips for filling this form"]
+}`
+        },
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: 'Analyze this form screenshot and extract the field information:' },
+            { type: 'image_url', image_url: { url: imageDataUrl } }
+          ]
+        }
+      ],
+      max_tokens: 1500
+    })
+  });
+  
+  if (!response.ok) {
+    throw new Error(`OpenAI API error: ${response.status}`);
+  }
+  
+  const data = await response.json();
+  const content = data.choices[0]?.message?.content || '';
+  
+  try {
+    // Try to parse JSON response
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
+    }
+  } catch (e) {
+    // If JSON parsing fails, return raw description
+  }
+  
+  return { description: content, fields: [] };
+}
+
+// Add VISUAL_CAPTURE to external message handler
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+  if (message.type === 'VISUAL_CAPTURE') {
+    handleVisualCapture().then(sendResponse);
+    return true;
+  }
+  // ... rest handled below
 });
 
 console.log('[MigrantAI] Background script loaded');

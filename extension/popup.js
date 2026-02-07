@@ -4,6 +4,7 @@ const APP_URL = 'http://localhost:3000';
 
 // Elements
 const captureBtn = document.getElementById('captureBtn');
+const visualCaptureBtn = document.getElementById('visualCaptureBtn');
 const openAppBtn = document.getElementById('openAppBtn');
 const connectionDot = document.getElementById('connectionDot');
 const connectionStatus = document.getElementById('connectionStatus');
@@ -43,6 +44,42 @@ captureBtn.addEventListener('click', async () => {
     setTimeout(() => {
       captureBtn.innerHTML = '📸 Capture This Page';
       captureBtn.disabled = false;
+    }, 2000);
+  }
+});
+
+// Visual capture button - screenshot + AI analysis
+visualCaptureBtn.addEventListener('click', async () => {
+  visualCaptureBtn.disabled = true;
+  visualCaptureBtn.innerHTML = '<span class="spinner"></span>Analyzing...';
+  
+  try {
+    const response = await chrome.runtime.sendMessage({ type: 'VISUAL_CAPTURE' });
+    
+    if (response && response.success) {
+      showResult({ 
+        title: 'AI Analysis',
+        description: response.analysis,
+        fields: response.fields || []
+      });
+      visualCaptureBtn.innerHTML = '✅ Analyzed!';
+      
+      await chrome.storage.local.set({ lastCapture: response });
+      
+      setTimeout(() => {
+        visualCaptureBtn.innerHTML = '👁️ Visual Capture (AI)';
+        visualCaptureBtn.disabled = false;
+      }, 2000);
+    } else {
+      throw new Error(response?.error || 'Visual capture failed');
+    }
+  } catch (error) {
+    console.error('Visual capture error:', error);
+    visualCaptureBtn.innerHTML = '❌ Error';
+    showResult({ error: error.message });
+    setTimeout(() => {
+      visualCaptureBtn.innerHTML = '👁️ Visual Capture (AI)';
+      visualCaptureBtn.disabled = false;
     }, 2000);
   }
 });
@@ -111,4 +148,46 @@ chrome.storage.onChanged.addListener((changes, area) => {
   if (area === 'local' && changes.appConnected) {
     updateConnectionUI(changes.appConnected.newValue);
   }
+});
+
+// API Key management
+const apiKeyInput = document.getElementById('apiKeyInput');
+const saveKeyBtn = document.getElementById('saveKeyBtn');
+
+// Load saved key
+chrome.storage.local.get('openaiApiKey', ({ openaiApiKey }) => {
+  if (openaiApiKey) {
+    apiKeyInput.value = '••••••••••••••••';
+    apiKeyInput.dataset.hasKey = 'true';
+  }
+});
+
+// Clear placeholder on focus
+apiKeyInput.addEventListener('focus', () => {
+  if (apiKeyInput.dataset.hasKey === 'true') {
+    apiKeyInput.value = '';
+  }
+});
+
+// Save key
+saveKeyBtn.addEventListener('click', async () => {
+  const key = apiKeyInput.value.trim();
+  
+  if (!key || key === '••••••••••••••••') {
+    return;
+  }
+  
+  if (!key.startsWith('sk-')) {
+    alert('Invalid API key format. Should start with sk-');
+    return;
+  }
+  
+  await chrome.storage.local.set({ openaiApiKey: key });
+  apiKeyInput.value = '••••••••••••••••';
+  apiKeyInput.dataset.hasKey = 'true';
+  saveKeyBtn.textContent = '✅ Saved!';
+  
+  setTimeout(() => {
+    saveKeyBtn.textContent = 'Save Key';
+  }, 2000);
 });
