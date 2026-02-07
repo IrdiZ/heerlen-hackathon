@@ -46,7 +46,7 @@ async function capturePageViaExtension(): Promise<FormSchema> {
   if (!EXTENSION_ID) {
     throw new Error('Extension ID not configured. Go to chrome://extensions, load the unpacked extension, copy its ID, and add NEXT_PUBLIC_EXTENSION_ID=<id> to .env.local');
   }
-  
+
   if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
     throw new Error('Chrome extension API not available');
   }
@@ -122,7 +122,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
     lines.push(`Page: ${schema.title}`);
     lines.push(`URL: ${schema.url}`);
     lines.push('');
-    
+
     if (schema.fields && schema.fields.length > 0) {
       lines.push(`Found ${schema.fields.length} form fields:`);
       lines.push('');
@@ -138,21 +138,21 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
     } else {
       lines.push('No form fields were detected on this page.');
     }
-    
+
     return lines.join('\n');
   };
 
   // Handle get_current_capture - returns schema already captured via extension popup
   const handleGetCurrentCapture = useCallback(async (): Promise<string> => {
     console.log('[VoiceAgent] get_current_capture tool called');
-    
+
     // Check if there's a schema from extension popup
     if (currentSchema && currentSchema.fields?.length > 0) {
       console.log('[VoiceAgent] Returning existing schema from extension:', currentSchema);
       emitMessage('system', `📋 Found existing capture: ${currentSchema.title}`);
       return formatSchemaForAgent(currentSchema);
     }
-    
+
     // No existing capture
     return 'No form has been captured yet. Use capture_page to scan the current page, or ask the user to capture a form using the browser extension.';
   }, [currentSchema, emitMessage, formatSchemaForAgent]);
@@ -161,40 +161,41 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   const handleCapturePage = useCallback(async (): Promise<string> => {
     console.log('[VoiceAgent] capture_page tool called');
     emitMessage('system', '📸 Capturing page...');
-    
+
     try {
       const schema = await capturePageViaExtension();
       console.log('[VoiceAgent] Captured schema:', schema);
-      
+
       // Store locally
       setLastSchema(schema);
-      
+
       // Sync to parent UI
       if (onFormCaptured) {
         onFormCaptured(schema);
       }
-      
+
       // Format for agent
       const formatted = formatSchemaForAgent(schema);
       console.log('[VoiceAgent] Returning to agent:', formatted);
-      
+
       emitMessage('system', `✅ Captured: ${schema.title} (${schema.fields?.length || 0} fields)`);
-      
+
       return formatted;
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       console.error('[VoiceAgent] Capture error:', err);
       emitMessage('system', `❌ Capture failed: ${errorMsg}`);
-      
+
       return `Failed to capture page: ${errorMsg}. The user should click the MigrantAI extension icon in their browser toolbar while viewing the form.`;
     }
   }, [emitMessage, onFormCaptured]);
 
   // Handle fill_form tool call from agent
-  const handleFillForm = useCallback(async (params: { field_mappings?: Record<string, string> }): Promise<string> => {
+  const handleFillForm = useCallback(async (params: { fieldMappings?: Record<string, string>; field_mappings?: Record<string, string> }): Promise<string> => {
     console.log('[VoiceAgent] fill_form tool called:', params);
-
-    const fieldMappings = params.field_mappings;
+    
+    // Handle both camelCase and snake_case (ElevenLabs may use either)
+    const fieldMappings = params.fieldMappings || params.field_mappings;
 
     if (!fieldMappings || Object.keys(fieldMappings).length === 0) {
       return 'No field mappings provided. Please specify which fields to fill.';
@@ -255,7 +256,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
 
     if (!steps || !Array.isArray(steps) || steps.length === 0) {
       console.error('[VoiceAgent] Invalid steps. Raw params were:', JSON.stringify(rawParams, null, 2));
-      
+
       // Try to find steps in any nested structure
       const findSteps = (obj: unknown): Array<Record<string, unknown>> | null => {
         if (!obj || typeof obj !== 'object') return null;
@@ -269,9 +270,9 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
         }
         return null;
       };
-      
+
       steps = findSteps(rawParams);
-      
+
       if (!steps || steps.length === 0) {
         emitMessage('system', `❌ Roadmap creation failed: No steps received from agent`);
         return 'Failed to create roadmap: No steps were provided. Please describe the immigration journey steps you want me to create, for example: "Create a roadmap with steps for getting a work visa"';
@@ -363,7 +364,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   // Start conversation
   const startConversation = useCallback(async () => {
     const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
-    
+
     if (!agentId) {
       setError('No agent ID configured');
       emitMessage('system', '❌ Missing NEXT_PUBLIC_ELEVENLABS_AGENT_ID');
@@ -408,7 +409,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
              'Ready'}
           </span>
         </div>
-        
+
         <div className="flex items-center gap-1">
           <div className={`w-2 h-2 rounded-full ${extensionConnected ? 'bg-green-400' : 'bg-gray-300'}`} />
           <span className="text-xs text-gray-400">
@@ -442,8 +443,8 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
         className={`
           w-full py-4 px-6 rounded-xl font-semibold text-lg
           transition-all duration-200 transform
-          ${isConnected 
-            ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/30' 
+          ${isConnected
+            ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/30'
             : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30'
           }
           ${isConnecting ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'}
@@ -492,7 +493,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
           </div>
         </div>
       )}
-      
+
       {/* Show last captured schema */}
       {lastSchema && lastSchema.fields && lastSchema.fields.length > 0 && (
         <div className="mt-4 p-3 bg-gray-50 rounded-lg border text-xs">
