@@ -22,6 +22,12 @@ interface FormSchema {
   url: string;
   title: string;
   fields: FormField[];
+  // Extra context from page
+  headings?: Array<{ level: string; text: string }>;
+  mainContent?: string;
+  pageDescription?: string;
+  buttons?: Array<{ id: string; text: string; type: string }>;
+  capturedAt?: string;
 }
 
 interface VoiceAgentProps {
@@ -123,8 +129,38 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
     lines.push(`URL: ${schema.url}`);
     lines.push('');
 
+    // Include page description if available
+    if (schema.pageDescription) {
+      lines.push('PAGE SUMMARY:');
+      lines.push(schema.pageDescription);
+      lines.push('');
+    }
+
+    // Include headings for context
+    if (schema.headings && schema.headings.length > 0) {
+      lines.push('PAGE SECTIONS:');
+      schema.headings.forEach(h => {
+        const prefix = h.level === 'H1' ? '# ' : h.level === 'H2' ? '## ' : '### ';
+        lines.push(`${prefix}${h.text}`);
+      });
+      lines.push('');
+    }
+
+    // Include main content text (for requirements pages, explanations, etc.)
+    if (schema.mainContent) {
+      lines.push('PAGE CONTENT:');
+      // Limit to 3000 chars to avoid overwhelming the agent
+      const content = schema.mainContent.slice(0, 3000);
+      lines.push(content);
+      if (schema.mainContent.length > 3000) {
+        lines.push('... (content truncated)');
+      }
+      lines.push('');
+    }
+
+    // Form fields
     if (schema.fields && schema.fields.length > 0) {
-      lines.push(`Found ${schema.fields.length} form fields:`);
+      lines.push(`FORM FIELDS (${schema.fields.length} found):`);
       lines.push('');
       schema.fields.forEach((field, index) => {
         const required = field.required ? ' (required)' : '';
@@ -136,7 +172,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
         }
       });
     } else {
-      lines.push('No form fields were detected on this page.');
+      lines.push('No form fields were detected on this page (this may be an info/requirements page).');
     }
 
     return lines.join('\n');
