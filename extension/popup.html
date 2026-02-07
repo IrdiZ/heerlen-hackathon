@@ -27,10 +27,39 @@
       font-size: 28px;
     }
     
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
     .title {
       font-size: 18px;
       font-weight: 600;
       color: #1e293b;
+    }
+    
+    .connection-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94a3b8;
+      transition: background 0.3s;
+    }
+    
+    .connection-indicator.connected {
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e80;
+    }
+    
+    .connection-indicator.warning {
+      background: #eab308;
+      box-shadow: 0 0 6px #eab30880;
+    }
+    
+    .connection-indicator.error {
+      background: #ef4444;
+      box-shadow: 0 0 6px #ef444480;
     }
     
     .subtitle {
@@ -67,6 +96,55 @@
       cursor: not-allowed;
     }
     
+    .toast {
+      position: fixed;
+      top: -60px;
+      left: 16px;
+      right: 16px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: top 0.3s ease;
+      z-index: 100;
+    }
+    
+    .toast.visible {
+      top: 16px;
+    }
+    
+    .toast.success {
+      background: #22c55e;
+      color: white;
+    }
+    
+    .toast.error {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .toast.info {
+      background: #3b82f6;
+      color: white;
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 10px;
+      background: #3b82f6;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    
     .status {
       margin-top: 12px;
       padding: 10px;
@@ -98,6 +176,10 @@
       font-size: 12px;
       color: #64748b;
       text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
     
     .divider {
@@ -136,10 +218,15 @@
   </style>
 </head>
 <body>
+  <div id="toast" class="toast"></div>
+  
   <div class="header">
     <span class="logo">🌍</span>
     <div>
-      <div class="title">MigrantAI</div>
+      <div class="title-row">
+        <div class="title">MigrantAI</div>
+        <div id="connectionIndicator" class="connection-indicator" title="Checking connection..."></div>
+      </div>
       <div class="subtitle">Form Filler Extension</div>
     </div>
   </div>

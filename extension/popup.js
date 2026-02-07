@@ -3,6 +3,35 @@
 const captureBtn = document.getElementById('captureBtn');
 const statusEl = document.getElementById('status');
 const fieldCountEl = document.getElementById('fieldCount');
+const toastEl = document.getElementById('toast');
+const connectionIndicator = document.getElementById('connectionIndicator');
+
+let toastTimeout = null;
+
+function showToast(type, message) {
+  if (toastTimeout) clearTimeout(toastTimeout);
+  
+  toastEl.className = `toast ${type}`;
+  toastEl.textContent = message;
+  
+  // Trigger reflow for animation
+  toastEl.offsetHeight;
+  toastEl.classList.add('visible');
+  
+  toastTimeout = setTimeout(() => {
+    toastEl.classList.remove('visible');
+  }, 3000);
+}
+
+function setConnectionStatus(status) {
+  connectionIndicator.className = `connection-indicator ${status}`;
+  const titles = {
+    connected: 'Connected to page',
+    warning: 'Limited access',
+    error: 'Cannot access page'
+  };
+  connectionIndicator.title = titles[status] || 'Unknown status';
+}
 
 function setStatus(type, message) {
   statusEl.className = `status ${type}`;
@@ -29,7 +58,7 @@ function setLoading(loading) {
 captureBtn.addEventListener('click', async () => {
   setLoading(true);
   setStatus('info', 'Scanning page for forms...');
-  fieldCountEl.textContent = '';
+  fieldCountEl.innerHTML = '';
 
   try {
     // Send message to background script
@@ -38,11 +67,15 @@ captureBtn.addEventListener('click', async () => {
       
       if (chrome.runtime.lastError) {
         setStatus('error', `Error: ${chrome.runtime.lastError.message}`);
+        showToast('error', 'Failed to capture form');
+        setConnectionStatus('error');
         return;
       }
 
       if (!response) {
         setStatus('error', 'No response from content script. Is the page fully loaded?');
+        showToast('error', 'Page not responding');
+        setConnectionStatus('warning');
         return;
       }
 
@@ -50,27 +83,51 @@ captureBtn.addEventListener('click', async () => {
         const count = response.schema.fields.length;
         if (count === 0) {
           setStatus('info', 'No form fields found on this page.');
+          showToast('info', 'No form fields found');
+          setConnectionStatus('connected');
         } else {
           setStatus('success', `✓ Captured ${count} form field${count !== 1 ? 's' : ''}!`);
-          fieldCountEl.textContent = `From: ${response.schema.title || response.schema.url}`;
+          fieldCountEl.innerHTML = `<span class="badge">${count}</span> fields from: ${response.schema.title || response.schema.url}`;
+          showToast('success', `Captured ${count} field${count !== 1 ? 's' : ''}!`);
+          setConnectionStatus('connected');
           
           // Log the schema for debugging
           console.log('Captured schema:', response.schema);
         }
       } else {
         setStatus('error', response.error || 'Failed to capture form');
+        showToast('error', response.error || 'Capture failed');
+        setConnectionStatus('error');
       }
     });
   } catch (e) {
     setLoading(false);
     setStatus('error', `Error: ${e.message}`);
+    showToast('error', 'Unexpected error');
+    setConnectionStatus('error');
   }
 });
 
 // Check connection on popup open
 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-  if (tabs[0]?.url?.startsWith('chrome://')) {
+  const url = tabs[0]?.url || '';
+  
+  if (url.startsWith('chrome://') || url.startsWith('chrome-extension://')) {
     setStatus('info', 'Cannot capture forms on Chrome system pages.');
     captureBtn.disabled = true;
+    setConnectionStatus('error');
+  } else if (url.startsWith('https://') || url.startsWith('http://')) {
+    // Try to ping content script
+    chrome.tabs.sendMessage(tabs[0].id, { type: 'PING' }, (response) => {
+      if (chrome.runtime.lastError || !response) {
+        setConnectionStatus('warning');
+        connectionIndicator.title = 'Content script not loaded - try refreshing the page';
+      } else {
+        setConnectionStatus('connected');
+      }
+    });
+  } else {
+    setConnectionStatus('warning');
+    connectionIndicator.title = 'Unsupported page type';
   }
 });
