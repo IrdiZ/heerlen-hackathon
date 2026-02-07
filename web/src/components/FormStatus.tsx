@@ -59,24 +59,41 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error, c
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-      {/* Capture History Tabs */}
-      {captureHistory.length > 1 && (
-        <div className="bg-gray-100 px-2 py-1 border-b flex gap-1 overflow-x-auto">
-          {captureHistory.map((capture, i) => (
-            <button
-              key={i}
-              onClick={() => onSelectCapture?.(i)}
-              className={`px-2 py-1 text-xs rounded whitespace-nowrap transition-colors ${
-                capture.url === schema?.url && capture.capturedAt === schema?.capturedAt
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-200'
-              }`}
-              title={capture.url}
-            >
-              {capture.title?.slice(0, 20) || `Page ${i + 1}`}
-              {capture.title && capture.title.length > 20 ? '...' : ''}
-            </button>
-          ))}
+      {/* Capture History Carousel */}
+      {captureHistory.length > 0 && (
+        <div className="bg-gradient-to-r from-gray-100 to-gray-50 px-3 py-2 border-b">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-medium text-gray-500">📚 Captures ({captureHistory.length})</span>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory">
+            {captureHistory.map((capture, i) => {
+              const isActive = capture.url === schema?.url && capture.capturedAt === schema?.capturedAt;
+              return (
+                <button
+                  key={capture.capturedAt || i}
+                  onClick={() => onSelectCapture?.(i)}
+                  className={`
+                    snap-start shrink-0 w-40 p-2 rounded-lg text-left transition-all duration-200
+                    ${isActive 
+                      ? 'bg-blue-500 text-white shadow-lg scale-105 ring-2 ring-blue-300' 
+                      : 'bg-white text-gray-700 shadow hover:shadow-md hover:scale-102 border border-gray-200'
+                    }
+                  `}
+                >
+                  <div className={`text-xs font-medium truncate ${isActive ? 'text-white' : 'text-gray-800'}`}>
+                    {capture.title?.slice(0, 25) || 'Untitled'}
+                    {capture.title && capture.title.length > 25 ? '...' : ''}
+                  </div>
+                  <div className={`text-[10px] truncate mt-0.5 ${isActive ? 'text-blue-100' : 'text-gray-400'}`}>
+                    {capture.fields?.length || 0} fields
+                  </div>
+                  <div className={`text-[10px] mt-0.5 ${isActive ? 'text-blue-200' : 'text-gray-400'}`}>
+                    {capture.capturedAt ? new Date(capture.capturedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 
