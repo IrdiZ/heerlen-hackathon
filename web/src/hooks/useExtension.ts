@@ -56,7 +56,8 @@ export function useExtension() {
     }
   }, []);
 
-  const sendToExtension = useCallback(async (message: unknown): Promise<unknown> => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sendToExtension = useCallback(async (message: unknown): Promise<any> => {
     return new Promise((resolve, reject) => {
       if (!EXTENSION_ID) {
         reject(new Error('Extension ID not configured'));

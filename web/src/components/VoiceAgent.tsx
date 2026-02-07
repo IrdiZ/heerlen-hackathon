@@ -10,6 +10,11 @@ interface VoiceAgentProps {
   onMessage?: (message: { role: string; content: string }) => void;
 }
 
+interface ElevenLabsMessage {
+  message: string;
+  role: string;
+}
+
 export function VoiceAgent({ onFormSchemaRequest, onFillForm, onMessage }: VoiceAgentProps) {
   const [isStarting, setIsStarting] = useState(false);
 
@@ -21,9 +26,10 @@ export function VoiceAgent({ onFormSchemaRequest, onFillForm, onMessage }: Voice
     onDisconnect: () => {
       console.log('Disconnected from ElevenLabs');
     },
-    onMessage: (message) => {
+    onMessage: (message: ElevenLabsMessage) => {
       console.log('Message:', message);
-      onMessage?.(message);
+      // Map ElevenLabs message format to our format
+      onMessage?.({ role: message.role, content: message.message });
     },
     onError: (error) => {
       console.error('ElevenLabs error:', error);
@@ -50,16 +56,17 @@ export function VoiceAgent({ onFormSchemaRequest, onFillForm, onMessage }: Voice
           request_form_schema: async () => {
             console.log('Agent requested form schema');
             onFormSchemaRequest();
-            return { success: true, message: 'Form capture requested. Please click "Capture Form" in the extension.' };
+            return 'Form capture requested. Please click "Capture Form" in the extension.';
           },
           // Client tool: fill form with placeholder mappings
           fill_form: async ({ fieldMappings }: { fieldMappings: Record<string, string> }) => {
             console.log('Agent wants to fill form:', fieldMappings);
             onFillForm(fieldMappings);
-            return { success: true, message: 'Form fill initiated' };
+            return 'Form fill initiated successfully.';
           },
         },
-      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
     } catch (error) {
       console.error('Failed to start conversation:', error);
       setIsStarting(false);
