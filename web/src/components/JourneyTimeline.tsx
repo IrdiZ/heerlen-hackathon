@@ -137,7 +137,7 @@ interface Particle {
 
 function ParticleEffect({ active, x, y }: { active: boolean; x: number; y: number }) {
   const [particles, setParticles] = useState<Particle[]>([]);
-  const frameRef = useRef<number>();
+  const frameRef = useRef<number | null>(null);
   
   useEffect(() => {
     if (!active) {
