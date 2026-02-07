@@ -309,6 +309,7 @@ export default function Home() {
                 onMessage={handleMessage}
                 onCreateRoadmap={handleCreateRoadmap}
                 onUpdateRoadmap={handleUpdateRoadmap}
+                currentSchema={formSchema}
               />
             </div>
 

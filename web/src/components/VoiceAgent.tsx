@@ -31,6 +31,7 @@ interface VoiceAgentProps {
   onMessage?: (msg: { role: string; content: string }) => void;
   onCreateRoadmap?: (params: CreateRoadmapParams) => Promise<string>;
   onUpdateRoadmap?: (params: UpdateRoadmapParams) => Promise<string>;
+  currentSchema?: FormSchema | null;  // Schema captured via extension popup
 }
 
 const EXTENSION_ID = process.env.NEXT_PUBLIC_EXTENSION_ID || '';
@@ -95,7 +96,7 @@ async function pingExtension(): Promise<boolean> {
   });
 }
 
-export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, onMessage, onCreateRoadmap, onUpdateRoadmap }: VoiceAgentProps) {
+export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, onMessage, onCreateRoadmap, onUpdateRoadmap, currentSchema }: VoiceAgentProps) {
   const [error, setError] = useState<string | null>(null);
   const [extensionConnected, setExtensionConnected] = useState(false);
   const [lastSchema, setLastSchema] = useState<FormSchema | null>(null);
@@ -140,6 +141,21 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
     
     return lines.join('\n');
   };
+
+  // Handle get_current_capture - returns schema already captured via extension popup
+  const handleGetCurrentCapture = useCallback(async (): Promise<string> => {
+    console.log('[VoiceAgent] get_current_capture tool called');
+    
+    // Check if there's a schema from extension popup
+    if (currentSchema && currentSchema.fields?.length > 0) {
+      console.log('[VoiceAgent] Returning existing schema from extension:', currentSchema);
+      emitMessage('system', `📋 Found existing capture: ${currentSchema.title}`);
+      return formatSchemaForAgent(currentSchema);
+    }
+    
+    // No existing capture
+    return 'No form has been captured yet. Use capture_page to scan the current page, or ask the user to capture a form using the browser extension.';
+  }, [currentSchema, emitMessage, formatSchemaForAgent]);
 
   // Handle capture_page tool call from agent
   const handleCapturePage = useCallback(async (): Promise<string> => {
@@ -294,6 +310,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   // Initialize conversation with client tools
   const conversation = useConversation({
     clientTools: {
+      get_current_capture: handleGetCurrentCapture,
       capture_page: handleCapturePage,
       fill_form: handleFillForm,
       create_roadmap: handleCreateRoadmap,

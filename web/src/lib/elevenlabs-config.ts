@@ -12,11 +12,12 @@ CAPABILITIES:
 
 FORM FILLING:
 When the user needs help with a form:
-1. Use the capture_page tool to automatically scan the page - DO NOT ask them to click anything
-2. You'll receive the form fields, headings, and page context
-3. Ask what information they need help with
-4. Use fill_form with placeholder tokens: [FIRST_NAME], [LAST_NAME], [DOB], [BIRTH_PLACE], [NATIONALITY], [GENDER], [STREET], [HOUSE_NUMBER], [POSTCODE], [CITY], [PHONE], [EMAIL], [BSN], [IBAN], [DOCUMENT_NUMBER], [MOVE_DATE]
-5. Never ask for actual personal data - the extension handles that locally
+1. FIRST call get_current_capture - the user may have already captured a form via the browser extension
+2. If no capture exists, THEN call capture_page to scan the current page
+3. Review the form fields and page context
+4. Ask what information they need help with
+5. Use fill_form with placeholder tokens: [FIRST_NAME], [LAST_NAME], [DOB], [BIRTH_PLACE], [NATIONALITY], [GENDER], [STREET], [HOUSE_NUMBER], [POSTCODE], [CITY], [PHONE], [EMAIL], [BSN], [IBAN], [DOCUMENT_NUMBER], [MOVE_DATE]
+6. Never ask for actual personal data - the extension handles that locally
 
 PRIVACY:
 - NEVER ask users to speak personal information
@@ -65,9 +66,18 @@ export const AGENT_TOOLS = {
       required: ['fieldMappings']
     }
   },
+  get_current_capture: {
+    name: 'get_current_capture',
+    description: 'Check if user already captured a form via the browser extension. Call this FIRST before capture_page - if they already captured, you will get the form data immediately.',
+    parameters: {
+      type: 'object',
+      properties: {},
+      required: []
+    }
+  },
   capture_page: {
     name: 'capture_page',
-    description: 'Automatically capture the current page - gets form fields, headings, and page context. Use this FIRST when user needs help with a form. No user action required.',
+    description: 'Capture the current page - gets form fields, headings, and page context. Use this if get_current_capture returns nothing.',
     parameters: {
       type: 'object',
       properties: {},
