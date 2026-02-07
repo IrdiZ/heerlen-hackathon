@@ -257,7 +257,7 @@ function StepNode({
       scale: 1, 
       opacity: 1,
       transition: { 
-        type: 'spring',
+        type: 'spring' as const,
         stiffness: 300,
         damping: 20,
         delay: index * 0.1,
@@ -279,7 +279,7 @@ function StepNode({
       y: 0, 
       x: 0,
       scale: 1,
-      transition: { type: 'spring', stiffness: 400, damping: 25 }
+      transition: { type: 'spring' as const, stiffness: 400, damping: 25 }
     },
     exit: { 
       opacity: 0, 
@@ -358,7 +358,7 @@ function StepNode({
           <motion.span
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: 'spring', stiffness: 300 }}
+            transition={{ type: 'spring' as const, stiffness: 300 }}
             className="text-white text-3xl"
           >
             ✓

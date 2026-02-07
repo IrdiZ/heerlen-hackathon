@@ -331,7 +331,12 @@ function convertSerbiaSteps(): VisaStep[] {
     estimatedTime: step.duration,
     tips: step.notes || [],
     warnings: [],
-    responsibleParty: step.responsible === 'government' ? 'employer' : step.responsible,
+    responsibleParty: step.responsible === 'government' ? 'government' 
+      : step.responsible === 'applicant' ? 'employee'
+      : step.responsible === 'ind' ? 'government'
+      : step.responsible === 'embassy' ? 'government'
+      : step.responsible === 'institution' ? 'employer'
+      : step.responsible as 'employer' | 'employee' | 'both' | 'government',
   }));
 }
 
