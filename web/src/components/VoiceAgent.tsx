@@ -289,8 +289,8 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
       console.error('[VoiceAgent] Invalid steps. Raw params were:', JSON.stringify(rawParams, null, 2));
 
       // Try to find steps in any nested structure
-      const findSteps = (obj: unknown): Array<Record<string, unknown>> | null => {
-        if (!obj || typeof obj !== 'object') return null;
+      const findSteps = (obj: unknown): Array<Record<string, unknown>> | undefined => {
+        if (!obj || typeof obj !== 'object') return undefined;
         const o = obj as Record<string, unknown>;
         if (Array.isArray(o.steps) && o.steps.length > 0) return o.steps;
         for (const key of Object.keys(o)) {
@@ -299,7 +299,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
             if (found) return found;
           }
         }
-        return null;
+        return undefined;
       };
 
       steps = findSteps(rawParams);
