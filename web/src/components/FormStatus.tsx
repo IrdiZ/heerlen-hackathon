@@ -76,7 +76,7 @@ export function FormStatus({ schema, fillResults, onClear, isConnected, error, c
                     snap-start shrink-0 w-40 p-2 rounded-lg text-left transition-all duration-200
                     ${isActive 
                       ? 'bg-blue-500 text-white shadow-lg scale-105 ring-2 ring-blue-300' 
-                      : 'bg-white text-gray-700 shadow hover:shadow-md hover:scale-102 border border-gray-200'
+                      : 'bg-white text-gray-700 shadow hover:shadow-md hover:scale-[1.02] border border-gray-200'
                     }
                   `}
                 >
