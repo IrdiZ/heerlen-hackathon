@@ -162,15 +162,18 @@ The applicant receives instructions to collect the MVV.`,
     },
     {
       step: 6,
-      title: 'MVV Collection at Embassy',
-      description: `The applicant visits the Dutch Embassy in Tirana to have the MVV sticker placed in 
-their passport. Biometrics may be collected at this time.`,
+      title: 'MVV Collection at Embassy in SKOPJE',
+      description: `⚠️ Albania has no Dutch visa processing - you must travel to SKOPJE, NORTH MACEDONIA.
+Book appointment via VFS Global. Plan for 1-2 day trip. The MVV sticker will be placed in your passport.`,
       duration: '1-2 weeks (appointment + processing)',
       responsible: 'applicant',
       tips: [
-        'Bring original passport with sufficient validity',
-        'MVV is valid for 90 days - plan travel accordingly',
-        'Schedule appointment early as slots fill up'
+        '⚠️ NO Dutch embassy in Albania - must go to Skopje!',
+        'Book via VFS Global: https://www.vfsglobal.com/Netherlands/northmacedonia/',
+        'Bus Tirana→Skopje: ~5-6 hours, €15-25. Consider overnight stay.',
+        'Alternative: Dutch Embassy Athens (longer travel, sometimes faster)',
+        'Bring all ORIGINAL documents + copies',
+        'MVV valid 90 days - plan Netherlands travel accordingly'
       ]
     },
     {
@@ -428,9 +431,19 @@ permit (verblijfsvergunning) at the IND desk. Biometrics will be collected if no
       description: 'Download forms for various applications'
     },
     {
-      title: 'Netherlands Embassy Albania',
-      url: 'https://www.netherlandsandyou.nl/web/albania',
-      description: 'Dutch embassy in Tirana, Albania - for MVV collection'
+      title: 'Netherlands Embassy Skopje (for MVV collection)',
+      url: 'https://www.netherlandsandyou.nl/web/north-macedonia',
+      description: '⚠️ Albanian citizens must collect MVV in Skopje, North Macedonia'
+    },
+    {
+      title: 'VFS Global - Skopje Appointments',
+      url: 'https://www.vfsglobal.com/Netherlands/northmacedonia/',
+      description: 'Book your visa appointment in Skopje'
+    },
+    {
+      title: 'Bus Tirana-Skopje',
+      url: 'https://www.rome2rio.com/map/Tirana/Skopje',
+      description: 'Travel options from Albania to Skopje (~5-6 hours by bus)'
     },
     {
       title: 'Netherlands Worldwide - Legalisation',
@@ -445,13 +458,25 @@ permit (verblijfsvergunning) at the IND desk. Biometrics will be collected if no
   ],
 
   embassy: {
-    name: 'Embassy of the Kingdom of the Netherlands in Albania',
-    city: 'Tirana',
-    country: 'Albania',
-    website: 'https://www.netherlandsandyou.nl/web/albania',
-    notes: `The Dutch Embassy in Tirana handles MVV collection for Albanian citizens. 
-Appointments must be scheduled in advance. Bring original passport and all required documents. 
-For visa inquiries, check netherlandsworldwide.nl for consular services.`
+    name: 'Embassy of the Kingdom of the Netherlands in North Macedonia',
+    city: 'Skopje',
+    country: 'North Macedonia',
+    website: 'https://www.netherlandsandyou.nl/web/north-macedonia',
+    notes: `⚠️ IMPORTANT: There is NO Dutch embassy in Albania that processes visas. 
+Albanian citizens must travel to SKOPJE, NORTH MACEDONIA to collect their MVV.
+
+Embassy address: Leninova 69-71, 1000 Skopje, North Macedonia
+Tel: +389 2 3129 319
+Email: sko@minbuza.nl
+
+Practical tips for the Skopje trip:
+- Book appointment through VFS Global: https://www.vfsglobal.com/Netherlands/northmacedonia/
+- Bus from Tirana to Skopje: ~5-6 hours, €15-25
+- Consider staying overnight - appointments can be early morning
+- Bring all original documents + copies
+- Processing usually takes 1-2 weeks after appointment
+
+Alternative: Some applicants use the Dutch embassy in Athens, Greece (longer travel but sometimes faster appointments).`
   }
 };
 
