@@ -149,10 +149,10 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
     // Include main content text (for requirements pages, explanations, etc.)
     if (schema.mainContent) {
       lines.push('PAGE CONTENT:');
-      // Include up to 6000 chars for comprehensive context
-      const content = schema.mainContent.slice(0, 6000);
+      // Include up to 12000 chars for comprehensive context
+      const content = schema.mainContent.slice(0, 12000);
       lines.push(content);
-      if (schema.mainContent.length > 6000) {
+      if (schema.mainContent.length > 12000) {
         lines.push('... (content truncated)');
       }
       lines.push('');

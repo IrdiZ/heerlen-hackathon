@@ -304,17 +304,40 @@ function capturePageContent() {
     });
   });
   
-  // Get ALL page text content (for requirements pages, info pages, etc.)
-  // Try main content areas first, fallback to body
-  const main = document.querySelector('main, article, [role="main"], .content, #content');
-  if (main) {
-    data.mainContent = main.textContent?.slice(0, 8000).trim();
-  } else {
-    // Fallback: get all text from body, excluding scripts/styles/nav/footer
-    const body = document.body.cloneNode(true);
-    // Remove noise elements
-    body.querySelectorAll('script, style, nav, footer, header, aside, .nav, .footer, .header, .sidebar, .menu, .cookie, .popup, .modal, .ad, [role="navigation"], [role="banner"], [role="contentinfo"]').forEach(el => el.remove());
-    data.mainContent = body.textContent?.replace(/\s+/g, ' ').slice(0, 8000).trim();
+  // Get ALL page text content - be aggressive, capture everything
+  // Clone body and remove only obvious noise
+  const body = document.body.cloneNode(true);
+  
+  // Remove only scripts and styles - keep everything else
+  body.querySelectorAll('script, style, noscript, svg, iframe').forEach(el => el.remove());
+  
+  // Expand any collapsed/hidden content by removing hidden attributes
+  body.querySelectorAll('[hidden], [aria-hidden="true"], .collapsed, .hidden').forEach(el => {
+    el.removeAttribute('hidden');
+    el.removeAttribute('aria-hidden');
+    el.classList.remove('collapsed', 'hidden');
+  });
+  
+  // Get ALL text from body
+  let fullText = body.textContent || '';
+  
+  // Clean up whitespace but preserve structure
+  fullText = fullText.replace(/[\t\r]+/g, ' ').replace(/\n\s*\n/g, '\n').replace(/  +/g, ' ').trim();
+  
+  // Take up to 15000 chars
+  data.mainContent = fullText.slice(0, 15000);
+  
+  // Also try to get specific content sections (IND, government sites often use these)
+  const contentSections = document.querySelectorAll('.content-block, .text-block, .accordion-content, .tab-content, [class*="content"], [class*="text"], details, .expandable');
+  if (contentSections.length > 0) {
+    let sectionText = '';
+    contentSections.forEach(section => {
+      sectionText += ' ' + (section.textContent || '');
+    });
+    // Append if not already included
+    if (sectionText.length > data.mainContent.length) {
+      data.mainContent = sectionText.replace(/[\t\r]+/g, ' ').replace(/\n\s*\n/g, '\n').replace(/  +/g, ' ').trim().slice(0, 15000);
+    }
   }
   
   // Helper to find label for a field - tries multiple strategies
