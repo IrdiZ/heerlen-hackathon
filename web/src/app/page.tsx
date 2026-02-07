@@ -86,21 +86,27 @@ function FeatureCard({ emoji, title, description, delay = 0 }: {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay, ease: "easeOut" }}
       whileHover={{ 
-        y: -8, 
-        boxShadow: "0 20px 40px -15px rgba(0,0,0,0.15)",
-        transition: { duration: 0.2 }
+        y: -12, 
+        scale: 1.02,
+        transition: { duration: 0.2, ease: "easeOut" }
       }}
-      className="bg-white rounded-xl p-6 shadow-md cursor-default"
+      className="relative group cursor-default"
     >
-      <motion.div 
-        className="text-3xl mb-3"
-        whileHover={{ scale: 1.2, rotate: [0, -10, 10, 0] }}
-        transition={{ duration: 0.3 }}
-      >
-        {emoji}
-      </motion.div>
-      <h3 className="font-semibold text-gray-800">{title}</h3>
-      <p className="text-sm text-gray-500 mt-1">{description}</p>
+      {/* Gradient border glow on hover */}
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl opacity-0 group-hover:opacity-100 blur transition-all duration-300" />
+      
+      {/* Card content */}
+      <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-white/20 h-full">
+        <motion.div 
+          className="text-4xl mb-4 w-16 h-16 flex items-center justify-center bg-gradient-to-br from-orange-100 to-amber-50 rounded-xl"
+          whileHover={{ scale: 1.1, rotate: [0, -10, 10, 0] }}
+          transition={{ duration: 0.3 }}
+        >
+          {emoji}
+        </motion.div>
+        <h3 className="font-bold text-lg text-gray-900 mb-2">{title}</h3>
+        <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+      </div>
     </motion.div>
   );
 }
@@ -284,14 +290,21 @@ export default function Home() {
           initial="initial"
           animate="animate"
           exit="exit"
-          className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-100 flex flex-col items-center justify-center p-4 sm:p-8"
+          className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden"
         >
+          {/* Background decorations */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" />
+            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }} />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-amber-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
+          </div>
+
           {/* Language Switcher - Top Right */}
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
-            className="absolute top-4 right-4 rtl:right-auto rtl:left-4"
+            className="absolute top-4 right-4 rtl:right-auto rtl:left-4 z-10"
           >
             <LanguageSwitcher />
           </motion.div>
@@ -310,7 +323,7 @@ export default function Home() {
               transition={{ duration: 0.6, ease: "easeOut" }}
             >
               <motion.h1 
-                className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4"
+                className="text-5xl sm:text-6xl font-extrabold mb-6"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
@@ -318,14 +331,16 @@ export default function Home() {
                 <motion.span
                   animate={{ rotate: [0, 10, -10, 0] }}
                   transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                  className="inline-block"
+                  className="inline-block text-6xl sm:text-7xl"
                 >
                   🌍
                 </motion.span>{' '}
-                {t('landing.title')}
+                <span className="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-500 bg-clip-text text-transparent">
+                  {t('landing.title')}
+                </span>
               </motion.h1>
               <motion.p 
-                className="text-lg sm:text-xl text-gray-600"
+                className="text-xl sm:text-2xl text-gray-600 font-medium"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
@@ -366,16 +381,16 @@ export default function Home() {
                 onClick={() => setAppState('active')}
                 whileHover={{ 
                   scale: 1.05, 
-                  boxShadow: "0 25px 50px -12px rgba(59, 130, 246, 0.4)"
+                  boxShadow: "0 25px 50px -12px rgba(249, 115, 22, 0.5)"
                 }}
                 whileTap={{ scale: 0.98 }}
-                className="relative px-10 sm:px-12 py-4 sm:py-5 text-lg sm:text-xl font-semibold text-white bg-orange-500 rounded-full shadow-xl overflow-hidden focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-offset-2"
+                className="relative px-10 sm:px-12 py-4 sm:py-5 text-lg sm:text-xl font-bold text-white bg-gradient-to-r from-orange-500 to-amber-500 rounded-full shadow-2xl overflow-hidden focus:outline-none focus:ring-4 focus:ring-orange-300 focus:ring-offset-2 border border-orange-400/30"
               >
-                {/* Glow effect */}
+                {/* Shine sweep effect */}
                 <motion.span
-                  className="absolute inset-0 bg-gradient-to-r from-orange-400 to-orange-600 opacity-0"
-                  whileHover={{ opacity: 0.3 }}
-                  transition={{ duration: 0.3 }}
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full"
+                  animate={{ translateX: ['−100%', '200%'] }}
+                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
                 />
                 {/* Ripple effect on click */}
                 <motion.span
