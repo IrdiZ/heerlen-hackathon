@@ -43,9 +43,9 @@ function AnimatedButton({
   const baseClasses = "relative overflow-hidden transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2";
   
   const variantClasses = {
-    primary: "bg-orange-500 text-white hover:bg-orange-600 focus:ring-orange-500 shadow-lg hover:shadow-xl",
-    secondary: "bg-gray-100 text-gray-600 hover:bg-gray-200 focus:ring-gray-400",
-    ghost: "bg-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:ring-gray-400"
+    primary: "bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600 focus:ring-orange-500 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40",
+    secondary: "bg-white/10 text-white border border-white/20 hover:bg-white/20 focus:ring-white/50",
+    ghost: "bg-transparent text-slate-300 hover:text-white hover:bg-white/10 focus:ring-white/30"
   };
 
   const sizeClasses = {
@@ -471,14 +471,14 @@ export default function Home() {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="min-h-screen bg-gray-50"
+        className="min-h-screen bg-slate-950"
       >
         {/* Header */}
         <motion.header 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="bg-white border-b px-4 sm:px-6 py-4 shadow-sm sticky top-0 z-50"
+          className="bg-slate-900/80 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 py-4 sticky top-0 z-50"
         >
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
             <motion.div 
@@ -492,7 +492,7 @@ export default function Home() {
               >
                 🌍
               </motion.span>
-              <h1 className="text-xl font-bold text-gray-800">{t('landing.title')}</h1>
+              <h1 className="text-xl font-bold text-white">{t('landing.title')}</h1>
             </motion.div>
             <div className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center sm:justify-end">
               <AnimatePresence>
@@ -579,7 +579,7 @@ export default function Home() {
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="bg-white rounded-xl shadow-lg p-8 text-center"
+                    className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-8 text-center"
                   >
                     <motion.div 
                       className="text-5xl mb-4"
@@ -588,8 +588,8 @@ export default function Home() {
                     >
                       📍
                     </motion.div>
-                    <h2 className="text-xl font-semibold text-gray-700 mb-2">{t('roadmap.empty')}</h2>
-                    <p className="text-gray-500">{t('roadmap.emptyDescription')}</p>
+                    <h2 className="text-xl font-semibold text-white mb-2">{t('roadmap.empty')}</h2>
+                    <p className="text-slate-400">{t('roadmap.emptyDescription')}</p>
                   </motion.div>
                 )}
               </div>
@@ -605,9 +605,9 @@ export default function Home() {
               {/* Voice control */}
               <FadeInOnScroll>
                 <motion.div 
-                  className="bg-white rounded-xl shadow-lg p-6 sm:p-8"
+                  className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-6 sm:p-8"
                   whileHover={{ 
-                    boxShadow: "0 20px 40px -15px rgba(0,0,0,0.1)",
+                    borderColor: "rgba(251, 146, 60, 0.3)",
                     transition: { duration: 0.3 }
                   }}
                 >
@@ -626,14 +626,14 @@ export default function Home() {
               {/* Transcript */}
               <FadeInOnScroll delay={0.1}>
                 <motion.div 
-                  className="bg-white rounded-xl shadow-lg h-80 sm:h-96"
+                  className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl h-80 sm:h-96"
                   whileHover={{ 
                     boxShadow: "0 20px 40px -15px rgba(0,0,0,0.1)",
                     transition: { duration: 0.3 }
                   }}
                 >
-                  <div className="px-4 py-3 border-b">
-                    <h2 className="font-semibold text-gray-800">{t('transcript.title')}</h2>
+                  <div className="px-4 py-3 border-b border-white/10">
+                    <h2 className="font-semibold text-white">{t('transcript.title')}</h2>
                   </div>
                   <div className="h-[calc(100%-52px)]">
                     <Transcript messages={messages} />

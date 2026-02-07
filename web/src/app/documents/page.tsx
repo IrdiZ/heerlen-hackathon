@@ -5,22 +5,22 @@ import { DocumentChecklist } from '@/components/DocumentChecklist';
 
 export default function DocumentsPage() {
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-slate-950">
       {/* Header */}
-      <header className="bg-white border-b px-4 sm:px-6 py-4 shadow-sm">
+      <header className="bg-slate-900/50 backdrop-blur-sm border border-white/10 border-b px-4 sm:px-6 py-4 shadow-sm">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="text-2xl hover:opacity-80 transition-opacity">
               🌍
             </Link>
             <div>
-              <h1 className="text-xl font-bold text-gray-800">Document Tracker</h1>
-              <p className="text-sm text-gray-500">MigrantAI</p>
+              <h1 className="text-xl font-bold text-white">Document Tracker</h1>
+              <p className="text-sm text-slate-400">MigrantAI</p>
             </div>
           </div>
           <Link
             href="/"
-            className="text-gray-500 hover:text-gray-700 transition-colors px-3 py-2 rounded-lg hover:bg-gray-100"
+            className="text-slate-400 hover:text-slate-200 transition-colors px-3 py-2 rounded-lg hover:bg-slate-900"
           >
             ← Back to App
           </Link>
@@ -68,9 +68,9 @@ export default function DocumentsPage() {
 
         {/* Quick links */}
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow">
-            <h4 className="font-semibold text-gray-800 mb-2">🏛️ Gemeente Heerlen</h4>
-            <p className="text-sm text-gray-600 mb-3">
+          <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl border border-white/10 p-4 hover:shadow-md transition-shadow">
+            <h4 className="font-semibold text-white mb-2">🏛️ Gemeente Heerlen</h4>
+            <p className="text-sm text-slate-300 mb-3">
               Book appointments and find information for Heerlen municipality.
             </p>
             <a
@@ -82,9 +82,9 @@ export default function DocumentsPage() {
               Visit heerlen.nl →
             </a>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow">
-            <h4 className="font-semibold text-gray-800 mb-2">🆔 DigiD</h4>
-            <p className="text-sm text-gray-600 mb-3">
+          <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl border border-white/10 p-4 hover:shadow-md transition-shadow">
+            <h4 className="font-semibold text-white mb-2">🆔 DigiD</h4>
+            <p className="text-sm text-slate-300 mb-3">
               Apply for your digital identity for Dutch government services.
             </p>
             <a

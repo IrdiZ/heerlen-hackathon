@@ -33,10 +33,10 @@ function IntakeForm({
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+        <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
           🛂 Let&apos;s Find Your Visa Path
         </h2>
-        <p className="text-gray-500">
+        <p className="text-slate-400">
           Answer a few questions and we&apos;ll show you exactly what you need to do.
         </p>
       </div>
@@ -44,8 +44,8 @@ function IntakeForm({
       {/* Form Fields */}
       <div className="space-y-6">
         {/* Country of Origin */}
-        <div className="bg-white rounded-xl p-6 shadow-md">
-          <label className="block text-lg font-medium text-gray-800 mb-3">
+        <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-6 shadow-md">
+          <label className="block text-lg font-medium text-white mb-3">
             🌍 Where are you from?
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -57,7 +57,7 @@ function IntakeForm({
                 className={`p-4 rounded-xl border-2 text-center transition-all duration-200 hover:shadow-md ${
                   intakeData.countryOfOrigin === option.value
                     ? 'border-orange-500 bg-orange-50 text-orange-700'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-white/10 hover:border-gray-300'
                 }`}
               >
                 <span className="text-2xl block mb-1">{option.flag}</span>
@@ -68,8 +68,8 @@ function IntakeForm({
         </div>
 
         {/* Current Location */}
-        <div className="bg-white rounded-xl p-6 shadow-md">
-          <label className="block text-lg font-medium text-gray-800 mb-3">
+        <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-6 shadow-md">
+          <label className="block text-lg font-medium text-white mb-3">
             📍 Where are you now?
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -81,7 +81,7 @@ function IntakeForm({
                 className={`p-4 rounded-xl border-2 text-left transition-all duration-200 hover:shadow-md ${
                   intakeData.currentLocation === option.value
                     ? 'border-orange-500 bg-orange-50 text-orange-700'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-white/10 hover:border-gray-300'
                 }`}
               >
                 <span className="text-2xl mr-3">
@@ -94,8 +94,8 @@ function IntakeForm({
         </div>
 
         {/* Job Offer */}
-        <div className="bg-white rounded-xl p-6 shadow-md">
-          <label className="block text-lg font-medium text-gray-800 mb-3">
+        <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-6 shadow-md">
+          <label className="block text-lg font-medium text-white mb-3">
             💼 Do you have a job offer in the Netherlands?
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -105,7 +105,7 @@ function IntakeForm({
               className={`p-4 rounded-xl border-2 text-center transition-all duration-200 hover:shadow-md ${
                 intakeData.hasJobOffer === 'yes'
                   ? 'border-green-500 bg-green-50 text-green-700'
-                  : 'border-gray-200 hover:border-gray-300'
+                  : 'border-white/10 hover:border-gray-300'
               }`}
             >
               <span className="text-2xl block mb-1">✅</span>
@@ -117,7 +117,7 @@ function IntakeForm({
               className={`p-4 rounded-xl border-2 text-center transition-all duration-200 hover:shadow-md ${
                 intakeData.hasJobOffer === 'no'
                   ? 'border-orange-500 bg-orange-50 text-orange-700'
-                  : 'border-gray-200 hover:border-gray-300'
+                  : 'border-white/10 hover:border-gray-300'
               }`}
             >
               <span className="text-2xl block mb-1">❌</span>
@@ -128,11 +128,11 @@ function IntakeForm({
 
         {/* Conditional: Sponsor Recognition */}
         {intakeData.hasJobOffer === 'yes' && (
-          <div className="bg-white rounded-xl p-6 shadow-md animate-slide-up">
-            <label className="block text-lg font-medium text-gray-800 mb-2">
+          <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-6 shadow-md animate-slide-up">
+            <label className="block text-lg font-medium text-white mb-2">
               🏢 Is your employer recognized by IND as a sponsor?
             </label>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-slate-400 mb-4">
               Check the{' '}
               <a
                 href="https://ind.nl/en/public-register-recognised-sponsors"
@@ -151,7 +151,7 @@ function IntakeForm({
                 className={`p-4 rounded-xl border-2 text-center transition-all duration-200 hover:shadow-md ${
                   intakeData.sponsorRecognized === 'yes'
                     ? 'border-green-500 bg-green-50 text-green-700'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-white/10 hover:border-gray-300'
                 }`}
               >
                 <span className="font-medium">Yes</span>
@@ -162,7 +162,7 @@ function IntakeForm({
                 className={`p-4 rounded-xl border-2 text-center transition-all duration-200 hover:shadow-md ${
                   intakeData.sponsorRecognized === 'no'
                     ? 'border-red-500 bg-red-50 text-red-700'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-white/10 hover:border-gray-300'
                 }`}
               >
                 <span className="font-medium">No</span>
@@ -173,7 +173,7 @@ function IntakeForm({
                 className={`p-4 rounded-xl border-2 text-center transition-all duration-200 hover:shadow-md ${
                   intakeData.sponsorRecognized === 'dont-know'
                     ? 'border-yellow-500 bg-yellow-50 text-yellow-700'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-white/10 hover:border-gray-300'
                 }`}
               >
                 <span className="font-medium">Don&apos;t know</span>
@@ -184,11 +184,11 @@ function IntakeForm({
 
         {/* Conditional: Salary Range */}
         {intakeData.hasJobOffer === 'yes' && (
-          <div className="bg-white rounded-xl p-6 shadow-md animate-slide-up">
-            <label className="block text-lg font-medium text-gray-800 mb-2">
+          <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-6 shadow-md animate-slide-up">
+            <label className="block text-lg font-medium text-white mb-2">
               💰 What is your expected gross monthly salary?
             </label>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-slate-400 mb-4">
               Kennismigrant threshold (2026): €{SALARY_THRESHOLDS.kennismigrant.under30.toLocaleString()}/month (under 30) or €{SALARY_THRESHOLDS.kennismigrant.over30.toLocaleString()}/month (30+)
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -198,7 +198,7 @@ function IntakeForm({
                 className={`p-4 rounded-xl border-2 text-center transition-all duration-200 hover:shadow-md ${
                   intakeData.salaryRange === 'above-threshold'
                     ? 'border-green-500 bg-green-50 text-green-700'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-white/10 hover:border-gray-300'
                 }`}
               >
                 <span className="text-2xl block mb-1">📈</span>
@@ -210,7 +210,7 @@ function IntakeForm({
                 className={`p-4 rounded-xl border-2 text-center transition-all duration-200 hover:shadow-md ${
                   intakeData.salaryRange === 'below-threshold'
                     ? 'border-orange-500 bg-orange-50 text-orange-700'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-white/10 hover:border-gray-300'
                 }`}
               >
                 <span className="text-2xl block mb-1">📉</span>
@@ -222,7 +222,7 @@ function IntakeForm({
                 className={`p-4 rounded-xl border-2 text-center transition-all duration-200 hover:shadow-md ${
                   intakeData.salaryRange === 'dont-know'
                     ? 'border-yellow-500 bg-yellow-50 text-yellow-700'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-white/10 hover:border-gray-300'
                 }`}
               >
                 <span className="text-2xl block mb-1">🤔</span>
@@ -247,7 +247,7 @@ function IntakeForm({
           Show My Visa Path →
         </button>
         {!isComplete && (
-          <p className="mt-3 text-sm text-gray-500">
+          <p className="mt-3 text-sm text-slate-400">
             Please answer all questions to continue
           </p>
         )}
@@ -264,16 +264,16 @@ function CountryInfoCard({ countryData }: { countryData: CountryVisaData }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden">
+    <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl border-2 border-white/10 overflow-hidden">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-5 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+        className="w-full p-5 text-left flex items-center justify-between hover:bg-slate-950 transition-colors"
       >
         <div className="flex items-center gap-3">
           <span className="text-3xl">{countryData.flag}</span>
           <div>
-            <h3 className="font-semibold text-gray-800">{countryData.country} → Netherlands</h3>
-            <p className="text-sm text-gray-500">Country-specific requirements</p>
+            <h3 className="font-semibold text-white">{countryData.country} → Netherlands</h3>
+            <p className="text-sm text-slate-400">Country-specific requirements</p>
           </div>
         </div>
         <span className="text-gray-400 text-xl">{isExpanded ? '−' : '+'}</span>
@@ -309,23 +309,23 @@ function CountryInfoCard({ countryData }: { countryData: CountryVisaData }) {
           )}
 
           {/* Processing time */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-medium text-gray-800 mb-1 flex items-center gap-2">
+          <div className="bg-slate-950 rounded-lg p-4">
+            <h4 className="font-medium text-white mb-1 flex items-center gap-2">
               ⏱️ Processing Time
             </h4>
-            <p className="text-sm text-gray-600">{countryData.processingTimeNote}</p>
+            <p className="text-sm text-slate-300">{countryData.processingTimeNote}</p>
           </div>
 
           {/* Embassy Info */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-medium text-gray-800 mb-2 flex items-center gap-2">
+          <div className="bg-slate-950 rounded-lg p-4">
+            <h4 className="font-medium text-white mb-2 flex items-center gap-2">
               🏛️ Embassy/Consulate
             </h4>
-            <p className="text-sm font-medium text-gray-700">{countryData.embassy.name}</p>
+            <p className="text-sm font-medium text-slate-200">{countryData.embassy.name}</p>
             {countryData.embassy.address && (
-              <p className="text-sm text-gray-600">{countryData.embassy.address}</p>
+              <p className="text-sm text-slate-300">{countryData.embassy.address}</p>
             )}
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-slate-300">
               {countryData.embassy.city}, {countryData.embassy.country}
             </p>
             {countryData.embassy.email && (
@@ -344,10 +344,10 @@ function CountryInfoCard({ countryData }: { countryData: CountryVisaData }) {
               </a>
             )}
             {countryData.embassy.openingHours && countryData.embassy.openingHours.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-gray-200">
-                <p className="text-xs font-medium text-gray-500 mb-1">Opening Hours</p>
+              <div className="mt-3 pt-3 border-t border-white/10">
+                <p className="text-xs font-medium text-slate-400 mb-1">Opening Hours</p>
                 {countryData.embassy.openingHours.map((hours, i) => (
-                  <p key={i} className="text-xs text-gray-600">{hours}</p>
+                  <p key={i} className="text-xs text-slate-300">{hours}</p>
                 ))}
               </div>
             )}
@@ -364,22 +364,22 @@ function CountryInfoCard({ countryData }: { countryData: CountryVisaData }) {
 
 function SalaryThresholdsCard({ countryData }: { countryData: CountryVisaData }) {
   return (
-    <div className="bg-white rounded-xl border-2 border-gray-200 p-5">
-      <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+    <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl border-2 border-white/10 p-5">
+      <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
         💰 Salary Thresholds (2026)
       </h3>
       <div className="space-y-3">
         {countryData.salaryThresholds.map((threshold, index) => (
-          <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+          <div key={index} className="flex justify-between items-center p-3 bg-slate-950 rounded-lg">
             <div>
-              <p className="text-sm font-medium text-gray-800">{threshold.category}</p>
+              <p className="text-sm font-medium text-white">{threshold.category}</p>
               {threshold.notes && (
-                <p className="text-xs text-gray-500">{threshold.notes}</p>
+                <p className="text-xs text-slate-400">{threshold.notes}</p>
               )}
             </div>
             <div className="text-right">
               <p className="font-bold text-green-600">€{threshold.monthlyGross.toLocaleString()}</p>
-              <p className="text-xs text-gray-500">per month</p>
+              <p className="text-xs text-slate-400">per month</p>
             </div>
           </div>
         ))}
@@ -405,19 +405,19 @@ function CommonMistakesCard({ countryData }: { countryData: CountryVisaData }) {
       </h3>
       <div className="space-y-3">
         {displayMistakes.map((mistake, index) => (
-          <div key={index} className="bg-white rounded-lg p-4 border border-amber-100">
+          <div key={index} className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-lg p-4 border border-amber-100">
             <div className="flex items-start gap-2">
               <span className={`px-2 py-0.5 text-xs rounded ${
                 mistake.severity === 'high' ? 'bg-red-100 text-red-700' :
                 mistake.severity === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                'bg-gray-100 text-gray-700'
+                'bg-slate-900 text-slate-200'
               }`}>
                 {mistake.severity || 'warning'}
               </span>
             </div>
-            <h4 className="font-medium text-gray-800 mt-2">{mistake.title}</h4>
-            <p className="text-sm text-gray-600 mt-1">{mistake.description}</p>
-            <div className="mt-2 pt-2 border-t border-gray-100">
+            <h4 className="font-medium text-white mt-2">{mistake.title}</h4>
+            <p className="text-sm text-slate-300 mt-1">{mistake.description}</p>
+            <div className="mt-2 pt-2 border-t border-white/10">
               <p className="text-sm text-green-700">
                 <span className="font-medium">Prevention:</span> {mistake.prevention}
               </p>
@@ -455,7 +455,7 @@ function DocumentChecklistItem({
       className={`p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer ${
         isChecked
           ? 'border-green-400 bg-green-50'
-          : 'border-gray-200 hover:border-gray-300'
+          : 'border-white/10 hover:border-gray-300'
       }`}
       onClick={onToggle}
     >
@@ -470,12 +470,12 @@ function DocumentChecklistItem({
           {isChecked && '✓'}
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className={`font-medium ${isChecked ? 'text-green-700 line-through' : 'text-gray-800'}`}>
+          <h4 className={`font-medium ${isChecked ? 'text-green-700 line-through' : 'text-white'}`}>
             {document.name}
           </h4>
-          <p className="text-sm text-gray-500 mt-1">{document.description}</p>
+          <p className="text-sm text-slate-400 mt-1">{document.description}</p>
           <div className="mt-2 flex flex-wrap gap-2">
-            <span className="inline-flex items-center text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+            <span className="inline-flex items-center text-xs bg-slate-900 text-slate-300 px-2 py-1 rounded">
               📍 {document.whereToGet}
             </span>
             {document.link && (
@@ -558,7 +558,7 @@ function TimelineStepCard({
               ? 'bg-green-500 border-green-500 text-white'
               : isNext
               ? 'bg-orange-100 border-orange-400 text-orange-600 ring-4 ring-orange-200 ring-offset-2'
-              : 'bg-gray-100 border-gray-300 text-gray-500'
+              : 'bg-slate-900 border-gray-300 text-slate-400'
           }`}
           title={isCompleted ? 'Mark as incomplete' : 'Mark as complete'}
         >
@@ -583,13 +583,13 @@ function TimelineStepCard({
               ? 'bg-green-50 border-green-300'
               : isNext
               ? 'bg-orange-50 border-orange-300 shadow-md'
-              : 'bg-white border-gray-200'
+              : 'bg-slate-900/50 backdrop-blur-sm border border-white/10 border-white/10'
           }`}
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className={`font-semibold ${isCompleted ? 'text-green-700' : 'text-gray-800'}`}>
+                <h3 className={`font-semibold ${isCompleted ? 'text-green-700' : 'text-white'}`}>
                   {step.title}
                 </h3>
                 {isNext && !isCompleted && (
@@ -608,20 +608,20 @@ function TimelineStepCard({
                       ? 'bg-orange-100 text-orange-700'
                       : step.responsibleParty === 'employee'
                       ? 'bg-purple-100 text-purple-700'
-                      : 'bg-gray-100 text-gray-700'
+                      : 'bg-slate-900 text-slate-200'
                   }`}>
                     {step.responsibleParty === 'employer' ? '🏢 Employer' : 
                      step.responsibleParty === 'employee' ? '👤 You' : '👥 Both'}
                   </span>
                 )}
               </div>
-              <p className="text-sm text-gray-500 mt-1">{step.description}</p>
+              <p className="text-sm text-slate-400 mt-1">{step.description}</p>
               <div className="flex flex-wrap gap-2 mt-2">
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                <span className="text-xs bg-slate-900 text-slate-300 px-2 py-1 rounded">
                   ⏱️ {step.estimatedTime}
                 </span>
                 {totalDocs > 0 && (
-                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                  <span className="text-xs bg-slate-900 text-slate-300 px-2 py-1 rounded">
                     📄 {completedDocs}/{totalDocs} docs ready
                   </span>
                 )}
@@ -638,13 +638,13 @@ function TimelineStepCard({
           <div className="mt-4 space-y-4 animate-fade-in">
             {/* What to do */}
             {step.whatToDo.length > 0 && (
-              <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-                <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
+              <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-5 border border-white/10 shadow-sm">
+                <h4 className="font-medium text-white mb-3 flex items-center gap-2">
                   📋 What to do
                 </h4>
                 <ul className="space-y-2">
                   {step.whatToDo.map((action, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
                       <span className="text-orange-500">→</span>
                       <span>{action}</span>
                     </li>
@@ -655,10 +655,10 @@ function TimelineStepCard({
 
             {/* Required Documents */}
             {step.requiredDocuments.length > 0 && (
-              <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-                <h4 className="font-medium text-gray-800 mb-3 flex items-center gap-2">
+              <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-5 border border-white/10 shadow-sm">
+                <h4 className="font-medium text-white mb-3 flex items-center gap-2">
                   📄 Required Documents
-                  <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+                  <span className="text-xs bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full">
                     {completedDocs}/{totalDocs}
                   </span>
                 </h4>
@@ -676,11 +676,11 @@ function TimelineStepCard({
             )}
 
             {/* Where to submit */}
-            <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-              <h4 className="font-medium text-gray-800 mb-2 flex items-center gap-2">
+            <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-5 border border-white/10 shadow-sm">
+              <h4 className="font-medium text-white mb-2 flex items-center gap-2">
                 📬 Where to submit
               </h4>
-              <p className="text-sm text-gray-600">{step.whereToSubmit}</p>
+              <p className="text-sm text-slate-300">{step.whereToSubmit}</p>
               {step.submitLink && (
                 <a
                   href={step.submitLink}
@@ -732,7 +732,7 @@ function TimelineStepCard({
               onClick={onToggleComplete}
               className={`w-full py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
                 isCompleted
-                  ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-slate-900 text-slate-300 hover:bg-gray-200'
                   : 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl'
               }`}
             >
@@ -845,7 +845,7 @@ function ResultsView({
           </div>
           <div className="w-full bg-orange-400/30 rounded-full h-3 overflow-hidden">
             <div
-              className="h-full bg-white rounded-full transition-all duration-500 ease-out"
+              className="h-full bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-full transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -856,7 +856,7 @@ function ResultsView({
       <div className="flex flex-wrap gap-3">
         <button
           onClick={onBack}
-          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+          className="px-4 py-2 bg-slate-900 text-slate-200 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
         >
           ← Edit Answers
         </button>
@@ -871,7 +871,7 @@ function ResultsView({
       {/* Country-Specific Information */}
       {countryData && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
             {countryData.flag} Information for {countryData.country} Citizens
           </h3>
           <div className="grid md:grid-cols-2 gap-4">
@@ -906,11 +906,11 @@ function ResultsView({
       )}
 
       {/* Timeline */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
-        <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-2xl shadow-lg p-6 sm:p-8">
+        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
           📍 Your Visa Journey
           {countryData && (
-            <span className="text-sm font-normal text-gray-500">
+            <span className="text-sm font-normal text-slate-400">
               ({countryData.country} → Netherlands)
             </span>
           )}
@@ -934,13 +934,13 @@ function ResultsView({
 
       {/* Eligibility Criteria */}
       {pathway.eligibilityCriteria.length > 0 && (
-        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-          <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+        <div className="bg-slate-950 rounded-xl p-6 border border-white/10">
+          <h3 className="font-semibold text-white mb-3 flex items-center gap-2">
             ✅ Eligibility Criteria
           </h3>
           <ul className="space-y-2">
             {pathway.eligibilityCriteria.map((criteria, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+              <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
                 <span className="text-green-500">✓</span>
                 <span>{criteria}</span>
               </li>
@@ -1003,11 +1003,11 @@ export default function VisaWizardPage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 animate-fade-in">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b px-4 sm:px-6 py-4 shadow-sm sticky top-0 z-40">
+      <header className="bg-slate-900/50 backdrop-blur-sm border border-white/10/80 backdrop-blur-sm border-b px-4 sm:px-6 py-4 shadow-sm sticky top-0 z-40">
         <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🛂</span>
-            <h1 className="text-xl font-bold text-gray-800">Visa Wizard</h1>
+            <h1 className="text-xl font-bold text-white">Visa Wizard</h1>
             {currentStep === 'results' && pathway && (
               <>
                 {countryData && (
@@ -1028,7 +1028,7 @@ export default function VisaWizardPage() {
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <span className="text-gray-600">{progress}%</span>
+                <span className="text-slate-300">{progress}%</span>
               </div>
             )}
             <Link

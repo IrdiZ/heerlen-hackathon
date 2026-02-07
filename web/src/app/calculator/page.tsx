@@ -208,19 +208,19 @@ const SETTLEMENT_COSTS = {
 
 function Header() {
   return (
-    <header className="bg-white border-b px-4 sm:px-6 py-4 shadow-sm">
+    <header className="bg-slate-900/50 backdrop-blur-sm border border-white/10 border-b px-4 sm:px-6 py-4 shadow-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <span className="text-2xl">🌍</span>
-            <h1 className="text-xl font-bold text-gray-800">MigrantAI</h1>
+            <h1 className="text-xl font-bold text-white">MigrantAI</h1>
           </Link>
           <span className="text-gray-300">|</span>
-          <span className="text-gray-600 font-medium">💰 Cost Calculator</span>
+          <span className="text-slate-300 font-medium">💰 Cost Calculator</span>
         </div>
         <Link
           href="/"
-          className="text-gray-500 hover:text-gray-700 transition-colors duration-200 px-3 py-2 rounded hover:bg-gray-100"
+          className="text-slate-400 hover:text-slate-200 transition-colors duration-200 px-3 py-2 rounded hover:bg-slate-900"
         >
           ← Back to Home
         </Link>
@@ -236,7 +236,7 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
       className={`px-4 py-3 font-medium text-sm transition-all duration-200 border-b-2 ${
         active
           ? 'text-orange-600 border-orange-500 bg-orange-50'
-          : 'text-gray-600 border-transparent hover:text-gray-800 hover:bg-gray-50'
+          : 'text-slate-300 border-transparent hover:text-white hover:bg-slate-950'
       }`}
     >
       {children}
@@ -246,12 +246,12 @@ function TabButton({ active, onClick, children }: { active: boolean; onClick: ()
 
 function CostRow({ label, amount, sublabel, highlight }: { label: string; amount: number; sublabel?: string; highlight?: boolean }) {
   return (
-    <div className={`flex justify-between items-center py-3 px-4 ${highlight ? 'bg-orange-50 rounded-lg' : 'border-b border-gray-100'}`}>
+    <div className={`flex justify-between items-center py-3 px-4 ${highlight ? 'bg-orange-50 rounded-lg' : 'border-b border-white/10'}`}>
       <div>
-        <span className={highlight ? 'font-semibold text-blue-900' : 'text-gray-700'}>{label}</span>
-        {sublabel && <p className="text-xs text-gray-500">{sublabel}</p>}
+        <span className={highlight ? 'font-semibold text-blue-900' : 'text-slate-200'}>{label}</span>
+        {sublabel && <p className="text-xs text-slate-400">{sublabel}</p>}
       </div>
-      <span className={`font-mono ${highlight ? 'font-bold text-blue-900 text-lg' : 'text-gray-900'}`}>
+      <span className={`font-mono ${highlight ? 'font-bold text-blue-900 text-lg' : 'text-white'}`}>
         €{amount.toLocaleString('nl-NL')}
       </span>
     </div>
@@ -282,11 +282,11 @@ function InitialSettlementTab() {
   return (
     <div className="space-y-6">
       {/* Configuration */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">📍 Your Situation</h3>
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">📍 Your Situation</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+            <label className="block text-sm font-medium text-slate-200 mb-2">City</label>
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
@@ -298,7 +298,7 @@ function InitialSettlementTab() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Apartment Type</label>
+            <label className="block text-sm font-medium text-slate-200 mb-2">Apartment Type</label>
             <select
               value={apartmentType}
               onChange={(e) => setApartmentType(e.target.value as typeof apartmentType)}
@@ -310,7 +310,7 @@ function InitialSettlementTab() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-200 mb-2">
               Temporary Housing: {tempHousingWeeks} weeks
             </label>
             <input
@@ -321,7 +321,7 @@ function InitialSettlementTab() {
               onChange={(e) => setTempHousingWeeks(Number(e.target.value))}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
             />
-            <p className="text-xs text-gray-500 mt-1">While searching for permanent housing</p>
+            <p className="text-xs text-slate-400 mt-1">While searching for permanent housing</p>
           </div>
           <div className="flex items-center">
             <label className="flex items-center gap-3 cursor-pointer">
@@ -331,15 +331,15 @@ function InitialSettlementTab() {
                 onChange={(e) => setIncludeFurniture(e.target.checked)}
                 className="w-5 h-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
               />
-              <span className="text-sm text-gray-700">Include basic furniture (€{SETTLEMENT_COSTS.furnitureBasic})</span>
+              <span className="text-sm text-slate-200">Include basic furniture (€{SETTLEMENT_COSTS.furnitureBasic})</span>
             </label>
           </div>
         </div>
       </div>
 
       {/* Cost Breakdown */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">💶 Initial Settlement Costs</h3>
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">💶 Initial Settlement Costs</h3>
         <div className="space-y-1">
           <CostRow label="Security Deposit" amount={deposit} sublabel={`${SETTLEMENT_COSTS.depositMonths} months rent`} />
           <CostRow label="First Month Rent" amount={firstMonthRent} />
@@ -402,11 +402,11 @@ function MonthlyCostsTab() {
   return (
     <div className="space-y-6">
       {/* Configuration */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">🏠 Your Living Situation</h3>
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">🏠 Your Living Situation</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+            <label className="block text-sm font-medium text-slate-200 mb-2">City</label>
             <select
               value={selectedCity}
               onChange={(e) => setSelectedCity(e.target.value)}
@@ -418,7 +418,7 @@ function MonthlyCostsTab() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Apartment</label>
+            <label className="block text-sm font-medium text-slate-200 mb-2">Apartment</label>
             <select
               value={apartmentType}
               onChange={(e) => setApartmentType(e.target.value as typeof apartmentType)}
@@ -430,7 +430,7 @@ function MonthlyCostsTab() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Lifestyle</label>
+            <label className="block text-sm font-medium text-slate-200 mb-2">Lifestyle</label>
             <select
               value={lifestyle}
               onChange={(e) => setLifestyle(e.target.value as typeof lifestyle)}
@@ -445,8 +445,8 @@ function MonthlyCostsTab() {
       </div>
 
       {/* Cost Breakdown */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">📊 Monthly Expenses in {city.name}</h3>
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">📊 Monthly Expenses in {city.name}</h3>
         <div className="space-y-1">
           <CostRow label="🏠 Rent" amount={rent} sublabel={apartmentType === 'studio' ? 'Studio apartment' : apartmentType === 'oneBedroom' ? '1 bedroom' : '2 bedrooms'} />
           <CostRow label="💡 Utilities" amount={city.utilities} sublabel="Gas, electricity, water" />
@@ -459,14 +459,14 @@ function MonthlyCostsTab() {
             <CostRow label="TOTAL MONTHLY" amount={total} highlight />
           </div>
         </div>
-        <p className="text-xs text-gray-500 mt-4 text-center">
+        <p className="text-xs text-slate-400 mt-4 text-center">
           Annual cost: €{(total * 12).toLocaleString('nl-NL')}
         </p>
       </div>
 
       {/* Cost breakdown chart */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">📈 Cost Distribution</h3>
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">📈 Cost Distribution</h3>
         <div className="space-y-3">
           {[
             { label: 'Rent', amount: rent, color: 'bg-orange-500' },
@@ -474,17 +474,17 @@ function MonthlyCostsTab() {
             { label: 'Groceries', amount: groceries, color: 'bg-green-500' },
             { label: 'Transport', amount: transport, color: 'bg-purple-500' },
             { label: 'Insurance', amount: healthInsurance, color: 'bg-red-500' },
-            { label: 'Other', amount: city.internet + leisure, color: 'bg-gray-500' },
+            { label: 'Other', amount: city.internet + leisure, color: 'bg-slate-9500' },
           ].map(item => (
             <div key={item.label} className="flex items-center gap-3">
-              <span className="w-20 text-sm text-gray-600">{item.label}</span>
-              <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
+              <span className="w-20 text-sm text-slate-300">{item.label}</span>
+              <div className="flex-1 bg-slate-900 rounded-full h-4 overflow-hidden">
                 <div
                   className={`h-full ${item.color} transition-all duration-500`}
                   style={{ width: `${(item.amount / total) * 100}%` }}
                 />
               </div>
-              <span className="w-20 text-sm text-gray-700 text-right">{Math.round((item.amount / total) * 100)}%</span>
+              <span className="w-20 text-sm text-slate-200 text-right">{Math.round((item.amount / total) * 100)}%</span>
             </div>
           ))}
         </div>
@@ -502,9 +502,9 @@ function VisaFeesTab() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">🛂 Visa & Permit Fees (2024)</h3>
-        <p className="text-sm text-gray-600 mb-6">
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg p-6">
+        <h3 className="text-lg font-semibold text-white mb-2">🛂 Visa & Permit Fees (2024)</h3>
+        <p className="text-sm text-slate-300 mb-6">
           These are IND (Immigration and Naturalization Service) application fees. Additional legalization costs may apply.
         </p>
         
@@ -516,18 +516,18 @@ function VisaFeesTab() {
               className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
                 selectedVisa === visa.name
                   ? 'border-orange-500 bg-orange-50'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  : 'border-white/10 hover:border-gray-300 hover:bg-slate-950'
               }`}
             >
               <div className="flex justify-between items-start mb-2">
-                <h4 className="font-semibold text-gray-800">{visa.name}</h4>
+                <h4 className="font-semibold text-white">{visa.name}</h4>
                 <span className="font-mono font-bold text-orange-600">€{visa.fee}</span>
               </div>
-              <p className="text-sm text-gray-500 mb-2">{visa.nameNL}</p>
+              <p className="text-sm text-slate-400 mb-2">{visa.nameNL}</p>
               {selectedVisa === visa.name && (
-                <div className="mt-3 pt-3 border-t border-gray-200 animate-fade-in">
-                  <p className="text-sm text-gray-700">{visa.description}</p>
-                  <p className="text-sm text-gray-500 mt-2">
+                <div className="mt-3 pt-3 border-t border-white/10 animate-fade-in">
+                  <p className="text-sm text-slate-200">{visa.description}</p>
+                  <p className="text-sm text-slate-400 mt-2">
                     ⏱️ Processing time: <span className="font-medium">{visa.processingTime}</span>
                   </p>
                 </div>
@@ -538,8 +538,8 @@ function VisaFeesTab() {
       </div>
 
       {/* Additional fees */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">📋 Additional Costs to Consider</h3>
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">📋 Additional Costs to Consider</h3>
         <div className="space-y-1">
           <CostRow label="MVV (Entry Visa)" amount={210} sublabel="If required for your nationality" />
           <CostRow label="Legalization of Documents" amount={50} sublabel="Per document, varies by country" />
@@ -590,15 +590,15 @@ function ZorgtoeslagTab() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">🏥 Zorgtoeslag Eligibility Check</h3>
-        <p className="text-sm text-gray-600 mb-6">
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg p-6">
+        <h3 className="text-lg font-semibold text-white mb-2">🏥 Zorgtoeslag Eligibility Check</h3>
+        <p className="text-sm text-slate-300 mb-6">
           Zorgtoeslag is a healthcare allowance from the Dutch government to help pay for health insurance.
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-200 mb-2">
               Your Annual Gross Income (€)
             </label>
             <input
@@ -626,12 +626,12 @@ function ZorgtoeslagTab() {
                 onChange={(e) => setHasPartner(e.target.checked)}
                 className="w-5 h-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
               />
-              <span className="text-sm text-gray-700">I have a fiscal partner (toeslagpartner)</span>
+              <span className="text-sm text-slate-200">I have a fiscal partner (toeslagpartner)</span>
             </label>
             
             {hasPartner && (
               <div className="animate-fade-in">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-200 mb-2">
                   Partner&apos;s Annual Income (€)
                 </label>
                 <input
@@ -659,10 +659,10 @@ function ZorgtoeslagTab() {
               <p className="text-green-700 mb-4">
                 Based on a combined income of €{totalIncome.toLocaleString('nl-NL')}
               </p>
-              <div className="bg-white rounded-lg p-4 inline-block">
-                <p className="text-sm text-gray-600">Estimated annual benefit</p>
+              <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-lg p-4 inline-block">
+                <p className="text-sm text-slate-300">Estimated annual benefit</p>
                 <p className="text-3xl font-bold text-green-600">€{estimatedBenefit.toLocaleString('nl-NL')}</p>
-                <p className="text-sm text-gray-500">~€{monthlyBenefit}/month</p>
+                <p className="text-sm text-slate-400">~€{monthlyBenefit}/month</p>
               </div>
             </div>
           ) : (
@@ -674,8 +674,8 @@ function ZorgtoeslagTab() {
       </div>
 
       {/* Requirements */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">📋 Requirements for Zorgtoeslag</h3>
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">📋 Requirements for Zorgtoeslag</h3>
         <ul className="space-y-3">
           {[
             { text: 'You have Dutch health insurance (zorgverzekering)', required: true },
@@ -686,7 +686,7 @@ function ZorgtoeslagTab() {
           ].map((item, i) => (
             <li key={i} className="flex items-start gap-3">
               <span className="text-green-500 mt-0.5">✓</span>
-              <span className="text-gray-700">{item.text}</span>
+              <span className="text-slate-200">{item.text}</span>
             </li>
           ))}
         </ul>
@@ -740,8 +740,8 @@ function CityComparisonTab() {
   return (
     <div className="space-y-6">
       {/* City selector */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">🏙️ Select Cities to Compare (max 4)</h3>
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">🏙️ Select Cities to Compare (max 4)</h3>
         <div className="flex flex-wrap gap-2">
           {CITIES.map(city => (
             <button
@@ -750,7 +750,7 @@ function CityComparisonTab() {
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 selectedCities.includes(city.name)
                   ? 'bg-orange-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-slate-900 text-slate-200 hover:bg-gray-200'
               }`}
             >
               {city.name}
@@ -759,7 +759,7 @@ function CityComparisonTab() {
         </div>
         
         <div className="mt-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Apartment Type</label>
+          <label className="block text-sm font-medium text-slate-200 mb-2">Apartment Type</label>
           <select
             value={apartmentType}
             onChange={(e) => setApartmentType(e.target.value as typeof apartmentType)}
@@ -773,53 +773,53 @@ function CityComparisonTab() {
       </div>
 
       {/* Comparison table */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50">
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Category</th>
+              <tr className="bg-slate-950">
+                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-200">Category</th>
                 {comparedCities.map(city => (
-                  <th key={city.name} className="px-6 py-4 text-center text-sm font-semibold text-gray-700">
+                  <th key={city.name} className="px-6 py-4 text-center text-sm font-semibold text-slate-200">
                     {city.name}
-                    <span className="block text-xs font-normal text-gray-500">{city.region}</span>
+                    <span className="block text-xs font-normal text-slate-400">{city.region}</span>
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               <tr>
-                <td className="px-6 py-4 text-sm text-gray-700">🏠 Rent ({apartmentType === 'studio' ? 'Studio' : apartmentType === 'oneBedroom' ? '1BR' : '2BR'})</td>
+                <td className="px-6 py-4 text-sm text-slate-200">🏠 Rent ({apartmentType === 'studio' ? 'Studio' : apartmentType === 'oneBedroom' ? '1BR' : '2BR'})</td>
                 {comparedCities.map(city => (
                   <td key={city.name} className="px-6 py-4 text-center font-mono">€{city.rent[apartmentType]}</td>
                 ))}
               </tr>
-              <tr className="bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-700">💡 Utilities</td>
+              <tr className="bg-slate-950">
+                <td className="px-6 py-4 text-sm text-slate-200">💡 Utilities</td>
                 {comparedCities.map(city => (
                   <td key={city.name} className="px-6 py-4 text-center font-mono">€{city.utilities}</td>
                 ))}
               </tr>
               <tr>
-                <td className="px-6 py-4 text-sm text-gray-700">🛒 Groceries</td>
+                <td className="px-6 py-4 text-sm text-slate-200">🛒 Groceries</td>
                 {comparedCities.map(city => (
                   <td key={city.name} className="px-6 py-4 text-center font-mono">€{city.groceries}</td>
                 ))}
               </tr>
-              <tr className="bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-700">🚌 Transport</td>
+              <tr className="bg-slate-950">
+                <td className="px-6 py-4 text-sm text-slate-200">🚌 Transport</td>
                 {comparedCities.map(city => (
                   <td key={city.name} className="px-6 py-4 text-center font-mono">€{city.transport}</td>
                 ))}
               </tr>
               <tr>
-                <td className="px-6 py-4 text-sm text-gray-700">📱 Internet</td>
+                <td className="px-6 py-4 text-sm text-slate-200">📱 Internet</td>
                 {comparedCities.map(city => (
                   <td key={city.name} className="px-6 py-4 text-center font-mono">€{city.internet}</td>
                 ))}
               </tr>
-              <tr className="bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-700">🏥 Health Insurance</td>
+              <tr className="bg-slate-950">
+                <td className="px-6 py-4 text-sm text-slate-200">🏥 Health Insurance</td>
                 {comparedCities.map(() => (
                   <td key={Math.random()} className="px-6 py-4 text-center font-mono">€{SETTLEMENT_COSTS.healthInsuranceMonthly}</td>
                 ))}
@@ -838,9 +838,9 @@ function CityComparisonTab() {
                 })}
               </tr>
               <tr>
-                <td className="px-6 py-4 text-sm text-gray-500">Annual Total</td>
+                <td className="px-6 py-4 text-sm text-slate-400">Annual Total</td>
                 {comparedCities.map(city => (
-                  <td key={city.name} className="px-6 py-4 text-center font-mono text-gray-500">€{(getMonthlyTotal(city) * 12).toLocaleString('nl-NL')}</td>
+                  <td key={city.name} className="px-6 py-4 text-center font-mono text-slate-400">€{(getMonthlyTotal(city) * 12).toLocaleString('nl-NL')}</td>
                 ))}
               </tr>
             </tbody>
@@ -902,11 +902,11 @@ export default function CalculatorPage() {
   }, [activeTab]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-950">
       <Header />
       
       {/* Tab Navigation */}
-      <div className="bg-white border-b shadow-sm sticky top-0 z-10">
+      <div className="bg-slate-900/50 backdrop-blur-sm border border-white/10 border-b shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex overflow-x-auto">
             <TabButton active={activeTab === 'settlement'} onClick={() => setActiveTab('settlement')}>
@@ -934,8 +934,8 @@ export default function CalculatorPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t mt-12 py-6">
-        <div className="max-w-5xl mx-auto px-4 text-center text-sm text-gray-500">
+      <footer className="bg-slate-900/50 backdrop-blur-sm border border-white/10 border-t mt-12 py-6">
+        <div className="max-w-5xl mx-auto px-4 text-center text-sm text-slate-400">
           <p>💡 All costs are estimates based on 2024 data and may vary.</p>
           <p className="mt-1">Always verify current rates with official sources.</p>
         </div>
