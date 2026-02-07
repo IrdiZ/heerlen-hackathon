@@ -89,19 +89,27 @@ export function useExtension() {
     // Poll for captured data from extension storage
     const pollCapture = async () => {
       // Skip if we already have a schema
-      if (hasSchema.current) return;
+      if (hasSchema.current) {
+        console.log('[useExtension] Skipping poll - already have schema');
+        return;
+      }
       
       try {
+        console.log('[useExtension] Polling for captured data...');
         const response = await sendMessageToExtension({ type: 'GET_LAST_CAPTURE' });
+        console.log('[useExtension] Poll response:', response);
+        
         if (response?.success && response.schema && response.schema.fields?.length > 0) {
-          console.log('[useExtension] Got captured schema from storage:', response.schema);
+          console.log('[useExtension] ✅ Got captured schema from storage:', response.schema);
           setFormSchema(response.schema);
           hasSchema.current = true;
           // Clear it so we don't re-read
           await sendMessageToExtension({ type: 'CLEAR_LAST_CAPTURE' });
+        } else if (response?.success === false) {
+          console.log('[useExtension] No capture in storage');
         }
       } catch (e) {
-        // Ignore errors during poll
+        console.error('[useExtension] Poll error:', e);
       }
     };
 

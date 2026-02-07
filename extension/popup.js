@@ -28,7 +28,9 @@ captureBtn.addEventListener('click', async () => {
       captureBtn.innerHTML = '✅ Captured!';
       
       // Store for the app to retrieve
+      console.log('[Popup] Storing capture:', response.data);
       await chrome.storage.local.set({ lastCapture: response.data });
+      console.log('[Popup] Capture stored to chrome.storage.local');
       
       setTimeout(() => {
         captureBtn.innerHTML = '📸 Capture This Page';

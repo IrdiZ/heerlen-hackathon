@@ -437,7 +437,9 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
   
   // Get last capture from storage (for polling from web app)
   if (message.type === 'GET_LAST_CAPTURE') {
+    console.log('[MigrantAI] GET_LAST_CAPTURE requested');
     chrome.storage.local.get('lastCapture', ({ lastCapture }) => {
+      console.log('[MigrantAI] lastCapture from storage:', lastCapture ? 'exists' : 'null');
       if (lastCapture) {
         // Transform to schema format
         const schema = {
