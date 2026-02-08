@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Country {
   code: string;
   name: string;
   flag: string;
-  users: number;
   estimatedTime: string;
   challenges: string[];
   route: string;
@@ -18,7 +18,6 @@ const countries: Country[] = [
     code: 'AL',
     name: 'Albania',
     flag: '🇦🇱',
-    users: 1247,
     estimatedTime: '3-6 months',
     challenges: ['Work visa required', 'Diploma recognition', 'Dutch integration exam'],
     route: 'MVV → VVR → Integration'
@@ -27,7 +26,6 @@ const countries: Country[] = [
     code: 'TR',
     name: 'Turkey',
     flag: '🇹🇷',
-    users: 3891,
     estimatedTime: '4-8 months',
     challenges: ['Work visa required', 'Language certificate', 'Proof of income'],
     route: 'MVV → VVR → BSN Registration'
@@ -36,7 +34,6 @@ const countries: Country[] = [
     code: 'RS',
     name: 'Serbia',
     flag: '🇷🇸',
-    users: 892,
     estimatedTime: '3-5 months',
     challenges: ['Visa-free entry 90 days', 'Work permit needed', 'Housing registration'],
     route: 'Tourist Entry → Work Permit → VVR'
@@ -45,7 +42,6 @@ const countries: Country[] = [
     code: 'UA',
     name: 'Ukraine',
     flag: '🇺🇦',
-    users: 8234,
     estimatedTime: '1-3 months',
     challenges: ['Temporary protection status', 'Document translation', 'BSN registration'],
     route: 'Temporary Protection → Registration → Integration'
@@ -54,7 +50,6 @@ const countries: Country[] = [
     code: 'MA',
     name: 'Morocco',
     flag: '🇲🇦',
-    users: 5621,
     estimatedTime: '4-7 months',
     challenges: ['MVV required', 'Integration abroad exam', 'Sponsor requirements'],
     route: 'MVV → VVR → Civic Integration'
@@ -63,7 +58,6 @@ const countries: Country[] = [
     code: 'BR',
     name: 'Brazil',
     flag: '🇧🇷',
-    users: 2156,
     estimatedTime: '3-6 months',
     challenges: ['Work visa required', 'Document apostille', 'Health insurance'],
     route: 'MVV → VVR → BSN → DigiD'
@@ -76,6 +70,7 @@ interface CountrySelectorProps {
 }
 
 export function CountrySelector({ onSelect, onStartJourney }: CountrySelectorProps) {
+  const t = useTranslations('countrySelector');
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
 
@@ -100,10 +95,10 @@ export function CountrySelector({ onSelect, onStartJourney }: CountrySelectorPro
         className="text-center mb-8"
       >
         <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-          Where are you from?
+          {t('title')}
         </h2>
         <p className="text-slate-400">
-          Select your country to see your personalized journey to the Netherlands
+          {t('subtitle')}
         </p>
       </motion.div>
 
@@ -196,35 +191,9 @@ export function CountrySelector({ onSelect, onStartJourney }: CountrySelectorPro
           >
             🌍
           </motion.div>
-          <p className="text-xs text-slate-400 text-center">More soon...</p>
+          <p className="text-xs text-slate-400 text-center">{t('moreSoon')}</p>
         </motion.div>
       </motion.div>
-
-      {/* User stat for selected country */}
-      <AnimatePresence>
-        {selectedCountry && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="text-center mb-6"
-          >
-            <motion.p
-              className="text-orange-400 font-medium"
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              key={selectedCountry.code}
-            >
-              <span className="text-2xl">{selectedCountry.flag}</span>
-              {' '}
-              <span className="text-white font-bold">{selectedCountry.users.toLocaleString()}</span>
-              {' '}
-              people from {selectedCountry.name} used Welkom.ai
-            </motion.p>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Selected country details card */}
       <AnimatePresence>
@@ -257,23 +226,23 @@ export function CountrySelector({ onSelect, onStartJourney }: CountrySelectorPro
                   </motion.span>
                   <div>
                     <h3 className="text-xl sm:text-2xl font-bold text-white">
-                      {selectedCountry.name} → Netherlands
+                      {selectedCountry.name} {t('toNetherlands')}
                     </h3>
                     <p className="text-slate-400">
-                      Your immigration journey
+                      {t('journeySubtitle')}
                     </p>
                   </div>
                 </div>
 
                 {/* Stats grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                   {/* Route */}
                   <div className="bg-white/5 rounded-xl p-4 border border-white/5">
                     <div className="flex items-center gap-2 text-orange-400 mb-2">
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                       </svg>
-                      <span className="text-sm font-medium">Route</span>
+                      <span className="text-sm font-medium">{t('route')}</span>
                     </div>
                     <p className="text-white font-semibold text-sm">{selectedCountry.route}</p>
                   </div>
@@ -284,20 +253,9 @@ export function CountrySelector({ onSelect, onStartJourney }: CountrySelectorPro
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <span className="text-sm font-medium">Timeline</span>
+                      <span className="text-sm font-medium">{t('timeline')}</span>
                     </div>
                     <p className="text-white font-semibold text-sm">{selectedCountry.estimatedTime}</p>
-                  </div>
-
-                  {/* Users */}
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/5">
-                    <div className="flex items-center gap-2 text-green-400 mb-2">
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                      <span className="text-sm font-medium">Community</span>
-                    </div>
-                    <p className="text-white font-semibold text-sm">{selectedCountry.users.toLocaleString()} helped</p>
                   </div>
                 </div>
 
@@ -305,7 +263,7 @@ export function CountrySelector({ onSelect, onStartJourney }: CountrySelectorPro
                 <div className="mb-6">
                   <h4 className="text-sm font-medium text-slate-400 mb-3 flex items-center gap-2">
                     <span className="w-1.5 h-1.5 bg-orange-500 rounded-full" />
-                    Key challenges we&apos;ll help you with
+                    {t('challengesLabel')}
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedCountry.challenges.map((challenge, index) => (
@@ -329,7 +287,7 @@ export function CountrySelector({ onSelect, onStartJourney }: CountrySelectorPro
                   whileTap={{ scale: 0.98 }}
                   className="w-full py-4 px-6 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-lg rounded-xl shadow-lg shadow-orange-500/25 flex items-center justify-center gap-3 group"
                 >
-                  <span>Start your journey</span>
+                  <span>{t('startJourney')}</span>
                   <motion.span
                     animate={{ x: [0, 4, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity }}

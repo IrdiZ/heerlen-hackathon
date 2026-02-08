@@ -6,6 +6,9 @@
   "landing": {
     "title": "MigrantAI",
     "tagline": "صوتك، لغتك، دليلك إلى هولندا",
+    "heroLine1": "اكتشف",
+    "heroLine2": "هولندا",
+    "subtitle": "ذكاء اصطناعي صوتي يتحدث لغتك ويتعامل مع البيروقراطية الهولندية نيابة عنك.",
     "features": {
       "language": {
         "title": "أي لغة",
@@ -23,9 +26,31 @@
     "startButton": "ابدأ المحادثة",
     "noAccount": "لا حاجة لحساب • مجاني • يعمل بدون اتصال للنماذج"
   },
+  "toolbar": {
+    "forms": "النماذج",
+    "roadmap": "خارطة الطريق",
+    "chat": "المحادثة",
+    "backToHome": "العودة للرئيسية"
+  },
+  "panels": {
+    "capturedForms": "النماذج الملتقطة",
+    "roadmap": "خارطة الطريق"
+  },
+  "countrySelector": {
+    "title": "من أين أنت؟",
+    "subtitle": "اختر بلدك لرؤية رحلتك المخصصة إلى هولندا",
+    "toNetherlands": "← هولندا",
+    "journeySubtitle": "رحلة الهجرة الخاصة بك",
+    "route": "المسار",
+    "timeline": "الجدول الزمني",
+    "challengesLabel": "التحديات الرئيسية التي سنساعدك فيها",
+    "startJourney": "ابدأ رحلتك",
+    "moreSoon": "المزيد قريباً..."
+  },
   "header": {
     "templates": "القوالب",
     "personalDetails": "البيانات الشخصية",
+    "roadmap": "خارطة الطريق",
     "back": "رجوع"
   },
   "voiceAgent": {
@@ -99,6 +124,18 @@
   },
   "templates": {
     "autoFillWith": "ملء تلقائي بـ {template}"
+  },
+  "roadmap": {
+    "title": "خارطة طريق الهجرة",
+    "empty": "لا توجد خارطة طريق بعد",
+    "emptyDescription": "ابدأ محادثة صوتية لإنشاء خارطة طريق هجرة مخصصة لك",
+    "progress": "{completed} من {total} مكتمل",
+    "nextAction": "الإجراء التالي",
+    "estimatedTime": "الوقت المقدر",
+    "tips": "نصائح",
+    "notes": "ملاحظاتك",
+    "clear": "مسح خارطة الطريق",
+    "startConversation": "ابدأ المحادثة"
   },
   "checklist": {
     "title": "قائمة الهجرة",

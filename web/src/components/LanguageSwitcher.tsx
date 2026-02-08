@@ -2,11 +2,12 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { locales, localeNames, type Locale } from '@/i18n/config';
+import { locales, localeNames, isRTL, type Locale } from '@/i18n/config';
 
 export function LanguageSwitcher() {
   const t = useTranslations('languageSwitcher');
   const currentLocale = useLocale() as Locale;
+  const rtl = isRTL(currentLocale);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +46,8 @@ export function LanguageSwitcher() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+        className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
+        style={{ color: 'var(--w-text-secondary)', background: 'var(--w-bg-raised)', border: '1px solid var(--w-border)' }}
         aria-label={t('label')}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
@@ -64,7 +66,8 @@ export function LanguageSwitcher() {
 
       {isOpen && (
         <div
-          className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50 animate-fade-in"
+          className={`absolute ${rtl ? 'left-0' : 'right-0'} mt-2 w-44 rounded-xl shadow-lg py-1 z-50 animate-fade-in`}
+          style={{ background: 'var(--w-bg-elevated)', border: '1px solid var(--w-border)' }}
           role="listbox"
           aria-label={t('label')}
         >
@@ -77,16 +80,22 @@ export function LanguageSwitcher() {
               }}
               className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150 ${
                 locale === currentLocale
-                  ? 'bg-orange-50 text-orange-700 font-medium'
-                  : 'text-gray-700 hover:bg-gray-50'
+                  ? 'font-medium'
+                  : ''
               }`}
+              style={{
+                color: locale === currentLocale ? 'var(--w-accent)' : 'var(--w-text-secondary)',
+                background: locale === currentLocale ? 'var(--w-accent-soft)' : 'transparent',
+              }}
+              onMouseEnter={(e) => { if (locale !== currentLocale) e.currentTarget.style.background = 'var(--w-bg-surface)'; }}
+              onMouseLeave={(e) => { if (locale !== currentLocale) e.currentTarget.style.background = 'transparent'; }}
               role="option"
               aria-selected={locale === currentLocale}
             >
               <span className="text-lg">{getFlag(locale)}</span>
               <span>{localeNames[locale]}</span>
               {locale === currentLocale && (
-                <svg className="w-4 h-4 ml-auto text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 text-orange-500" style={{ marginInlineStart: 'auto' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               )}

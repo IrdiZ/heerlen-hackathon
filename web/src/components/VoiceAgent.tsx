@@ -5,7 +5,7 @@
  * ElevenLabs Conversational AI with extension integration
  */
 
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { useConversation } from '@elevenlabs/react';
 import { CreateRoadmapParams, UpdateRoadmapParams } from '@/lib/roadmap-types';
 
@@ -108,6 +108,19 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   const [lastSchema, setLastSchema] = useState<FormSchema | null>(null);
   const [extensionIdMissing] = useState(!EXTENSION_ID);
 
+  // Refs so ElevenLabs client-tool closures always read the latest values
+  const currentSchemaRef = useRef(currentSchema);
+  const onFillFormRef = useRef(onFillForm);
+  const onFormCapturedRef = useRef(onFormCaptured);
+  const onCreateRoadmapRef = useRef(onCreateRoadmap);
+  const onUpdateRoadmapRef = useRef(onUpdateRoadmap);
+
+  useEffect(() => { currentSchemaRef.current = currentSchema; }, [currentSchema]);
+  useEffect(() => { onFillFormRef.current = onFillForm; }, [onFillForm]);
+  useEffect(() => { onFormCapturedRef.current = onFormCaptured; }, [onFormCaptured]);
+  useEffect(() => { onCreateRoadmapRef.current = onCreateRoadmap; }, [onCreateRoadmap]);
+  useEffect(() => { onUpdateRoadmapRef.current = onUpdateRoadmap; }, [onUpdateRoadmap]);
+
   // Check extension on mount
   useEffect(() => {
     if (EXTENSION_ID) {
@@ -182,16 +195,17 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
   const handleGetCurrentCapture = useCallback(async (): Promise<string> => {
     console.log('[VoiceAgent] get_current_capture tool called');
 
-    // Check if there's a schema from extension popup
-    if (currentSchema && currentSchema.fields?.length > 0) {
-      console.log('[VoiceAgent] Returning existing schema from extension:', currentSchema);
-      emitMessage('system', `📋 Found existing capture: ${currentSchema.title}`);
-      return formatSchemaForAgent(currentSchema);
+    // Read from ref so we always get the latest schema, even in a stale closure
+    const schema = currentSchemaRef.current;
+    if (schema && schema.fields?.length > 0) {
+      console.log('[VoiceAgent] Returning existing schema from extension:', schema);
+      emitMessage('system', `📋 Found existing capture: ${schema.title}`);
+      return formatSchemaForAgent(schema);
     }
 
     // No existing capture
     return 'No form has been captured yet. Use capture_page to scan the current page, or ask the user to capture a form using the browser extension.';
-  }, [currentSchema, emitMessage, formatSchemaForAgent]);
+  }, [emitMessage]);
 
   // Handle capture_page tool call from agent
   const handleCapturePage = useCallback(async (): Promise<string> => {
@@ -206,8 +220,8 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
       setLastSchema(schema);
 
       // Sync to parent UI
-      if (onFormCaptured) {
-        onFormCaptured(schema);
+      if (onFormCapturedRef.current) {
+        onFormCapturedRef.current(schema);
       }
 
       // Format for agent
@@ -224,7 +238,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
 
       return `Failed to capture page: ${errorMsg}. The user should click the MigrantAI extension icon in their browser toolbar while viewing the form.`;
     }
-  }, [emitMessage, onFormCaptured]);
+  }, [emitMessage]);
 
   // Handle fill_form tool call from agent
   const handleFillForm = useCallback(async (rawParams: unknown): Promise<string> => {
@@ -258,8 +272,8 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
     emitMessage('system', `📝 Filling ${Object.keys(fieldMappings).length} fields...`);
 
     try {
-      if (onFillForm) {
-        await onFillForm(fieldMappings);
+      if (onFillFormRef.current) {
+        await onFillFormRef.current(fieldMappings);
         return `Filled ${Object.keys(fieldMappings).length} fields. Ask the user to verify the values are correct.`;
       }
 
@@ -270,7 +284,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       return `Failed to fill form: ${errorMsg}`;
     }
-  }, [onFillForm, emitMessage]);
+  }, [emitMessage]);
 
   // Handle create_roadmap tool call from agent
   const handleCreateRoadmap = useCallback(async (rawParams: unknown): Promise<string> => {
@@ -380,8 +394,8 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
     emitMessage('system', `📍 Creating roadmap: ${params.name}`);
 
     try {
-      if (onCreateRoadmap) {
-        const result = await onCreateRoadmap(params);
+      if (onCreateRoadmapRef.current) {
+        const result = await onCreateRoadmapRef.current(params);
         emitMessage('system', `✅ Roadmap created with ${params.steps.length} steps`);
         return result;
       }
@@ -392,7 +406,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
       emitMessage('system', `❌ Failed to create roadmap: ${errorMsg}`);
       return `Failed to create roadmap: ${errorMsg}`;
     }
-  }, [onCreateRoadmap, emitMessage]);
+  }, [emitMessage]);
 
   // Handle update_roadmap tool call from agent
   const handleUpdateRoadmap = useCallback(async (rawParams: unknown): Promise<string> => {
@@ -424,8 +438,8 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
     };
 
     try {
-      if (onUpdateRoadmap) {
-        const result = await onUpdateRoadmap(params);
+      if (onUpdateRoadmapRef.current) {
+        const result = await onUpdateRoadmapRef.current(params);
         if (params.status) {
           emitMessage('system', `✅ Step marked as ${params.status}`);
         }
@@ -436,7 +450,7 @@ export function VoiceAgent({ onFormSchemaRequest, onFormCaptured, onFillForm, on
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       return `Failed to update roadmap: ${errorMsg}`;
     }
-  }, [onUpdateRoadmap, emitMessage]);
+  }, [emitMessage]);
 
   // Initialize conversation with client tools
   const conversation = useConversation({

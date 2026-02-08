@@ -6,6 +6,9 @@
   "landing": {
     "title": "MigrantAI",
     "tagline": "Your voice, your language, your guide to the Netherlands",
+    "heroLine1": "Navigate the",
+    "heroLine2": "Netherlands",
+    "subtitle": "Voice-first AI that speaks your language and handles Dutch bureaucracy for you.",
     "features": {
       "language": {
         "title": "Any Language",
@@ -22,6 +25,27 @@
     },
     "startButton": "Start Conversation",
     "noAccount": "No account needed • Free to use • Works offline for forms"
+  },
+  "toolbar": {
+    "forms": "Forms",
+    "roadmap": "Roadmap",
+    "chat": "Chat",
+    "backToHome": "Back to home"
+  },
+  "panels": {
+    "capturedForms": "Captured Forms",
+    "roadmap": "Roadmap"
+  },
+  "countrySelector": {
+    "title": "Where are you from?",
+    "subtitle": "Select your country to see your personalized journey to the Netherlands",
+    "toNetherlands": "→ Netherlands",
+    "journeySubtitle": "Your immigration journey",
+    "route": "Route",
+    "timeline": "Timeline",
+    "challengesLabel": "Key challenges we'll help you with",
+    "startJourney": "Start your journey",
+    "moreSoon": "More soon..."
   },
   "header": {
     "templates": "Templates",

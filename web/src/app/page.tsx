@@ -1,25 +1,22 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { useTranslations, useLocale } from 'next-intl';
+import { motion, AnimatePresence } from 'framer-motion';
 import { VoiceAgent } from '@/components/VoiceAgent';
-import { PIIForm } from '@/components/PIIForm';
+
 import { FormStatus } from '@/components/FormStatus';
 import { Transcript } from '@/components/Transcript';
-import { FormTemplateSelector, TemplateIndicator } from '@/components/FormTemplateSelector';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ProgressTracker } from '@/components/ProgressTracker';
 import { DevPanel } from '@/components/dev';
 import { CountrySelector } from '@/components/CountrySelector';
-import StatsShowcase from '@/components/StatsShowcase';
-import { JourneyTimeline } from '@/components/JourneyTimeline';
 import { useLocalPII } from '@/hooks/useLocalPII';
 import { useExtension } from '@/hooks/useExtension';
 import { useRoadmap } from '@/hooks/useRoadmap';
 import { swapPlaceholders } from '@/lib/placeholders';
-import { FormTemplate, getTemplateById, createFillMapFromTemplate } from '@/lib/form-templates';
 import { CreateRoadmapParams, UpdateRoadmapParams } from '@/lib/roadmap-types';
+import { isRTL, type Locale } from '@/i18n/config';
 
 type AppState = 'landing' | 'active';
 
@@ -29,167 +26,71 @@ interface Message {
   timestamp: Date;
 }
 
-// Animated button with ripple effect
-function AnimatedButton({ 
-  children, 
-  onClick, 
-  className = '',
-  variant = 'primary',
-  size = 'md'
-}: { 
-  children: React.ReactNode;
-  onClick?: () => void;
-  className?: string;
-  variant?: 'primary' | 'secondary' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
-}) {
-  const baseClasses = "relative overflow-hidden transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2";
-  
-  const variantClasses = {
-    primary: "bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600 focus:ring-orange-500 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40",
-    secondary: "bg-white/10 text-white border border-white/20 hover:bg-white/20 focus:ring-white/50",
-    ghost: "bg-transparent text-slate-300 hover:text-white hover:bg-white/10 focus:ring-white/30"
-  };
-
-  const sizeClasses = {
-    sm: "px-3 py-2 text-sm rounded-lg",
-    md: "px-4 py-2.5 rounded-lg",
-    lg: "px-10 py-4 text-lg rounded-full"
-  };
-
-  return (
-    <motion.button
-      onClick={onClick}
-      whileHover={{ scale: 1.02, y: -1 }}
-      whileTap={{ scale: 0.98 }}
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
-    >
-      <motion.span
-        className="absolute inset-0 bg-white/20"
-        initial={{ scale: 0, opacity: 0.5 }}
-        whileTap={{ scale: 4, opacity: 0 }}
-        transition={{ duration: 0.5 }}
-        style={{ borderRadius: '50%', transformOrigin: 'center' }}
-      />
-      {children}
-    </motion.button>
-  );
-}
-
-// Feature card with hover effects
-function FeatureCard({ emoji, title, description, delay = 0 }: { 
-  emoji: string; 
-  title: string; 
-  description: string;
-  delay?: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay, ease: "easeOut" }}
-      whileHover={{ y: -4 }}
-      className="group"
-    >
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-orange-200 transition-all duration-300">
-        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-400 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform duration-300">
-          {emoji}
-        </div>
-        <h3 className="font-semibold text-gray-900 mb-2">{title}</h3>
-        <p className="text-sm text-gray-500">{description}</p>
-      </div>
-    </motion.div>
-  );
-}
-
-// Scroll-triggered fade-in wrapper
-function FadeInOnScroll({ children, className = '', delay = 0 }: { 
-  children: React.ReactNode; 
-  className?: string;
-  delay?: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay, ease: "easeOut" }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-// Page transition variants
-const pageVariants: Variants = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] } },
-  exit: { opacity: 0, y: -20, transition: { duration: 0.3 } }
-};
-
-// Stagger children animation
-const staggerContainer: Variants = {
-  initial: {},
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
+// Panel types for the active view
+type ActivePanel = 'forms' | 'roadmap' | null;
 
 export default function Home() {
   const t = useTranslations();
+  const locale = useLocale() as Locale;
+  const rtl = isRTL(locale);
   const [appState, setAppState] = useState<AppState>('landing');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [showPIIForm, setShowPIIForm] = useState(false);
-  const [showTemplates, setShowTemplates] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<FormTemplate | null>(null);
-  
-  const { piiData, updateField, clearAll, loadDemo, getFilledCount, totalFields } = useLocalPII();
+  const [activePanel, setActivePanel] = useState<ActivePanel>(null);
+  const [showTranscript, setShowTranscript] = useState(false);
+
+  const { piiData } = useLocalPII();
   const { isConnected, formSchema: extensionFormSchema, captureHistory, lastFillResults, error, requestFormSchema, fillForm, clearSchema, selectCapture, removeCapture } = useExtension();
   const { roadmap, createRoadmap, setStepStatus, updateNotes, clearRoadmap, getProgress } = useRoadmap();
-  const [showRoadmap, setShowRoadmap] = useState(false);
 
-  // Allow VoiceAgent to set schema directly (for when agent captures via tool)
   const [voiceAgentSchema, setVoiceAgentSchema] = useState<typeof extensionFormSchema | null>(null);
 
-  // Clear voiceAgentSchema when extension captures new data (so new capture shows)
   useEffect(() => {
     if (extensionFormSchema && extensionFormSchema.fields?.length > 0) {
       setVoiceAgentSchema(null);
     }
   }, [extensionFormSchema]);
 
-  // Use the most recently captured schema (extension capture clears voice capture above)
   const formSchema = voiceAgentSchema || extensionFormSchema;
 
-  // Auto-show roadmap when loaded from localStorage on first active
+  // Auto-show roadmap panel when loaded
   useEffect(() => {
-    if (roadmap && appState === 'active' && !showRoadmap) {
-      setShowRoadmap(true);
+    if (roadmap && appState === 'active' && activePanel === null) {
+      setActivePanel('roadmap');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appState]); // Only trigger on appState change, not on every roadmap/showRoadmap change
+  }, [appState]);
 
-  // Auto-select template when form schema is captured with a detected template
+  // Debug: expose roadmap test on window for console testing
   useEffect(() => {
-    if (formSchema?.detectedTemplate && !selectedTemplate) {
-      const template = getTemplateById(formSchema.detectedTemplate.id);
-      if (template) {
-        setSelectedTemplate(template);
-        setShowTemplates(true);
-      }
+    if (typeof window !== 'undefined') {
+      (window as any).__testRoadmap = () => {
+        const testParams: CreateRoadmapParams = {
+          name: 'Test Roadmap - Turkey to Netherlands',
+          steps: [
+            { title: 'Employer submits IND application', description: 'Your employer files the HSM residence permit application.', estimatedTime: '2-4 weeks', sources: [{ label: 'IND Official', url: 'https://ind.nl/en/residence-permits/work/highly-skilled-migrant' }] },
+            { title: 'Receive IND approval', description: 'IND processes and approves the application.', estimatedTime: '2-3 weeks', sources: [{ label: 'IND Processing', url: 'https://ind.nl/en' }] },
+            { title: 'Apply for MVV at consulate', description: 'Book appointment at Dutch consulate, bring passport and approval letter.', estimatedTime: '1-2 weeks', sources: [{ label: 'MVV Info', url: 'https://ind.nl/en/short-stay/the-provisional-residence-permit-mvv' }] },
+            { title: 'Register at gemeente', description: 'Register address at municipality within 5 days. Get BSN.', estimatedTime: '1-2 weeks', sources: [{ label: 'BRP Registration', url: 'https://www.government.nl/topics/registration-with-a-municipality-brp' }] },
+            { title: 'Collect residence permit', description: 'Pick up VVR card at IND desk.', estimatedTime: '1-2 weeks', sources: [{ label: 'IND Desks', url: 'https://ind.nl/en/service-and-contact/ind-desks' }] },
+            { title: 'Open bank account', description: 'Open Dutch bank account with BSN and passport.', estimatedTime: '1-2 weeks', sources: [{ label: 'Banking Guide', url: 'https://www.iamexpat.nl/expat-info/banking-netherlands' }] },
+            { title: 'Get health insurance', description: 'Mandatory within 4 months. Basic package ~€130/month.', estimatedTime: '1 day', sources: [{ label: 'Health Insurance', url: 'https://www.rijksoverheid.nl/onderwerpen/zorgverzekering' }] },
+          ],
+        };
+        const result = createRoadmap(testParams);
+        setActivePanel('roadmap');
+        setAppState('active');
+        console.log('[TestRoadmap] Created:', result);
+        return result;
+      };
+      console.log('[Welkom.ai] Debug: type __testRoadmap() in console to test roadmap pipeline');
     }
-  }, [formSchema, selectedTemplate]);
+  }, [createRoadmap]);
 
   const handleMessage = useCallback((msg: { role: string; content: string }) => {
     setMessages(prev => [...prev, { ...msg, timestamp: new Date() }]);
   }, []);
 
-  // Handle schema captured by VoiceAgent tool
   const handleFormCaptured = useCallback((schema: any) => {
-    console.log('[Page] VoiceAgent captured schema:', schema);
     setVoiceAgentSchema(schema);
   }, []);
 
@@ -197,56 +98,18 @@ export default function Home() {
     const schema = await requestFormSchema();
     if (schema) {
       let message = `Form captured: ${schema.fields.length} fields detected on "${schema.title}"`;
-      
-      // If template was auto-detected, mention it
       if (schema.detectedTemplate) {
         message += ` (Template detected: ${schema.detectedTemplate.nameEN})`;
       }
-      
       handleMessage({ role: 'system', content: message });
     }
   }, [requestFormSchema, handleMessage]);
 
-  const handleTemplateSelect = useCallback((template: FormTemplate) => {
-    setSelectedTemplate(template);
-    handleMessage({
-      role: 'system',
-      content: `Template selected: ${template.nameEN} (${template.nameNL})`
-    });
-  }, [handleMessage]);
-
-  const handleTemplateBasedFill = useCallback(async () => {
-    if (!selectedTemplate || !formSchema) return;
-    
-    // Create fill map from template and actual form fields
-    const formFieldIds = formSchema.fields.map(f => f.id);
-    const fillMap = createFillMapFromTemplate(selectedTemplate, formFieldIds);
-    
-    // Swap placeholders for real PII values
-    const realValues = swapPlaceholders(fillMap, piiData as unknown as Record<string, string>);
-    
-    // Send to extension to fill
-    const results = await fillForm(realValues);
-    
-    const filled = results.filter(r => r.status === 'filled').length;
-    const failed = results.filter(r => r.status !== 'filled').length;
-    
-    handleMessage({
-      role: 'system',
-      content: `Template-based fill complete: ${filled} fields filled${failed > 0 ? `, ${failed} failed` : ''}`
-    });
-  }, [selectedTemplate, formSchema, piiData, fillForm, handleMessage]);
-
   const handleFillForm = useCallback(async (fieldMappings: Record<string, string>) => {
-    // Swap placeholders for real PII values locally
     const realValues = swapPlaceholders(fieldMappings, piiData as unknown as Record<string, string>);
-
-    // Send to extension to fill
     const results = await fillForm(realValues);
-
     const filled = results.filter(r => r.status === 'filled').length;
     const failed = results.filter(r => r.status !== 'filled').length;
-
     handleMessage({
       role: 'system',
       content: `Form fill complete: ${filled} fields filled${failed > 0 ? `, ${failed} failed` : ''}`
@@ -255,10 +118,10 @@ export default function Home() {
 
   const handleCreateRoadmap = useCallback(async (params: CreateRoadmapParams): Promise<string> => {
     const result = createRoadmap(params);
-    setShowRoadmap(true); // Auto-show roadmap when created
+    setActivePanel('roadmap');
     handleMessage({
       role: 'system',
-      content: `📍 Roadmap created: "${result.name}" with ${result.steps.length} steps`
+      content: `Roadmap created: "${result.name}" with ${result.steps.length} steps`
     });
     return `Created "${result.name}" with ${result.steps.length} steps. The roadmap is now visible on the page.`;
   }, [createRoadmap, handleMessage]);
@@ -271,477 +134,307 @@ export default function Home() {
     return 'Updated';
   }, [setStepStatus]);
 
-  // Landing page
+  const togglePanel = (panel: ActivePanel) => {
+    setActivePanel(prev => prev === panel ? null : panel);
+  };
+
+  // ─── Landing ───
   if (appState === 'landing') {
     return (
       <AnimatePresence mode="wait">
         <motion.main
           key="landing"
-          variants={pageVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="min-h-screen bg-slate-950 text-white relative overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="welkom-landing"
         >
-          {/* Gradient mesh background */}
-          <div className="absolute inset-0">
-            <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-orange-500/30 rounded-full blur-[120px]" />
-            <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-amber-500/20 rounded-full blur-[100px]" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-600/10 rounded-full blur-[150px]" />
+          {/* Subtle ambient light */}
+          <div className="landing-ambient">
+            <div className="landing-ambient-orb landing-ambient-orb--warm" />
+            <div className="landing-ambient-orb landing-ambient-orb--cool" />
           </div>
 
-          {/* Grid pattern overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:72px_72px]" />
+          {/* Grain overlay */}
+          <div className="grain-overlay" />
 
-          {/* Header */}
-          <header className="relative z-10 flex justify-between items-center px-6 py-4">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">🌍</span>
-              <span className="font-bold text-lg">Welkom.ai</span>
+          {/* Nav */}
+          <motion.nav
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="landing-nav"
+          >
+            <div className="landing-logo">
+              <div className="landing-logo-dot" />
+              <span>welkom.ai</span>
             </div>
             <LanguageSwitcher />
-          </header>
+          </motion.nav>
 
-          {/* Hero content */}
-          <div className="relative z-10 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4 pb-20">
-            <motion.div 
-              className="max-w-4xl text-center"
+          {/* Hero */}
+          <div className="landing-hero">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              className="landing-hero-text"
+            >
+              <h1 className="landing-title">
+                <span className="landing-title-line">{t('landing.heroLine1')}</span>
+                <span className="landing-title-line landing-title-accent">{t('landing.heroLine2')}</span>
+              </h1>
+              <p className="landing-subtitle">
+                {t('landing.subtitle')}
+              </p>
+            </motion.div>
+
+            {/* Orb */}
+            <motion.div
+              className="landing-orb-wrapper"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <div className="landing-orb">
+                <div className="landing-orb-ring landing-orb-ring--outer" />
+                <div className="landing-orb-ring landing-orb-ring--inner" />
+                <div className="landing-orb-core" />
+                <div className="landing-orb-glow" />
+              </div>
+            </motion.div>
+
+            {/* Country Selector */}
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ delay: 0.7, duration: 0.6 }}
+              className="landing-countries"
             >
-              {/* Badge */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-300 text-sm mb-8"
-              >
-                <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-                AI-powered immigration assistant
-              </motion.div>
-
-              {/* Main headline */}
-              <motion.h1 
-                className="text-5xl sm:text-7xl font-bold mb-6 tracking-tight"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                {t('landing.tagline').split(' ').slice(0, 2).join(' ')}{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500">
-                  {t('landing.tagline').split(' ').slice(2).join(' ')}
-                </span>
-              </motion.h1>
-
-              <motion.p 
-                className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                Navigate Dutch bureaucracy with ease. Speak any language, get instant help with forms, visas, and documents.
-              </motion.p>
-
-              {/* Animated AI orb visualization */}
-              <motion.div 
-                className="relative w-48 h-48 mx-auto mb-10"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.35, duration: 0.6 }}
-              >
-                {/* Outer glow ring */}
-                <motion.div 
-                  className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500/20 to-amber-500/20 blur-xl"
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                />
-                {/* Middle ring */}
-                <motion.div 
-                  className="absolute inset-4 rounded-full border border-orange-500/30"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                />
-                {/* Inner spinning ring */}
-                <motion.div 
-                  className="absolute inset-8 rounded-full border-2 border-dashed border-orange-400/40"
-                  animate={{ rotate: -360 }}
-                  transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                />
-                {/* Core orb */}
-                <motion.div 
-                  className="absolute inset-12 rounded-full bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600 shadow-lg shadow-orange-500/50"
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                />
-                {/* Glowing center */}
-                <motion.div 
-                  className="absolute inset-16 rounded-full bg-white/80 blur-sm"
-                  animate={{ opacity: [0.6, 1, 0.6] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                />
-                {/* Floating particles */}
-                {[...Array(6)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute w-2 h-2 rounded-full bg-orange-400"
-                    style={{
-                      left: '50%',
-                      top: '50%',
-                    }}
-                    animate={{
-                      x: [0, Math.cos(i * 60 * Math.PI / 180) * 80, 0],
-                      y: [0, Math.sin(i * 60 * Math.PI / 180) * 80, 0],
-                      opacity: [0, 1, 0],
-                      scale: [0, 1, 0],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      delay: i * 0.5,
-                      ease: "easeInOut"
-                    }}
-                  />
-                ))}
-              </motion.div>
-
-              {/* Country Selector */}
-              <motion.div
-                className="w-full max-w-4xl mx-auto mb-16"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <CountrySelector 
-                  onStartJourney={() => setAppState('active')}
-                />
-              </motion.div>
-
-              {/* Feature cards */}
-              <motion.div 
-                className="grid grid-cols-1 sm:grid-cols-3 gap-4"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-left hover:bg-white/10 transition-colors">
-                  <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center text-xl mb-4">🗣️</div>
-                  <h3 className="font-semibold text-white mb-1">{t('landing.features.language.title')}</h3>
-                  <p className="text-sm text-slate-400">{t('landing.features.language.description')}</p>
-                </div>
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-left hover:bg-white/10 transition-colors">
-                  <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center text-xl mb-4">📋</div>
-                  <h3 className="font-semibold text-white mb-1">{t('landing.features.forms.title')}</h3>
-                  <p className="text-sm text-slate-400">{t('landing.features.forms.description')}</p>
-                </div>
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-left hover:bg-white/10 transition-colors">
-                  <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg flex items-center justify-center text-xl mb-4">🔒</div>
-                  <h3 className="font-semibold text-white mb-1">{t('landing.features.privacy.title')}</h3>
-                  <p className="text-sm text-slate-400">{t('landing.features.privacy.description')}</p>
-                </div>
-              </motion.div>
-
-              {/* Trust indicators */}
-              <motion.p 
-                className="mt-10 text-sm text-slate-500"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7 }}
-              >
-                🇳🇱 Built for the Netherlands • 🔐 {t('landing.noAccount')}
-              </motion.p>
+              <CountrySelector onStartJourney={() => setAppState('active')} />
             </motion.div>
-          </div>
 
-          {/* Stats Showcase Section */}
-          <div className="relative z-10 w-full max-w-6xl mx-auto px-4 py-16">
-            <StatsShowcase />
+            {/* Features - minimal pills */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.9, duration: 0.6 }}
+              className="landing-features"
+            >
+              {[
+                { label: t('landing.features.language.title'), icon: '~' },
+                { label: t('landing.features.forms.title'), icon: '/' },
+                { label: t('landing.features.privacy.title'), icon: '*' },
+              ].map((f, i) => (
+                <motion.div
+                  key={f.label}
+                  className="landing-pill"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1 + i * 0.1 }}
+                >
+                  <span className="landing-pill-icon">{f.icon}</span>
+                  <span>{f.label}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.3 }}
+              className="landing-trust"
+            >
+              {t('landing.noAccount')}
+            </motion.p>
           </div>
         </motion.main>
       </AnimatePresence>
     );
   }
 
-  // Active conversation view
+  // ─── Active (App) ───
   return (
     <AnimatePresence mode="wait">
       <motion.main
         key="active"
-        variants={pageVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        className="min-h-screen bg-slate-950"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.4 }}
+        className="welkom-app"
       >
-        {/* Header */}
-        <motion.header 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="bg-slate-900/80 backdrop-blur-xl border-b border-white/10 px-4 sm:px-6 py-4 sticky top-0 z-50"
-        >
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
-            <motion.div 
-              className="flex items-center gap-3"
-              whileHover={{ scale: 1.02 }}
-            >
-              <motion.span 
-                className="text-2xl"
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 5 }}
-              >
-                🌍
-              </motion.span>
-              <h1 className="text-xl font-bold text-white">{t('landing.title')}</h1>
-            </motion.div>
-            <div className="flex items-center gap-3 sm:gap-4 flex-wrap justify-center sm:justify-end">
-              <AnimatePresence>
-                {selectedTemplate && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                  >
-                    <TemplateIndicator
-                      template={selectedTemplate}
-                      onClick={() => setSelectedTemplate(null)}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              <AnimatedButton
-                onClick={() => setShowTemplates(!showTemplates)}
-                variant={showTemplates ? 'secondary' : 'secondary'}
-                size="sm"
-                className={showTemplates ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' : ''}
-              >
-                📋 {t('header.templates')}
-              </AnimatedButton>
-              <AnimatedButton
-                onClick={() => setShowPIIForm(!showPIIForm)}
-                variant="secondary"
-                size="sm"
-                className={showPIIForm ? 'bg-orange-100 text-orange-700 hover:bg-blue-200' : ''}
-              >
-                🔒 {t('header.personalDetails')} ({getFilledCount()}/{totalFields})
-              </AnimatedButton>
-              <AnimatedButton
-                onClick={() => setShowRoadmap(!showRoadmap)}
-                variant="secondary"
-                size="sm"
-                className={
-                  showRoadmap
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                    : roadmap
-                      ? 'bg-green-50 text-green-600 hover:bg-green-100'
-                      : ''
-                }
-              >
-                📍 {t('header.roadmap')} {roadmap ? `(${getProgress()}%)` : ''}
-              </AnimatedButton>
-              <LanguageSwitcher />
-              <AnimatedButton
-                onClick={() => setAppState('landing')}
-                variant="ghost"
-                size="sm"
-              >
-                ← {t('header.back')}
-              </AnimatedButton>
-            </div>
-          </div>
-        </motion.header>
+        {/* Grain overlay */}
+        <div className="grain-overlay" />
 
-        {/* Roadmap Section (shows when toggled) */}
-        <AnimatePresence>
-          {showRoadmap && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="overflow-hidden"
+        {/* ─── Toolbar (left edge) ─── */}
+        <motion.aside
+          initial={{ opacity: 0, x: rtl ? 20 : -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+          className="app-toolbar"
+        >
+          {/* Logo */}
+          <button
+            onClick={() => setAppState('landing')}
+            className="toolbar-logo"
+            title={t('toolbar.backToHome')}
+          >
+            <div className="toolbar-logo-dot" />
+          </button>
+
+          {/* Nav items */}
+          <div className="toolbar-nav">
+            <ToolbarButton
+              active={activePanel === 'forms'}
+              onClick={() => togglePanel('forms')}
+              label={t('toolbar.forms')}
+              badge={formSchema ? formSchema.fields.length : undefined}
             >
-              <div className="max-w-4xl mx-auto p-4 sm:p-6 pb-0">
-                {roadmap ? (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                  >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </ToolbarButton>
+
+            <ToolbarButton
+              active={activePanel === 'roadmap'}
+              onClick={() => togglePanel('roadmap')}
+              label={t('toolbar.roadmap')}
+              badge={roadmap ? `${getProgress()}%` : undefined}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              </svg>
+            </ToolbarButton>
+
+          </div>
+
+          {/* Bottom section */}
+          <div className="toolbar-bottom">
+            <ToolbarButton
+              active={showTranscript}
+              onClick={() => setShowTranscript(prev => !prev)}
+              label={t('toolbar.chat')}
+              badge={messages.length > 0 ? messages.length : undefined}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </ToolbarButton>
+          </div>
+        </motion.aside>
+
+        {/* ─── Center: Voice Agent ─── */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className={`app-center ${activePanel ? 'app-center--shifted' : ''} ${showTranscript ? 'app-center--transcript-open' : ''}`}
+        >
+          <div className="app-center-lang">
+            <LanguageSwitcher />
+          </div>
+
+          <VoiceAgent
+            onFormSchemaRequest={handleFormSchemaRequest}
+            onFormCaptured={handleFormCaptured}
+            onFillForm={handleFillForm}
+            onMessage={handleMessage}
+            onCreateRoadmap={handleCreateRoadmap}
+            onUpdateRoadmap={handleUpdateRoadmap}
+            currentSchema={formSchema}
+          />
+        </motion.div>
+
+        {/* ─── Right Panel (slides in) ─── */}
+        <AnimatePresence>
+          {activePanel && (
+            <motion.aside
+              key="panel"
+              initial={{ opacity: 0, x: rtl ? -40 : 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: rtl ? -40 : 40 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="app-panel"
+            >
+              <div className="app-panel-header">
+                <h2 className="app-panel-title">
+                  {activePanel === 'forms' && t('panels.capturedForms')}
+                  {activePanel === 'roadmap' && t('panels.roadmap')}
+                </h2>
+                <button
+                  onClick={() => setActivePanel(null)}
+                  className="app-panel-close"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-5 h-5">
+                    <path d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="app-panel-content">
+                {activePanel === 'forms' && (
+                  <FormStatus
+                    schema={formSchema}
+                    fillResults={lastFillResults}
+                    onClear={clearSchema}
+                    isConnected={isConnected}
+                    error={error}
+                    captureHistory={captureHistory}
+                    onSelectCapture={selectCapture}
+                    onRemoveCapture={removeCapture}
+                  />
+                )}
+                {activePanel === 'roadmap' && (
+                  roadmap ? (
                     <ProgressTracker
                       roadmap={roadmap}
                       onSetStatus={setStepStatus}
                       onUpdateNotes={updateNotes}
                       onClear={clearRoadmap}
                     />
-                  </motion.div>
-                ) : (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-8 text-center"
-                  >
-                    <motion.div 
-                      className="text-5xl mb-4"
-                      animate={{ y: [0, -10, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      📍
-                    </motion.div>
-                    <h2 className="text-xl font-semibold text-white mb-2">{t('roadmap.empty')}</h2>
-                    <p className="text-slate-400">{t('roadmap.emptyDescription')}</p>
-                  </motion.div>
+                  ) : (
+                    <div className="panel-empty">
+                      <div className="panel-empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1} className="w-12 h-12 opacity-30">
+                          <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                        </svg>
+                      </div>
+                      <p className="panel-empty-title">{t('roadmap.empty')}</p>
+                      <p className="panel-empty-sub">{t('roadmap.emptyDescription')}</p>
+                    </div>
+                  )
                 )}
+              </div>
+            </motion.aside>
+          )}
+        </AnimatePresence>
+
+        {/* ─── Transcript drawer (bottom) ─── */}
+        <AnimatePresence>
+          {showTranscript && (
+            <motion.div
+              key="transcript"
+              initial={{ opacity: 0, y: 60 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 60 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className={`app-transcript ${activePanel ? 'app-transcript--panel-open' : ''}`}
+            >
+              <div className="app-transcript-header">
+                <span className="app-transcript-title">{t('transcript.title')}</span>
+                <button onClick={() => setShowTranscript(false)} className="app-panel-close">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4">
+                    <path d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="app-transcript-body">
+                <Transcript messages={messages} />
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Main content */}
-        <div className="max-w-7xl mx-auto p-4 sm:p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-            {/* Left: Voice Agent + Transcript */}
-            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-              {/* Voice control */}
-              <FadeInOnScroll>
-                <motion.div 
-                  className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl p-6 sm:p-8"
-                  whileHover={{ 
-                    borderColor: "rgba(251, 146, 60, 0.3)",
-                    transition: { duration: 0.3 }
-                  }}
-                >
-                  <VoiceAgent
-                    onFormSchemaRequest={handleFormSchemaRequest}
-                    onFormCaptured={handleFormCaptured}
-                    onFillForm={handleFillForm}
-                    onMessage={handleMessage}
-                    onCreateRoadmap={handleCreateRoadmap}
-                    onUpdateRoadmap={handleUpdateRoadmap}
-                    currentSchema={formSchema}
-                  />
-                </motion.div>
-              </FadeInOnScroll>
-
-              {/* Transcript */}
-              <FadeInOnScroll delay={0.1}>
-                <motion.div 
-                  className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-xl h-80 sm:h-96"
-                  whileHover={{ 
-                    boxShadow: "0 20px 40px -15px rgba(0,0,0,0.1)",
-                    transition: { duration: 0.3 }
-                  }}
-                >
-                  <div className="px-4 py-3 border-b border-white/10">
-                    <h2 className="font-semibold text-white">{t('transcript.title')}</h2>
-                  </div>
-                  <div className="h-[calc(100%-52px)]">
-                    <Transcript messages={messages} />
-                  </div>
-                </motion.div>
-              </FadeInOnScroll>
-            </div>
-
-            {/* Right: Form Status + Templates + PII Form */}
-            <div className="space-y-4 sm:space-y-6">
-              {/* Form Status */}
-              <FadeInOnScroll delay={0.2}>
-                <FormStatus
-                  schema={formSchema}
-                  fillResults={lastFillResults}
-                  onClear={clearSchema}
-                  isConnected={isConnected}
-                  error={error}
-                  captureHistory={captureHistory}
-                  onSelectCapture={selectCapture}
-                  onRemoveCapture={removeCapture}
-                />
-              </FadeInOnScroll>
-
-              {/* Template-based Fill Button */}
-              <AnimatePresence>
-                {selectedTemplate && formSchema && formSchema.fields.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  >
-                    <motion.button
-                      onClick={handleTemplateBasedFill}
-                      whileHover={{ 
-                        scale: 1.02,
-                        boxShadow: "0 15px 35px -10px rgba(124, 58, 237, 0.4)"
-                      }}
-                      whileTap={{ scale: 0.98 }}
-                      className="relative w-full py-3 px-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl shadow-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-                    >
-                      {/* Shimmer effect */}
-                      <motion.span
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                        initial={{ x: '-100%' }}
-                        animate={{ x: '200%' }}
-                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-                      />
-                      <span className="relative z-10 flex items-center justify-center gap-2">
-                        <motion.span
-                          animate={{ rotate: [0, 360] }}
-                          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                        >
-                          ✨
-                        </motion.span>
-                        <span>{t('templates.autoFillWith', { template: selectedTemplate.nameEN })}</span>
-                      </span>
-                    </motion.button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Form Templates (collapsible with animation) */}
-              <AnimatePresence>
-                {showTemplates && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0, y: -20 }}
-                    animate={{ opacity: 1, height: 'auto', y: 0 }}
-                    exit={{ opacity: 0, height: 0, y: -20 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="overflow-hidden"
-                  >
-                    <FormTemplateSelector
-                      piiData={piiData}
-                      currentUrl={formSchema?.url}
-                      onSelectTemplate={handleTemplateSelect}
-                      selectedTemplateId={selectedTemplate?.id}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* PII Form (collapsible with animation) */}
-              <AnimatePresence>
-                {showPIIForm && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0, y: -20 }}
-                    animate={{ opacity: 1, height: 'auto', y: 0 }}
-                    exit={{ opacity: 0, height: 0, y: -20 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="overflow-hidden"
-                  >
-                    <PIIForm
-                      piiData={piiData}
-                      onUpdate={updateField}
-                      onClear={clearAll}
-                      onLoadDemo={loadDemo}
-                      filledCount={getFilledCount()}
-                      totalFields={totalFields}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-            </div>
-          </div>
-        </div>
 
         {/* Developer Panel */}
         <DevPanel
@@ -752,5 +445,34 @@ export default function Home() {
         />
       </motion.main>
     </AnimatePresence>
+  );
+}
+
+// ─── Toolbar Button ───
+function ToolbarButton({
+  children,
+  active,
+  onClick,
+  label,
+  badge,
+}: {
+  children: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  badge?: number | string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`toolbar-btn ${active ? 'toolbar-btn--active' : ''}`}
+      title={label}
+    >
+      <span className="toolbar-btn-icon">{children}</span>
+      <span className="toolbar-btn-label">{label}</span>
+      {badge !== undefined && (
+        <span className="toolbar-btn-badge">{badge}</span>
+      )}
+    </button>
   );
 }
